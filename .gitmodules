@@ -1,0 +1,3 @@
+[submodule "js_api"]
+	path = js_api
+	url = https://github.com/polkawallet-io/js_api.git
