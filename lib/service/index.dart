@@ -3,15 +3,17 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
-import 'package:polkawallet_sdk/service/apiAccount.dart';
+import 'package:polkawallet_sdk/service/account.dart';
+import 'package:polkawallet_sdk/service/keyring.dart';
 import 'package:polkawallet_sdk/storage/localStorage.dart';
 
-class PolkawalletApi {
-  PolkawalletApi(this.storage);
+class SubstrateService {
+  SubstrateService(this.storage);
 
   final KeyringStorage storage;
 
-  ApiAccount account;
+  ServiceKeyring keyring;
+  ServiceAccount account;
 
   Map<String, Function> _msgHandlers = {};
   Map<String, Completer> _msgCompleters = {};
@@ -26,7 +28,8 @@ class PolkawalletApi {
   String asExtensionJSCode;
 
   void init() {
-    account = ApiAccount(this);
+    keyring = ServiceKeyring(this);
+    account = ServiceAccount(this);
 
     launchWebview();
 

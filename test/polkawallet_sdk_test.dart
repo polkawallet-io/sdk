@@ -9,7 +9,6 @@ void main() {
       expect(sdk.isReady, false);
       expect(sdk.isConnected, false);
       expect(sdk.api, isNull);
-      expect(sdk.storage, isNull);
     });
   });
 }
