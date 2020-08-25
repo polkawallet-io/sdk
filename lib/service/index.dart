@@ -128,7 +128,7 @@ class SubstrateService {
   Future<dynamic> evalJavascript(
     String code, {
     bool wrapPromise = true,
-    bool allowRepeat = false,
+    bool allowRepeat = true,
   }) async {
     // check if there's a same request loading
     if (!allowRepeat) {
@@ -161,35 +161,22 @@ class SubstrateService {
     return c.future;
   }
 
-//  Future<void> connectNode() async {
-//    String node = store.settings.endpoint.value;
-//    // do connect
-//    String res = await evalJavascript('settings.connect("$node")');
-//    if (res == null) {
-//      print('connect failed');
-//      store.settings.setNetworkName(null);
-//      return;
-//    }
-//    fetchNetworkProps();
-//  }
-//
-//  Future<void> connectNodeAll() async {
-//    List<String> nodes =
-//        store.settings.endpointList.map((e) => e.value).toList();
-//    // do connect
-//    String res =
-//        await evalJavascript('settings.connectAll(${jsonEncode(nodes)})');
-//    if (res == null) {
-//      print('connect failed');
-//      store.settings.setNetworkName(null);
-//      return;
-//    }
-//    int index = store.settings.endpointList.indexWhere((i) => i.value == res);
-//    if (index < 0) return;
-//    store.settings.setEndpoint(store.settings.endpointList[index]);
-//    fetchNetworkProps();
-//  }
-//
+  Future<String> connectNode(String node) async {
+    final String res = await evalJavascript('settings.connect("$node")');
+    return res;
+  }
+
+  Future<String> connectNodeAll(List<String> nodes) async {
+    final String res =
+        await evalJavascript('settings.connectAll(${jsonEncode(nodes)})');
+    return res;
+  }
+
+  Future<void> disconnect() async {
+    _web.close();
+    _web.dispose();
+  }
+
 //  Future<void> fetchNetworkProps() async {
 //    // fetch network info
 //    List<dynamic> info = await Future.wait([
@@ -240,7 +227,7 @@ class SubstrateService {
     Function callback,
   ) async {
     _msgHandlers[channel] = callback;
-    evalJavascript(code, allowRepeat: true);
+    evalJavascript(code);
   }
 
   Future<void> unsubscribeMessage(String channel) async {

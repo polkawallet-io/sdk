@@ -36,22 +36,6 @@ class ServiceKeyring {
 //    }
 //  }
 
-  /// encode addresses to publicKeys
-  Future<Map> encodeAddress(List<String> pubKeys, ss58List) async {
-    Map res = await serviceRoot.evalJavascript(
-      'account.encodeAddress(${jsonEncode(pubKeys)}, ${jsonEncode(ss58List)})',
-      allowRepeat: true,
-    );
-    return res;
-  }
-
-  /// decode addresses to publicKeys
-  Future<Map> decodeAddress(List<String> addresses) async {
-    Map res = await serviceRoot
-        .evalJavascript('account.decodeAddress(${jsonEncode(addresses)})');
-    return res;
-  }
-
 //  Future<void> changeCurrentAccount({
 //    String pubKey,
 //    bool fetchData = false,
@@ -88,10 +72,8 @@ class ServiceKeyring {
 
   /// Generate a set of new mnemonic.
   Future<String> generateMnemonic() async {
-    final Map<String, dynamic> acc = await serviceRoot.evalJavascript(
-      'account.gen()',
-      allowRepeat: true,
-    );
+    final Map<String, dynamic> acc =
+        await serviceRoot.evalJavascript('account.gen()');
     return acc['mnemonic'];
   }
 
@@ -112,10 +94,7 @@ class ServiceKeyring {
     String code =
         'account.recover("$type", "$crypto", \'$key$derivePath\', "$password")';
     code = code.replaceAll(RegExp(r'\t|\n|\r'), '');
-    final Map<String, dynamic> acc = await serviceRoot.evalJavascript(
-      code,
-      allowRepeat: true,
-    );
+    final Map<String, dynamic> acc = await serviceRoot.evalJavascript(code);
     if (acc == null || acc['error'] != null) {
       return null;
     }
@@ -141,10 +120,8 @@ class ServiceKeyring {
 
   /// check password of account
   Future<bool> checkPassword(String pubKey, pass) async {
-    final res = await serviceRoot.evalJavascript(
-      'account.checkPassword("$pubKey", "$pass")',
-      allowRepeat: true,
-    );
+    final res = await serviceRoot
+        .evalJavascript('account.checkPassword("$pubKey", "$pass")');
     if (res == null) {
       return false;
     }
@@ -154,10 +131,8 @@ class ServiceKeyring {
   Future<String> checkDerivePath(
       String seed, path, CryptoType cryptoType) async {
     final String crypto = cryptoType.toString().split('.')[1];
-    String res = await serviceRoot.evalJavascript(
-      'account.checkDerivePath("$seed", "$path", "$crypto")',
-      allowRepeat: true,
-    );
+    String res = await serviceRoot
+        .evalJavascript('account.checkDerivePath("$seed", "$path", "$crypto")');
     return res;
   }
 

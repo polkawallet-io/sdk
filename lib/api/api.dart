@@ -1,5 +1,6 @@
 import 'package:polkawallet_sdk/api/apiAccount.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
+import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 
 class PolkawalletApi {
@@ -7,11 +8,13 @@ class PolkawalletApi {
 
   final SubstrateService service;
 
+  NetworkParams connectedNode;
+
   ApiAccount account;
   ApiKeyring keyring;
 
   void init() {
-    account = ApiAccount(service.account);
+    account = ApiAccount(this, service.account);
     keyring = ApiKeyring(service.keyring);
 
 //    DefaultAssetBundle.of(context)
@@ -20,6 +23,38 @@ class PolkawalletApi {
 //      print('asExtensionJSCode loaded');
 //      asExtensionJSCode = js;
 //    });
+  }
+
+  bool get isConnected {
+    return connectedNode != null;
+  }
+
+  /// connect to a specific node, return null if connect failed.
+  Future<NetworkParams> connectNode(NetworkParams params) async {
+    final String res = await service.connectNode(params.endpoint);
+    if (res != null) {
+      connectedNode = params;
+      return params;
+    }
+    return null;
+  }
+
+  /// connect to a list of nodes, return null if connect failed.
+  Future<NetworkParams> connectNodeAll(List<NetworkParams> nodes) async {
+    final String res =
+        await service.connectNodeAll(nodes.map((e) => e.endpoint).toList());
+    if (res != null) {
+      final node = nodes.firstWhere((e) => e.endpoint == res);
+      connectedNode = node;
+      return node;
+    }
+    return null;
+  }
+
+  /// disconnect to node.
+  Future<void> disconnect() async {
+    await service.disconnect();
+    connectedNode = null;
   }
 
 //  Future<void> _checkJSCodeUpdate() async {
@@ -33,35 +68,6 @@ class PolkawalletApi {
 //    }
 //  }
 
-//  Future<void> connectNode() async {
-//    String node = store.settings.endpoint.value;
-//    // do connect
-//    String res = await evalJavascript('settings.connect("$node")');
-//    if (res == null) {
-//      print('connect failed');
-//      store.settings.setNetworkName(null);
-//      return;
-//    }
-//    fetchNetworkProps();
-//  }
-//
-//  Future<void> connectNodeAll() async {
-//    List<String> nodes =
-//        store.settings.endpointList.map((e) => e.value).toList();
-//    // do connect
-//    String res =
-//        await evalJavascript('settings.connectAll(${jsonEncode(nodes)})');
-//    if (res == null) {
-//      print('connect failed');
-//      store.settings.setNetworkName(null);
-//      return;
-//    }
-//    int index = store.settings.endpointList.indexWhere((i) => i.value == res);
-//    if (index < 0) return;
-//    store.settings.setEndpoint(store.settings.endpointList[index]);
-//    fetchNetworkProps();
-//  }
-//
 //  Future<void> fetchNetworkProps() async {
 //    // fetch network info
 //    List<dynamic> info = await Future.wait([

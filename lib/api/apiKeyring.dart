@@ -38,20 +38,6 @@ class ApiKeyring {
 //    }
 //  }
 
-//  /// encode addresses to publicKeys
-//  Future<void> encodeAddress(List<String> pubKeys) async {
-//    Map res = await service.encodeAddress(pubKeys, [ss58]);
-//    if (res != null) {
-//      store.account.setPubKeyAddressMap(Map<String, Map>.from(res));
-//    }
-//  }
-
-  /// decode addresses to publicKeys
-  Future<Map> decodeAddress(List<String> addresses) async {
-    Map res = await service.decodeAddress(addresses);
-    return res;
-  }
-
 //  Future<void> changeCurrentAccount({
 //    String pubKey,
 //    bool fetchData = false,

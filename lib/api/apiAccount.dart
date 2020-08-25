@@ -1,20 +1,24 @@
 import 'dart:async';
 
+import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/service/account.dart';
 
 class ApiAccount {
-  ApiAccount(this.service);
+  ApiAccount(this.apiRoot, this.service);
 
+  final PolkawalletApi apiRoot;
   final ServiceAccount service;
 
-//  Future<void> fetchAccountsBonded(List<String> pubKeys) async {
-//    if (pubKeys.length > 0) {
-//      List res = await apiRoot.evalJavascript(
-//          'account.queryAccountsBonded(${jsonEncode(pubKeys)})');
-//      store.account.setAccountsBonded(res);
-//    }
-//  }
-//
+  /// query staking stash-controller relationship of a list of pubKeys,
+  /// return list of [pubKey, controllerAddress, stashAddress].
+  Future<List> queryBonded(List<String> pubKeys) async {
+    if (pubKeys == null || pubKeys.length == 0) {
+      return [];
+    }
+    List res = await service.queryBonded(pubKeys);
+    return res;
+  }
+
 //  Future<Map> estimateTxFees(Map txInfo, List params, {String rawParam}) async {
 //    String param = rawParam != null ? rawParam : jsonEncode(params);
 //    print(txInfo);
@@ -54,13 +58,29 @@ class ApiAccount {
 //  }
 //
 
+  /// encode addresses to publicKeys
+  Future<Map> encodeAddress(List<String> pubKeys) async {
+    final int ss58 = apiRoot.connectedNode.ss58;
+    final Map res = await service.encodeAddress(pubKeys, [ss58]);
+    if (res != null) {
+      return res[ss58.toString()];
+    }
+    return null;
+  }
+
+  /// decode addresses to publicKeys
+  Future<Map> decodeAddress(List<String> addresses) async {
+    final Map res = await service.decodeAddress(addresses);
+    return res;
+  }
+
   /// Get on-chain account info of addresses
-  Future<List> getAccountsIndex(List addresses) async {
+  Future<List> queryIndexInfo(List addresses) async {
     if (addresses == null || addresses.length == 0) {
       return [];
     }
 
-    var res = await service.getAccountsIndex(addresses);
+    var res = await service.queryAccountsIndex(addresses);
     return res;
   }
 

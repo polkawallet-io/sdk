@@ -111,22 +111,6 @@ class _KeyringPageState extends State<KeyringPage> {
     });
   }
 
-  Future<void> _decodeAddress() async {
-    setState(() {
-      _submitting = true;
-    });
-    final Map res =
-        await widget.sdk.api.keyring.decodeAddress([_testAcc.address]);
-    widget.showResult(
-      context,
-      'decodeAddress',
-      JsonEncoder.withIndent('  ').convert(res),
-    );
-    setState(() {
-      _submitting = false;
-    });
-  }
-
   Future<void> _checkPassword() async {
     if (_testAcc == null) {
       print('should import keyPair to init test account.');
@@ -227,16 +211,6 @@ sdk.api.keyring.importAccount(
             ),
             Divider(),
             ListTile(
-              title: Text('decodeAddress'),
-              subtitle: Text(
-                  'sdk.api.keyring.decodeAddress(["${_testAcc?.address}"])'),
-              trailing: SubmitButton(
-                submitting: _submitting,
-                call: _decodeAddress,
-              ),
-            ),
-            Divider(),
-            ListTile(
               title: Text('checkPassword'),
               subtitle: Text('''
 sdk.api.keyring.checkPassword(
@@ -271,19 +245,31 @@ sdk.api.keyring.checkDerivePath(
 }
 
 class SubmitButton extends StatelessWidget {
-  SubmitButton({this.call, this.submitting});
+  SubmitButton({this.call, this.submitting, this.needConnect = false});
   final bool submitting;
+  final bool needConnect;
   final Function call;
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return IconButton(
-      color: submitting
-          ? Theme.of(context).disabledColor
-          : Theme.of(context).primaryColor,
-      icon: submitting ? Icon(Icons.refresh) : Icon(Icons.play_circle_outline),
-      onPressed: () => call(),
-    );
+    return needConnect
+        ? Column(
+            children: [
+              Icon(
+                Icons.play_circle_outline,
+                color: Theme.of(context).disabledColor,
+              ),
+              Text('Connection\nRequired', style: TextStyle(fontSize: 10))
+            ],
+          )
+        : IconButton(
+            color: submitting
+                ? Theme.of(context).disabledColor
+                : Theme.of(context).primaryColor,
+            icon: submitting
+                ? Icon(Icons.refresh)
+                : Icon(Icons.play_circle_outline),
+            onPressed: () => call(),
+          );
   }
 }

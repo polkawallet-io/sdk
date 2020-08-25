@@ -1,7 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk_example/pages/account.dart';
 import 'package:polkawallet_sdk_example/pages/keyring.dart';
@@ -81,7 +80,27 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool _connecting = false;
   bool _apiConnected = false;
+
+  Future<void> _connectNode() async {
+    setState(() {
+      _connecting = true;
+    });
+    final node = NetworkParams();
+    node.name = 'Kusama';
+    node.endpoint = 'wss://kusama-rpc.polkadot.io/';
+    node.ss58 = 2;
+    final res = await widget.sdk.api.connectNode(node);
+    if (res != null) {
+      setState(() {
+        _apiConnected = true;
+      });
+    }
+    setState(() {
+      _connecting = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +122,22 @@ class _MyHomePageState extends State<MyHomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('js-api loaded: ${widget.sdkReady}'),
-                  Text('js-api connected: $_apiConnected')
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('js-api connected: $_apiConnected'),
+                      OutlineButton(
+                        child: _connecting
+                            ? CupertinoActivityIndicator()
+                            : Text(_apiConnected
+                                ? 'connected ${widget.sdk.api.connectedNode.name}'
+                                : 'connect'),
+                        onPressed: _apiConnected || _connecting
+                            ? null
+                            : () => _connectNode(),
+                      )
+                    ],
+                  )
                 ],
               ),
             ),

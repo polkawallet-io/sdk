@@ -7,7 +7,6 @@ void main() {
     test('init sdk', () async {
       final sdk = WalletSDK();
       expect(sdk.isReady, false);
-      expect(sdk.isConnected, false);
       expect(sdk.api, isNull);
     });
   });

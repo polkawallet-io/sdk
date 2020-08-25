@@ -8,14 +8,27 @@ class ServiceAccount {
 
   final SubstrateService serviceRoot;
 
-//  Future<void> fetchAccountsBonded(List<String> pubKeys) async {
-//    if (pubKeys.length > 0) {
-//      List res = await apiRoot.evalJavascript(
-//          'account.queryAccountsBonded(${jsonEncode(pubKeys)})');
-//      store.account.setAccountsBonded(res);
-//    }
-//  }
-//
+  /// encode addresses to publicKeys
+  Future<Map> encodeAddress(List<String> pubKeys, ss58List) async {
+    Map res = await serviceRoot.evalJavascript(
+        'account.encodeAddress(${jsonEncode(pubKeys)}, ${jsonEncode(ss58List)})');
+    return res;
+  }
+
+  /// decode addresses to publicKeys
+  Future<Map> decodeAddress(List<String> addresses) async {
+    Map res = await serviceRoot
+        .evalJavascript('account.decodeAddress(${jsonEncode(addresses)})');
+    return res;
+  }
+
+  /// query staking info of a list of pubKeys
+  Future<List> queryBonded(List<String> pubKeys) async {
+    List res = await serviceRoot
+        .evalJavascript('account.queryAccountsBonded(${jsonEncode(pubKeys)})');
+    return res;
+  }
+
 //  Future<Map> estimateTxFees(Map txInfo, List params, {String rawParam}) async {
 //    String param = rawParam != null ? rawParam : jsonEncode(params);
 //    print(txInfo);
@@ -56,25 +69,21 @@ class ServiceAccount {
 //
 
   /// Get on-chain account info of addresses
-  Future<List> getAccountsIndex(List addresses) async {
-    var res = await serviceRoot.evalJavascript(
-      'account.getAccountIndex(${jsonEncode(addresses)})',
-      allowRepeat: true,
-    );
+  Future<List> queryAccountsIndex(List addresses) async {
+    var res = await serviceRoot
+        .evalJavascript('account.getAccountIndex(${jsonEncode(addresses)})');
     return res;
   }
 
   Future<List> getPubKeyIcons(List<String> keys) async {
-    List res = await serviceRoot.evalJavascript(
-        'account.genPubKeyIcons(${jsonEncode(keys)})',
-        allowRepeat: true);
+    List res = await serviceRoot
+        .evalJavascript('account.genPubKeyIcons(${jsonEncode(keys)})');
     return res;
   }
 
   Future<List> getAddressIcons(List<String> addresses) async {
-    List res = await serviceRoot.evalJavascript(
-        'account.genIcons(${jsonEncode(addresses)})',
-        allowRepeat: true);
+    List res = await serviceRoot
+        .evalJavascript('account.genIcons(${jsonEncode(addresses)})');
     return res;
   }
 

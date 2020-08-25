@@ -14,7 +14,6 @@ class WalletSDK {
   KeyringStorage _storage;
 
   bool isReady = false;
-  bool isConnected = false;
 
   /// param [jsCode] is customized js code of parachain,
   /// the api works without [jsCode] param in Kusama/Polkadot.
