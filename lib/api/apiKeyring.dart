@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:polkawallet_sdk/api/types/accountData.dart';
+import 'package:polkawallet_sdk/api/types/keyPairData.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
 
 enum KeyType { mnemonic, rawSeed, keystore }
@@ -95,7 +95,7 @@ class ApiKeyring {
   /// Import account from mnemonic/rawSeed/keystore.
   /// param [cryptoType] can be `sr25519`(default) or `ed25519`.
   /// return [null] if import failed.
-  Future<AccountData> importAccount({
+  Future<KeyPairData> importAccount({
     @required KeyType keyType,
     @required String key,
     @required String name,
@@ -111,19 +111,20 @@ class ApiKeyring {
       cryptoType: cryptoType,
       derivePath: derivePath,
     );
-    return AccountData.fromJson(acc);
+    return KeyPairData.fromJson(acc);
   }
 
   /// check password of account
-  Future<bool> checkAccountPassword(AccountData account, String pass) async {
-    final res = await service.checkAccountPassword(account.pubKey, pass);
+  Future<bool> checkPassword(KeyPairData account, String pass) async {
+    final res = await service.checkPassword(account.pubKey, pass);
     return res;
   }
 
   /// Check if derive path is valid, return [null] if valid,
   /// and return error message if invalid.
-  Future<String> checkDerivePath(String seed, path, pairType) async {
-    String res = await service.checkDerivePath(seed, path, pairType);
+  Future<String> checkDerivePath(
+      String seed, path, CryptoType cryptoType) async {
+    String res = await service.checkDerivePath(seed, path, cryptoType);
     return res;
   }
 

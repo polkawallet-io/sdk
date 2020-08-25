@@ -64,14 +64,14 @@ class ServiceAccount {
     return res;
   }
 
-  Future<List> getPubKeyIcons(List keys) async {
+  Future<List> getPubKeyIcons(List<String> keys) async {
     List res = await serviceRoot.evalJavascript(
         'account.genPubKeyIcons(${jsonEncode(keys)})',
         allowRepeat: true);
     return res;
   }
 
-  Future<List> getAddressIcons(List addresses) async {
+  Future<List> getAddressIcons(List<String> addresses) async {
     List res = await serviceRoot.evalJavascript(
         'account.genIcons(${jsonEncode(addresses)})',
         allowRepeat: true);

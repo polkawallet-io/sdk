@@ -140,7 +140,7 @@ class ServiceKeyring {
   }
 
   /// check password of account
-  Future<bool> checkAccountPassword(String pubKey, pass) async {
+  Future<bool> checkPassword(String pubKey, pass) async {
     final res = await serviceRoot.evalJavascript(
       'account.checkPassword("$pubKey", "$pass")',
       allowRepeat: true,
@@ -151,9 +151,11 @@ class ServiceKeyring {
     return true;
   }
 
-  Future<String> checkDerivePath(String seed, path, pairType) async {
+  Future<String> checkDerivePath(
+      String seed, path, CryptoType cryptoType) async {
+    final String crypto = cryptoType.toString().split('.')[1];
     String res = await serviceRoot.evalJavascript(
-      'account.checkDerivePath("$seed", "$path", "$pairType")',
+      'account.checkDerivePath("$seed", "$path", "$crypto")',
       allowRepeat: true,
     );
     return res;

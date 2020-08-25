@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
-import 'package:polkawallet_sdk/api/types/accountData.dart';
+import 'package:polkawallet_sdk/api/types/keyPairData.dart';
 
 class KeyringPage extends StatefulWidget {
   KeyringPage(this.sdk, this.showResult);
@@ -29,6 +29,9 @@ class _KeyringPageState extends State<KeyringPage> {
         "whenCreated": 1598270113026,
         "whenEdited": 1598270113026
       }}''';
+  final String _testPass = 'a123456';
+
+  KeyPairData _testAcc;
 
   bool _apiConnected = false;
   bool _submitting = false;
@@ -48,20 +51,21 @@ class _KeyringPageState extends State<KeyringPage> {
     setState(() {
       _submitting = true;
     });
-    final AccountData acc = await widget.sdk.api.keyring.importAccount(
+    final KeyPairData acc = await widget.sdk.api.keyring.importAccount(
       keyType: KeyType.mnemonic,
       key:
           'wing know chapter eight shed lens mandate lake twenty useless bless glory',
       name: 'testName01',
-      password: 'a123456',
+      password: _testPass,
     );
     widget.showResult(
       context,
       'importFromMnemonic',
-      JsonEncoder.withIndent('  ').convert(AccountData.toJson(acc)),
+      JsonEncoder.withIndent('  ').convert(KeyPairData.toJson(acc)),
     );
     setState(() {
       _submitting = false;
+      _testAcc = acc;
     });
   }
 
@@ -69,19 +73,20 @@ class _KeyringPageState extends State<KeyringPage> {
     setState(() {
       _submitting = true;
     });
-    final AccountData acc = await widget.sdk.api.keyring.importAccount(
+    final KeyPairData acc = await widget.sdk.api.keyring.importAccount(
       keyType: KeyType.mnemonic,
       key: 'Alice',
       name: 'testName02',
-      password: 'a123456',
+      password: _testPass,
     );
     widget.showResult(
       context,
       'importFromRawSeed',
-      JsonEncoder.withIndent('  ').convert(AccountData.toJson(acc)),
+      JsonEncoder.withIndent('  ').convert(KeyPairData.toJson(acc)),
     );
     setState(() {
       _submitting = false;
+      _testAcc = acc;
     });
   }
 
@@ -89,16 +94,69 @@ class _KeyringPageState extends State<KeyringPage> {
     setState(() {
       _submitting = true;
     });
-    final AccountData acc = await widget.sdk.api.keyring.importAccount(
+    final KeyPairData acc = await widget.sdk.api.keyring.importAccount(
       keyType: KeyType.keystore,
       key: _testJson,
       name: 'testName03',
-      password: 'a123456',
+      password: _testPass,
     );
     widget.showResult(
       context,
       'importFromKeystore',
-      JsonEncoder.withIndent('  ').convert(AccountData.toJson(acc)),
+      JsonEncoder.withIndent('  ').convert(KeyPairData.toJson(acc)),
+    );
+    setState(() {
+      _submitting = false;
+      _testAcc = acc;
+    });
+  }
+
+  Future<void> _decodeAddress() async {
+    setState(() {
+      _submitting = true;
+    });
+    final Map res =
+        await widget.sdk.api.keyring.decodeAddress([_testAcc.address]);
+    widget.showResult(
+      context,
+      'decodeAddress',
+      JsonEncoder.withIndent('  ').convert(res),
+    );
+    setState(() {
+      _submitting = false;
+    });
+  }
+
+  Future<void> _checkPassword() async {
+    if (_testAcc == null) {
+      print('should import keyPair to init test account.');
+      return;
+    }
+    setState(() {
+      _submitting = true;
+    });
+    final bool passed =
+        await widget.sdk.api.keyring.checkPassword(_testAcc, _testPass);
+    widget.showResult(
+      context,
+      'checkPassword',
+      passed.toString(),
+    );
+    setState(() {
+      _submitting = false;
+    });
+  }
+
+  Future<void> _checkDerivePath() async {
+    setState(() {
+      _submitting = true;
+    });
+    final String err = await widget.sdk.api.keyring
+        .checkDerivePath('Alice', '///', CryptoType.sr25519);
+    widget.showResult(
+      context,
+      'checkDerivePath',
+      'error: $err',
     );
     setState(() {
       _submitting = false;
@@ -116,81 +174,116 @@ class _KeyringPageState extends State<KeyringPage> {
           children: [
             ListTile(
               title: Text('generateMnemonic'),
-              subtitle: Text('sdk.api.account.generateMnemonic()'),
-              trailing: IconButton(
-                color: _submitting
-                    ? Theme.of(context).disabledColor
-                    : Theme.of(context).primaryColor,
-                icon: _submitting
-                    ? Icon(Icons.refresh)
-                    : Icon(Icons.play_circle_outline),
-                onPressed: () => _generateMnemonic(),
+              subtitle: Text('sdk.api.keyring.generateMnemonic()'),
+              trailing: SubmitButton(
+                submitting: _submitting,
+                call: _generateMnemonic,
               ),
             ),
             Divider(),
             ListTile(
               title: Text('importFromMnemonic'),
               subtitle: Text('''
-sdk.api.account.importAccount(
+sdk.api.keyring.importAccount(
     keyType: KeyType.mnemonic,
     key: 'wing know chapter eight shed lens mandate lake twenty useless bless glory',
     name: 'testName01',
     password: 'a123456',
 )'''),
-              trailing: IconButton(
-                color: _submitting
-                    ? Theme.of(context).disabledColor
-                    : Theme.of(context).primaryColor,
-                icon: _submitting
-                    ? Icon(Icons.refresh)
-                    : Icon(Icons.play_circle_outline),
-                onPressed: () => _importFromMnemonic(),
+              trailing: SubmitButton(
+                submitting: _submitting,
+                call: _importFromMnemonic,
               ),
             ),
             Divider(),
             ListTile(
               title: Text('importFromRawSeed'),
               subtitle: Text('''
-sdk.api.account.importAccount(
+sdk.api.keyring.importAccount(
     keyType: KeyType.rawSeed,
     key: 'Alice',
     name: 'testName02',
     password: 'a123456',
 )'''),
-              trailing: IconButton(
-                color: _submitting
-                    ? Theme.of(context).disabledColor
-                    : Theme.of(context).primaryColor,
-                icon: _submitting
-                    ? Icon(Icons.refresh)
-                    : Icon(Icons.play_circle_outline),
-                onPressed: () => _importFromRawSeed(),
+              trailing: SubmitButton(
+                submitting: _submitting,
+                call: _importFromRawSeed,
               ),
             ),
             Divider(),
             ListTile(
               title: Text('importFromKeystore'),
               subtitle: Text('''
-sdk.api.account.importAccount(
+sdk.api.keyring.importAccount(
     keyType: KeyType.keystore,
     key: '{xxx...xxx}',
     name: 'testName03',
     password: 'a123456',
 )'''),
-              trailing: IconButton(
-                color: _submitting
-                    ? Theme.of(context).disabledColor
-                    : Theme.of(context).primaryColor,
-                icon: _submitting
-                    ? Icon(Icons.refresh)
-                    : Icon(Icons.play_circle_outline),
-                onPressed: () => _importFromKeystore(),
+              trailing: SubmitButton(
+                submitting: _submitting,
+                call: _importFromKeystore,
+              ),
+            ),
+            Divider(),
+            ListTile(
+              title: Text('decodeAddress'),
+              subtitle: Text(
+                  'sdk.api.keyring.decodeAddress(["${_testAcc?.address}"])'),
+              trailing: SubmitButton(
+                submitting: _submitting,
+                call: _decodeAddress,
+              ),
+            ),
+            Divider(),
+            ListTile(
+              title: Text('checkPassword'),
+              subtitle: Text('''
+sdk.api.keyring.checkPassword(
+    '${_testAcc?.toString()}',
+    'a123456',
+)'''),
+              trailing: SubmitButton(
+                submitting: _submitting,
+                call: _checkPassword,
+              ),
+            ),
+            Divider(),
+            ListTile(
+              title: Text('checkDerivePath'),
+              subtitle: Text('''
+sdk.api.keyring.checkDerivePath(
+    'Alice',
+    '///',
+    CryptoType.sr25519,
+)'''),
+              trailing: SubmitButton(
+                submitting: _submitting,
+                call: _checkDerivePath,
               ),
             ),
             Divider(),
           ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class SubmitButton extends StatelessWidget {
+  SubmitButton({this.call, this.submitting});
+  final bool submitting;
+  final Function call;
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return IconButton(
+      color: submitting
+          ? Theme.of(context).disabledColor
+          : Theme.of(context).primaryColor,
+      icon: submitting ? Icon(Icons.refresh) : Icon(Icons.play_circle_outline),
+      onPressed: () => call(),
     );
   }
 }

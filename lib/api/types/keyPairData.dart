@@ -1,16 +1,16 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'accountData.g.dart';
+part 'keyPairData.g.dart';
 
 @JsonSerializable()
-class AccountData extends _AccountData {
-  static AccountData fromJson(Map<String, dynamic> json) =>
-      _$AccountDataFromJson(json);
-  static Map<String, dynamic> toJson(AccountData acc) =>
-      _$AccountDataToJson(acc);
+class KeyPairData extends _KeyPairData {
+  static KeyPairData fromJson(Map<String, dynamic> json) =>
+      _$KeyPairDataFromJson(json);
+  static Map<String, dynamic> toJson(KeyPairData acc) =>
+      _$KeyPairDataToJson(acc);
 }
 
-abstract class _AccountData {
+abstract class _KeyPairData {
   String name = '';
   String address = '';
   String encoded = '';

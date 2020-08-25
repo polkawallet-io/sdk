@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
+import 'package:polkawallet_sdk_example/pages/account.dart';
 import 'package:polkawallet_sdk_example/pages/keyring.dart';
 
 void main() {
@@ -63,6 +64,7 @@ class _MyAppState extends State<MyApp> {
       home: MyHomePage(sdk, _sdkReady),
       routes: {
         KeyringPage.route: (_) => KeyringPage(sdk, _showResult),
+        AccountPage.route: (_) => AccountPage(sdk, _showResult),
       },
     );
   }
@@ -83,6 +85,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final Widget trailing = widget.sdkReady
+        ? IconButton(
+            icon: Icon(Icons.arrow_forward_ios, size: 18),
+          )
+        : CupertinoActivityIndicator();
     return Scaffold(
       appBar: AppBar(
         title: Text('Polkawallet SDK Demo'),
@@ -104,14 +111,20 @@ class _MyHomePageState extends State<MyHomePage> {
             ListTile(
               title: Text('sdk.keyring'),
               subtitle: Text('keyPairs management'),
-              trailing: widget.sdkReady
-                  ? IconButton(
-                      icon: Icon(Icons.arrow_forward_ios, size: 18),
-                    )
-                  : CupertinoActivityIndicator(),
+              trailing: trailing,
               onTap: () {
                 if (!widget.sdkReady) return;
                 Navigator.of(context).pushNamed(KeyringPage.route);
+              },
+            ),
+            Divider(),
+            ListTile(
+              title: Text('sdk.account'),
+              subtitle: Text('account management'),
+              trailing: trailing,
+              onTap: () {
+                if (!widget.sdkReady) return;
+                Navigator.of(context).pushNamed(AccountPage.route);
               },
             )
           ],

@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'accountData.dart';
+part of 'keyPairData.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-AccountData _$AccountDataFromJson(Map<String, dynamic> json) {
-  return AccountData()
+KeyPairData _$KeyPairDataFromJson(Map<String, dynamic> json) {
+  return KeyPairData()
     ..name = json['name'] as String
     ..address = json['address'] as String
     ..encoded = json['encoded'] as String
@@ -18,7 +18,7 @@ AccountData _$AccountDataFromJson(Map<String, dynamic> json) {
     ..observation = json['observation'] as bool;
 }
 
-Map<String, dynamic> _$AccountDataToJson(AccountData instance) =>
+Map<String, dynamic> _$KeyPairDataToJson(KeyPairData instance) =>
     <String, dynamic>{
       'name': instance.name,
       'address': instance.address,

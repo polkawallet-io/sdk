@@ -66,7 +66,7 @@ class ApiAccount {
 
   /// Get icons of pubKeys
   /// return svg strings
-  Future<List> getPubKeyIcons(List keys) async {
+  Future<List> getPubKeyIcons(List<String> keys) async {
     if (keys == null || keys.length == 0) {
       return [];
     }
@@ -76,7 +76,7 @@ class ApiAccount {
 
   /// Get icons of addresses
   /// return svg strings
-  Future<List> getAddressIcons(List addresses) async {
+  Future<List> getAddressIcons(List<String> addresses) async {
     if (addresses == null || addresses.length == 0) {
       return [];
     }
