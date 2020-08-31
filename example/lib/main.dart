@@ -4,6 +4,7 @@ import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk_example/pages/account.dart';
 import 'package:polkawallet_sdk_example/pages/keyring.dart';
+import 'package:polkawallet_sdk_example/pages/setting.dart';
 
 void main() {
   runApp(MyApp());
@@ -63,6 +64,7 @@ class _MyAppState extends State<MyApp> {
       home: MyHomePage(sdk, _sdkReady),
       routes: {
         KeyringPage.route: (_) => KeyringPage(sdk, _showResult),
+        SettingPage.route: (_) => SettingPage(sdk, _showResult),
         AccountPage.route: (_) => AccountPage(sdk, _showResult),
       },
     );
@@ -137,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             : () => _connectNode(),
                       )
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
@@ -149,6 +151,16 @@ class _MyHomePageState extends State<MyHomePage> {
               onTap: () {
                 if (!widget.sdkReady) return;
                 Navigator.of(context).pushNamed(KeyringPage.route);
+              },
+            ),
+            Divider(),
+            ListTile(
+              title: Text('sdk.setting'),
+              subtitle: Text('network settings'),
+              trailing: trailing,
+              onTap: () {
+                if (!widget.sdkReady) return;
+                Navigator.of(context).pushNamed(SettingPage.route);
               },
             ),
             Divider(),

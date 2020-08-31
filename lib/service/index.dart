@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:polkawallet_sdk/service/account.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
+import 'package:polkawallet_sdk/service/setting.dart';
 import 'package:polkawallet_sdk/storage/localStorage.dart';
 
 class SubstrateService {
@@ -13,6 +14,7 @@ class SubstrateService {
   final KeyringStorage storage;
 
   ServiceKeyring keyring;
+  ServiceSetting setting;
   ServiceAccount account;
 
   Map<String, Function> _msgHandlers = {};
@@ -20,15 +22,12 @@ class SubstrateService {
   FlutterWebviewPlugin _web;
   int _evalJavascriptUID = 0;
 
-  bool _jsCodeUpdated = false;
-
-  Function _connectFunc;
-
   /// preload js code for opening dApps
   String asExtensionJSCode;
 
   void init() {
     keyring = ServiceKeyring(this);
+    setting = ServiceSetting(this);
     account = ServiceAccount(this);
 
     launchWebview();
@@ -55,11 +54,6 @@ class SubstrateService {
   void _startJSCode(String js) {
     // inject js file to webview
     _web.evalJavascript(js);
-
-    // load keyPairs from local data
-//    account.initAccounts();
-    // connect remote node
-//    _connectFunc();
   }
 
   Future<void> launchWebview({bool customNode = false}) async {
@@ -67,8 +61,6 @@ class SubstrateService {
 
     _evalJavascriptUID = 0;
     _msgCompleters = {};
-
-//    _connectFunc = customNode ? connectNode : connectNodeAll;
 
 //    await _checkJSCodeUpdate();
     if (_web != null) {
@@ -175,50 +167,6 @@ class SubstrateService {
   Future<void> disconnect() async {
     _web.close();
     _web.dispose();
-  }
-
-//  Future<void> fetchNetworkProps() async {
-//    // fetch network info
-//    List<dynamic> info = await Future.wait([
-//      evalJavascript('settings.getNetworkConst()'),
-//      evalJavascript('api.rpc.system.properties()'),
-//      evalJavascript('api.rpc.system.chain()'),
-//    ]);
-//    store.settings.setNetworkConst(info[0]);
-//    store.settings.setNetworkState(info[1]);
-//    store.settings.setNetworkName(info[2]);
-//
-//    // fetch account balance
-//    if (store.account.accountListAll.length > 0) {
-//      if (store.settings.endpoint.info == networkEndpointAcala.info ||
-//          store.settings.endpoint.info == networkEndpointLaminar.info) {
-//        laminar.subscribeTokenPrices();
-//        await assets.fetchBalance();
-//        return;
-//      }
-//
-//      await Future.wait([
-//        assets.fetchBalance(),
-//        staking.fetchAccountStaking(),
-//        account.fetchAccountsBonded(
-//            store.account.accountList.map((i) => i.pubKey).toList()),
-//      ]);
-//    }
-//
-//    // fetch staking overview data as initializing
-//    staking.fetchStakingOverview();
-//  }
-
-  Future<void> subscribeBestNumber(Function callback) async {
-    final String channel = "BestNumber";
-    subscribeMessage(
-        'settings.subscribeMessage("chain", "bestNumber", [], "$channel")',
-        channel,
-        callback);
-  }
-
-  Future<void> unsubscribeBestNumber() async {
-    unsubscribeMessage('BestNumber');
   }
 
   Future<void> subscribeMessage(

@@ -1,5 +1,6 @@
 import 'package:polkawallet_sdk/api/apiAccount.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
+import 'package:polkawallet_sdk/api/apiSetting.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 
@@ -10,12 +11,14 @@ class PolkawalletApi {
 
   NetworkParams connectedNode;
 
-  ApiAccount account;
   ApiKeyring keyring;
+  ApiSetting setting;
+  ApiAccount account;
 
   void init() {
-    account = ApiAccount(this, service.account);
     keyring = ApiKeyring(service.keyring);
+    setting = ApiSetting(this, service.setting);
+    account = ApiAccount(this, service.account);
 
 //    DefaultAssetBundle.of(context)
 //        .loadString('lib/js_as_extension/dist/main.js')
@@ -68,50 +71,6 @@ class PolkawalletApi {
 //    }
 //  }
 
-//  Future<void> fetchNetworkProps() async {
-//    // fetch network info
-//    List<dynamic> info = await Future.wait([
-//      evalJavascript('settings.getNetworkConst()'),
-//      evalJavascript('api.rpc.system.properties()'),
-//      evalJavascript('api.rpc.system.chain()'),
-//    ]);
-//    store.settings.setNetworkConst(info[0]);
-//    store.settings.setNetworkState(info[1]);
-//    store.settings.setNetworkName(info[2]);
-//
-//    // fetch account balance
-//    if (store.account.accountListAll.length > 0) {
-//      if (store.settings.endpoint.info == networkEndpointAcala.info ||
-//          store.settings.endpoint.info == networkEndpointLaminar.info) {
-//        laminar.subscribeTokenPrices();
-//        await assets.fetchBalance();
-//        return;
-//      }
-//
-//      await Future.wait([
-//        assets.fetchBalance(),
-//        staking.fetchAccountStaking(),
-//        account.fetchAccountsBonded(
-//            store.account.accountList.map((i) => i.pubKey).toList()),
-//      ]);
-//    }
-//
-//    // fetch staking overview data as initializing
-//    staking.fetchStakingOverview();
-//  }
-
-//  Future<void> subscribeBestNumber(Function callback) async {
-//    final String channel = "BestNumber";
-//    subscribeMessage(
-//        'settings.subscribeMessage("chain", "bestNumber", [], "$channel")',
-//        channel,
-//        callback);
-//  }
-//
-//  Future<void> unsubscribeBestNumber() async {
-//    unsubscribeMessage('BestNumber');
-//  }
-//
 //  Future<void> subscribeMessage(
 //    String code,
 //    String channel,
