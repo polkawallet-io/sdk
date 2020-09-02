@@ -9,8 +9,6 @@ class PolkawalletApi {
 
   final SubstrateService service;
 
-  NetworkParams connectedNode;
-
   ApiKeyring keyring;
   ApiSetting setting;
   ApiAccount account;
@@ -19,24 +17,18 @@ class PolkawalletApi {
     keyring = ApiKeyring(service.keyring);
     setting = ApiSetting(this, service.setting);
     account = ApiAccount(this, service.account);
-
-//    DefaultAssetBundle.of(context)
-//        .loadString('lib/js_as_extension/dist/main.js')
-//        .then((String js) {
-//      print('asExtensionJSCode loaded');
-//      asExtensionJSCode = js;
-//    });
   }
 
   bool get isConnected {
-    return connectedNode != null;
+    return service.connectedNode != null;
   }
+
+  NetworkParams get connectedNode => service.connectedNode;
 
   /// connect to a specific node, return null if connect failed.
   Future<NetworkParams> connectNode(NetworkParams params) async {
-    final String res = await service.connectNode(params.endpoint);
+    final String res = await service.connectNode(params);
     if (res != null) {
-      connectedNode = params;
       return params;
     }
     return null;
@@ -44,20 +36,13 @@ class PolkawalletApi {
 
   /// connect to a list of nodes, return null if connect failed.
   Future<NetworkParams> connectNodeAll(List<NetworkParams> nodes) async {
-    final String res =
-        await service.connectNodeAll(nodes.map((e) => e.endpoint).toList());
-    if (res != null) {
-      final node = nodes.firstWhere((e) => e.endpoint == res);
-      connectedNode = node;
-      return node;
-    }
-    return null;
+    final NetworkParams res = await service.connectNodeAll(nodes);
+    return res;
   }
 
   /// disconnect to node.
   Future<void> disconnect() async {
     await service.disconnect();
-    connectedNode = null;
   }
 
 //  Future<void> _checkJSCodeUpdate() async {
@@ -71,16 +56,17 @@ class PolkawalletApi {
 //    }
 //  }
 
-//  Future<void> subscribeMessage(
-//    String code,
-//    String channel,
-//    Function callback,
-//  ) async {
-//    _msgHandlers[channel] = callback;
-//    evalJavascript(code, allowRepeat: true);
-//  }
-//
-//  Future<void> unsubscribeMessage(String channel) async {
-//    _web.evalJavascript('unsub$channel()');
-//  }
+  /// subscribe message.
+  Future<void> subscribeMessage(
+    String code,
+    String channel,
+    Function callback,
+  ) async {
+    service.subscribeMessage(code, channel, callback);
+  }
+
+  /// unsubscribe message.
+  Future<void> unsubscribeMessage(String channel) async {
+    service.unsubscribeMessage(channel);
+  }
 }

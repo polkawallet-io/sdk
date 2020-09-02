@@ -2,7 +2,9 @@ import 'package:get_storage/get_storage.dart';
 
 /// this is where we save keyPairs locally
 class KeyringStorage {
-  GetStorage _storage = GetStorage('keyring');
+  static final _storage = () => GetStorage('keyring');
 
-  final keyPairs = [].val('keyPairs');
+  final keyPairs = [].val('keyPairs', getBox: _storage);
+  final encryptedRawSeeds = {}.val('encryptedRawSeeds', getBox: _storage);
+  final encryptedMnemonics = {}.val('encryptedMnemonics', getBox: _storage);
 }

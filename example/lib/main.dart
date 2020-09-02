@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk_example/pages/account.dart';
+import 'package:polkawallet_sdk_example/pages/dAppPage.dart';
 import 'package:polkawallet_sdk_example/pages/keyring.dart';
 import 'package:polkawallet_sdk_example/pages/setting.dart';
 
@@ -63,6 +64,7 @@ class _MyAppState extends State<MyApp> {
       ),
       home: MyHomePage(sdk, _sdkReady),
       routes: {
+        DAppPage.route: (_) => DAppPage(sdk),
         KeyringPage.route: (_) => KeyringPage(sdk, _showResult),
         SettingPage.route: (_) => SettingPage(sdk, _showResult),
         AccountPage.route: (_) => AccountPage(sdk, _showResult),
@@ -142,6 +144,17 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ],
               ),
+            ),
+            Divider(),
+            ListTile(
+              title: Text('WebViewWithExtension'),
+              subtitle: Text('open polkassembly.io (DApp)'),
+              trailing: trailing,
+              onTap: () {
+                if (!widget.sdkReady) return;
+                Navigator.of(context).pushNamed(DAppPage.route,
+                    arguments: "https://apps.acala.network/#/loan");
+              },
             ),
             Divider(),
             ListTile(

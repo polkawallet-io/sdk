@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:polkawallet_sdk/api/types/keyPairData.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
+import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
 
 enum KeyType { mnemonic, rawSeed, keystore }
 enum CryptoType { sr25519, ed25519 }
@@ -11,6 +12,10 @@ class ApiKeyring {
   ApiKeyring(this.service);
 
   final ServiceKeyring service;
+
+  List<KeyPairData> get keyPairs {
+    return service.accountList.map((e) => KeyPairData.fromJson(e)).toList();
+  }
 
 //  Future<void> initAccounts() async {
 //    if (apiRoot.storage.keyPairs.val.length > 0) {
@@ -100,6 +105,13 @@ class ApiKeyring {
     return KeyPairData.fromJson(acc);
   }
 
+  /// delete account from storage
+  Future<void> deleteAccount(KeyPairData account) async {
+    if (account != null) {
+      await service.deleteAccount(account.pubKey);
+    }
+  }
+
   /// check password of account
   Future<bool> checkPassword(KeyPairData account, String pass) async {
     final res = await service.checkPassword(account.pubKey, pass);
@@ -156,15 +168,30 @@ class ApiKeyring {
 //    }
 //    return res;
 //  }
-//
-//  Future<Map> signAsExtension(String password, Map args) async {
-//    final String call = args['msgType'] == WalletExtensionSignPage.signTypeBytes
-//        ? 'signBytesAsExtension'
-//        : 'signTxAsExtension';
-//    final res = await apiRoot.evalJavascript(
-//      'account.$call("$password", ${jsonEncode(args['request'])})',
-//      allowRepeat: true,
-//    );
-//    return res;
-//  }
+
+  Future<ExtensionSignResult> signBytesAsExtension(
+      String password, SignBytesParam param) async {
+    final signature = await service.signAsExtension(
+        password, SignBytesRequest.toJson(param.request));
+    if (signature == null) {
+      return null;
+    }
+    final ExtensionSignResult res = ExtensionSignResult();
+    res.id = param.id;
+    res.signature = signature['signature'];
+    return res;
+  }
+
+  Future<ExtensionSignResult> signExtrinsicAsExtension(
+      String password, SignExtrinsicParam param) async {
+    final signature = await service.signAsExtension(
+        password, SignExtrinsicRequest.toJson(param.request));
+    if (signature == null) {
+      return null;
+    }
+    final ExtensionSignResult res = ExtensionSignResult();
+    res.id = param.id;
+    res.signature = signature['signature'];
+    return res;
+  }
 }

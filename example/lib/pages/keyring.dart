@@ -47,6 +47,15 @@ class _KeyringPageState extends State<KeyringPage> {
     });
   }
 
+  Future<void> _getAccountList() async {
+    final List<KeyPairData> ls = widget.sdk.api.keyring.keyPairs.toList();
+    widget.showResult(
+      context,
+      'getAccountList',
+      JsonEncoder.withIndent('  ').convert(ls.map((e) => e.address).toList()),
+    );
+  }
+
   Future<void> _importFromMnemonic() async {
     setState(() {
       _submitting = true;
@@ -111,6 +120,21 @@ class _KeyringPageState extends State<KeyringPage> {
     });
   }
 
+  Future<void> _deleteAccount() async {
+    setState(() {
+      _submitting = true;
+    });
+    await widget.sdk.api.keyring.deleteAccount(_testAcc);
+    widget.showResult(
+      context,
+      'deleteAccount',
+      'ok',
+    );
+    setState(() {
+      _submitting = false;
+    });
+  }
+
   Future<void> _checkPassword() async {
     if (_testAcc == null) {
       print('should import keyPair to init test account.');
@@ -148,6 +172,19 @@ class _KeyringPageState extends State<KeyringPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.sdk.api.keyring.keyPairs.length > 0) {
+        setState(() {
+          _testAcc = widget.sdk.api.keyring.keyPairs[0];
+        });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -162,6 +199,16 @@ class _KeyringPageState extends State<KeyringPage> {
               trailing: SubmitButton(
                 submitting: _submitting,
                 call: _generateMnemonic,
+              ),
+            ),
+            Divider(),
+            ListTile(
+              title: Text('getAccountList'),
+              subtitle: Text('''
+sdk.api.keyring.accountList'''),
+              trailing: SubmitButton(
+                submitting: _submitting,
+                call: _getAccountList,
               ),
             ),
             Divider(),
@@ -207,6 +254,16 @@ sdk.api.keyring.importAccount(
               trailing: SubmitButton(
                 submitting: _submitting,
                 call: _importFromKeystore,
+              ),
+            ),
+            Divider(),
+            ListTile(
+              title: Text('deleteAccount'),
+              subtitle: Text('''
+sdk.api.keyring.deleteAccount'''),
+              trailing: SubmitButton(
+                submitting: _submitting,
+                call: _deleteAccount,
               ),
             ),
             Divider(),

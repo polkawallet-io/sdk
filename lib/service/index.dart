@@ -3,15 +3,20 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/service/account.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
 import 'package:polkawallet_sdk/service/setting.dart';
 import 'package:polkawallet_sdk/storage/localStorage.dart';
+import 'package:polkawallet_sdk/utils/localStorage.dart';
 
 class SubstrateService {
-  SubstrateService(this.storage);
+  SubstrateService();
 
-  final KeyringStorage storage;
+  final KeyringStorage storage = KeyringStorage();
+  final LocalStorage storageOld = LocalStorage();
+
+  NetworkParams connectedNode;
 
   ServiceKeyring keyring;
   ServiceSetting setting;
@@ -27,6 +32,8 @@ class SubstrateService {
 
   void init() {
     keyring = ServiceKeyring(this);
+    keyring.loadKeyPairsFromStorage();
+
     setting = ServiceSetting(this);
     account = ServiceAccount(this);
 
@@ -153,20 +160,36 @@ class SubstrateService {
     return c.future;
   }
 
-  Future<String> connectNode(String node) async {
-    final String res = await evalJavascript('settings.connect("$node")');
+  Future<String> connectNode(NetworkParams params) async {
+    final String res =
+        await evalJavascript('settings.connect("${params.endpoint}")');
+    if (res != null) {
+      if (connectedNode != null && connectedNode.ss58 != params.ss58) {
+        keyring.updatePubKeyAddressMap();
+      }
+      connectedNode = params;
+    }
     return res;
   }
 
-  Future<String> connectNodeAll(List<String> nodes) async {
-    final String res =
-        await evalJavascript('settings.connectAll(${jsonEncode(nodes)})');
-    return res;
+  Future<NetworkParams> connectNodeAll(List<NetworkParams> nodes) async {
+    final String res = await evalJavascript(
+        'settings.connectAll(${jsonEncode(nodes.map((e) => e.endpoint).toList())})');
+    if (res != null) {
+      final node = nodes.firstWhere((e) => e.endpoint == res);
+      if (connectedNode != null && connectedNode.ss58 != node.ss58) {
+        keyring.updatePubKeyAddressMap();
+      }
+      connectedNode = node;
+      return node;
+    }
+    return null;
   }
 
   Future<void> disconnect() async {
     _web.close();
     _web.dispose();
+    connectedNode = null;
   }
 
   Future<void> subscribeMessage(

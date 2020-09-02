@@ -154,15 +154,4 @@ class ServiceAccount {
 //    );
 //    return res;
 //  }
-
-//  Future<Map> signAsExtension(String password, Map args) async {
-//    final String call = args['msgType'] == WalletExtensionSignPage.signTypeBytes
-//        ? 'signBytesAsExtension'
-//        : 'signTxAsExtension';
-//    final res = await apiRoot.evalJavascript(
-//      'account.$call("$password", ${jsonEncode(args['request'])})',
-//      allowRepeat: true,
-//    );
-//    return res;
-//  }
 }

@@ -2,13 +2,73 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/service/index.dart';
+import 'package:polkawallet_sdk/utils/index.dart';
 
 class ServiceKeyring {
   ServiceKeyring(this.serviceRoot);
 
   final SubstrateService serviceRoot;
+
+  Map<String, String> _pubKeyAddressMap = {};
+
+  List get accountList {
+    final ls = serviceRoot.storage.keyPairs.val.toList();
+    ls.forEach((e) {
+      if (_pubKeyAddressMap[e['pubKey']] != null) {
+        e['address'] = _pubKeyAddressMap[e['pubKey']];
+      }
+    });
+    return ls;
+  }
+
+  Future<void> loadKeyPairsFromStorage() async {
+    final ls = await serviceRoot.storageOld.getAccountList();
+    if (ls.length > 0) {
+      ls.retainWhere((e) {
+        // delete all storageOld data
+        serviceRoot.storageOld.removeAccount(e['pubKey']);
+
+        // retain accounts from storageOld
+        final i = serviceRoot.storage.keyPairs.val.indexWhere((pair) {
+          return pair['pubKey'] == e['pubKey'];
+        });
+        return i < 0;
+      });
+      serviceRoot.storage.keyPairs.val.addAll(ls);
+
+      // and move all encrypted seeds to new storage
+      _migrateSeeds();
+    }
+  }
+
+  Future<void> _migrateSeeds() async {
+    final res = await Future.wait([
+      serviceRoot.storageOld.getSeeds('mnemonic'),
+      serviceRoot.storageOld.getSeeds('rawSeed'),
+    ]);
+    if (res[0].keys.length > 0) {
+      serviceRoot.storage.encryptedMnemonics.val.addAll(res[0]);
+    }
+    if (res[0].keys.length > 0) {
+      serviceRoot.storage.encryptedRawSeeds.val.addAll(res[1]);
+    }
+  }
+
+  Future<void> updatePubKeyAddressMap() async {
+    if (serviceRoot.connectedNode == null) return;
+
+    final List<String> pubKeys =
+        accountList.map((e) => e['pubKey'].toString()).toList();
+    final Map res = await serviceRoot.account
+        .encodeAddress(pubKeys, [serviceRoot.connectedNode.ss58]);
+    if (res != null && res[serviceRoot.connectedNode.ss58] != null) {
+      _pubKeyAddressMap =
+          Map<String, String>.of(res[serviceRoot.connectedNode.ss58]);
+    }
+  }
 
 //  Future<void> initAccounts() async {
 //    if (apiRoot.storage.keyPairs.val.length > 0) {
@@ -107,15 +167,55 @@ class ServiceKeyring {
     }
     acc['meta']['whenEdited'] = DateTime.now().millisecondsSinceEpoch;
 
-    // save keystore to storage
-    serviceRoot.storage.keyPairs.val.add(acc);
-
-    // save encrypted key to storage
+    // save seed and remove it before add account
     if (keyType == KeyType.mnemonic || keyType == KeyType.rawSeed) {
-//      apiRoot.storage.keyPairs.val.add(acc);
+      final String seed = acc[type];
+      if (seed != null && seed.isNotEmpty) {
+        _encryptSeedAndSave(acc['pubKey'], acc[type], type, password);
+        acc.remove(type);
+      }
     }
 
+    // save keystore to storage
+    final pairs = serviceRoot.storage.keyPairs.val.toList();
+    pairs.add(acc);
+    serviceRoot.storage.keyPairs.val = pairs;
+
+    await updatePubKeyAddressMap();
+
     return acc;
+  }
+
+  Future<void> _encryptSeedAndSave(
+      String pubKey, String seed, String seedType, String password) async {
+    final String key = Encrypt.passwordToEncryptKey(password);
+    final String encrypted = await FlutterAesEcbPkcs5.encryptString(seed, key);
+
+    // read old data from storage-old
+    final Map stored = await serviceRoot.storageOld.getSeeds(seedType);
+    stored[pubKey] = encrypted;
+    // and save to new storage
+    if (KeyType.mnemonic.toString().contains(seedType)) {
+      final keys = Map.from(serviceRoot.storage.encryptedMnemonics.val);
+      keys.addAll(stored);
+      serviceRoot.storage.encryptedMnemonics.val = keys;
+    } else {
+      final keys = Map.from(serviceRoot.storage.encryptedRawSeeds.val);
+      keys.addAll(stored);
+      serviceRoot.storage.encryptedRawSeeds.val = keys;
+    }
+  }
+
+  /// Delete account
+  Future<void> deleteAccount(String pubKey) async {
+    serviceRoot.storage.keyPairs.val.removeWhere((e) => e['pubKey'] == pubKey);
+
+    final mnemonics = Map.from(serviceRoot.storage.encryptedMnemonics.val);
+    mnemonics.removeWhere((key, _) => key == pubKey);
+    serviceRoot.storage.encryptedMnemonics.val = mnemonics;
+    final keys = Map.from(serviceRoot.storage.encryptedRawSeeds.val);
+    keys.removeWhere((key, _) => key == pubKey);
+    serviceRoot.storage.encryptedMnemonics.val = keys;
   }
 
   /// check password of account
@@ -179,4 +279,14 @@ class ServiceKeyring {
 //    return res;
 //  }
 
+  Future<Map> signAsExtension(String password, Map args) async {
+    final String call = args['msgType'] == 'pub(bytes.sign)'
+        ? 'signBytesAsExtension'
+        : 'signTxAsExtension';
+    final res = await serviceRoot.evalJavascript(
+      'account.$call("$password", ${jsonEncode(args['request'])})',
+      allowRepeat: true,
+    );
+    return res;
+  }
 }
