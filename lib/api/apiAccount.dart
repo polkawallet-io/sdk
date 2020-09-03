@@ -80,7 +80,7 @@ class ApiAccount {
       return [];
     }
 
-    var res = await service.queryAccountsIndex(addresses);
+    var res = await service.queryIndexInfo(addresses);
     return res;
   }
 

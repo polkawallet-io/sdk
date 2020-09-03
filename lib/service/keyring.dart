@@ -30,6 +30,12 @@ class ServiceKeyring {
       ls.retainWhere((e) {
         // delete all storageOld data
         serviceRoot.storageOld.removeAccount(e['pubKey']);
+        if (e['mnemonic'] != null) {
+          e.remove('mnemonic');
+        }
+        if (e['rawSeed'] != null) {
+          e.remove('rawSeed');
+        }
 
         // retain accounts from storageOld
         final i = serviceRoot.storage.keyPairs.val.indexWhere((pair) {
@@ -78,40 +84,6 @@ class ServiceKeyring {
     }
   }
 
-//  Future<void> changeCurrentAccount({
-//    String pubKey,
-//    bool fetchData = false,
-//  }) async {
-//    String current = pubKey;
-//    if (pubKey == null) {
-//      if (store.account.accountListAll.length > 0) {
-//        current = store.account.accountListAll[0].pubKey;
-//      } else {
-//        current = '';
-//      }
-//    }
-//    store.account.setCurrentAccount(current);
-//
-//    // refresh balance
-//    store.assets.clearTxs();
-//    store.assets.loadAccountCache();
-//    if (fetchData) {
-//      webApi.assets.fetchBalance();
-//    }
-//    if (store.settings.endpoint.info == networkEndpointAcala.info) {
-//      store.acala.setTransferTxs([], reset: true);
-//      store.acala.loadCache();
-//    } else {
-//      // refresh user's staking info if network is kusama or polkadot
-//      store.staking.clearState();
-//      store.staking.loadAccountCache();
-//      if (fetchData) {
-//        webApi.staking.fetchAccountStaking();
-//      }
-//    }
-//  }
-//
-
   /// Generate a set of new mnemonic.
   Future<String> generateMnemonic() async {
     final Map<String, dynamic> acc =
@@ -142,12 +114,7 @@ class ServiceKeyring {
     }
 
     // add metadata to json
-    acc['name'] = name;
-    acc['meta']['name'] = name;
-    if (acc['meta']['whenCreated'] == null) {
-      acc['meta']['whenCreated'] = DateTime.now().millisecondsSinceEpoch;
-    }
-    acc['meta']['whenEdited'] = DateTime.now().millisecondsSinceEpoch;
+    updateKeyPairMetaData(acc, name);
 
     // save seed and remove it before add account
     if (keyType == KeyType.mnemonic || keyType == KeyType.rawSeed) {
@@ -165,6 +132,16 @@ class ServiceKeyring {
 
     await updatePubKeyAddressMap();
 
+    return acc;
+  }
+
+  Map updateKeyPairMetaData(Map acc, String name) {
+    acc['name'] = name;
+    acc['meta']['name'] = name;
+    if (acc['meta']['whenCreated'] == null) {
+      acc['meta']['whenCreated'] = DateTime.now().millisecondsSinceEpoch;
+    }
+    acc['meta']['whenEdited'] = DateTime.now().millisecondsSinceEpoch;
     return acc;
   }
 
@@ -194,17 +171,23 @@ class ServiceKeyring {
     final key = Encrypt.passwordToEncryptKey(password);
     final mnemonic = serviceRoot.storage.encryptedMnemonics.val[pubKey];
     if (mnemonic != null) {
-      return {
-        'type': KeyType.mnemonic.toString().split('.')[1],
-        'seed': await FlutterAesEcbPkcs5.decryptString(mnemonic, key),
-      };
+      final res = {'type': KeyType.mnemonic.toString().split('.')[1]};
+      try {
+        res['seed'] = await FlutterAesEcbPkcs5.decryptString(mnemonic, key);
+      } catch (err) {
+        print(err);
+      }
+      return res;
     }
     final rawSeed = serviceRoot.storage.encryptedRawSeeds.val[pubKey];
     if (rawSeed != null) {
-      return {
-        'type': KeyType.rawSeed.toString().split('.')[1],
-        'seed': await FlutterAesEcbPkcs5.decryptString(rawSeed, key),
-      };
+      final res = {'type': KeyType.rawSeed.toString().split('.')[1]};
+      try {
+        res['seed'] = await FlutterAesEcbPkcs5.decryptString(rawSeed, key);
+      } catch (err) {
+        print(err);
+      }
+      return res;
     }
     return null;
   }
@@ -223,6 +206,14 @@ class ServiceKeyring {
     serviceRoot.storage.encryptedRawSeeds.val = seeds;
   }
 
+  /// Update account in storage
+  Future<void> updateAccount(Map acc) async {
+    final List pairs = serviceRoot.storage.keyPairs.val.toList();
+    pairs.removeWhere((e) => e['pubKey'] == acc['pubKey']);
+    pairs.add(acc);
+    serviceRoot.storage.keyPairs.val = pairs;
+  }
+
   /// check password of account
   Future<bool> checkPassword(String pubKey, pass) async {
     final res = await serviceRoot
@@ -231,6 +222,17 @@ class ServiceKeyring {
       return false;
     }
     return true;
+  }
+
+  /// change password of account
+  Future<Map> changePassword(String pubKey, passOld, passNew) async {
+    final res = await serviceRoot.evalJavascript(
+        'account.changePassword("$pubKey", "$passOld", "$passNew")');
+    if (res != null) {
+      final seed = await getDecryptedSeed(pubKey, passOld);
+      _encryptSeedAndSave(pubKey, seed['seed'], seed['type'], passNew);
+    }
+    return res;
   }
 
   Future<String> checkDerivePath(

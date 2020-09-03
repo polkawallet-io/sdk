@@ -32,6 +32,7 @@ class SeedBackupData extends _SeedBackupData {
 }
 
 abstract class _SeedBackupData {
-  String type = '';
-  String seed = '';
+  String type;
+  String seed;
+  String error;
 }

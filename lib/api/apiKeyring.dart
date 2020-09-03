@@ -23,6 +23,9 @@ class ApiKeyring {
     if (data == null) {
       return null;
     }
+    if (data['seed'] == null) {
+      data['error'] = 'wrong password';
+    }
     return SeedBackupData.fromJson(data);
   }
 
@@ -125,6 +128,31 @@ class ApiKeyring {
   Future<bool> checkPassword(KeyPairData account, String pass) async {
     final res = await service.checkPassword(account.pubKey, pass);
     return res;
+  }
+
+  /// change password of account
+  Future<KeyPairData> changePassword(
+      KeyPairData acc, String passOld, passNew) async {
+    // change password of keyPair in webView
+    final res = await service.changePassword(acc.pubKey, passOld, passNew);
+    if (res == null) {
+      return null;
+    }
+    // update json meta data
+    service.updateKeyPairMetaData(res, acc.name);
+    // update keyPair date in storage
+    service.updateAccount(res);
+    return KeyPairData.fromJson(res);
+  }
+
+  /// change name of account
+  Future<KeyPairData> changeName(KeyPairData acc, String name) async {
+    final json = KeyPairData.toJson(acc);
+    // update json meta data
+    service.updateKeyPairMetaData(json, name);
+    // update keyPair date in storage
+    service.updateAccount(json);
+    return KeyPairData.fromJson(json);
   }
 
   /// Check if derive path is valid, return [null] if valid,

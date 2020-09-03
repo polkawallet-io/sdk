@@ -33,11 +33,13 @@ Map<String, dynamic> _$KeyPairDataToJson(KeyPairData instance) =>
 SeedBackupData _$SeedBackupDataFromJson(Map<String, dynamic> json) {
   return SeedBackupData()
     ..type = json['type'] as String
-    ..seed = json['seed'] as String;
+    ..seed = json['seed'] as String
+    ..error = json['error'] as String;
 }
 
 Map<String, dynamic> _$SeedBackupDataToJson(SeedBackupData instance) =>
     <String, dynamic>{
       'type': instance.type,
       'seed': instance.seed,
+      'error': instance.error,
     };

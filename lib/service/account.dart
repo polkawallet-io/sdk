@@ -69,7 +69,7 @@ class ServiceAccount {
 //
 
   /// Get on-chain account info of addresses
-  Future<List> queryAccountsIndex(List addresses) async {
+  Future<List> queryIndexInfo(List addresses) async {
     var res = await serviceRoot
         .evalJavascript('account.getAccountIndex(${jsonEncode(addresses)})');
     return res;

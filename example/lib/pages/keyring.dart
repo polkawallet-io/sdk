@@ -51,7 +51,8 @@ class _KeyringPageState extends State<KeyringPage> {
     widget.showResult(
       context,
       'getAccountList',
-      JsonEncoder.withIndent('  ').convert(ls.map((e) => e.address).toList()),
+      JsonEncoder.withIndent('  ')
+          .convert(ls.map((e) => '${e.name}: ${e.address}').toList()),
     );
   }
 
@@ -69,6 +70,7 @@ class _KeyringPageState extends State<KeyringPage> {
     });
     final seed =
         await widget.sdk.api.keyring.getDecryptedSeed(_testAcc, _testPass);
+//        await widget.sdk.api.keyring.getDecryptedSeed(_testAcc, 'a654321');
     widget.showResult(
       context,
       'getAccountList',
@@ -78,6 +80,7 @@ class _KeyringPageState extends State<KeyringPage> {
               'address': _testAcc.address,
               'type': seed.type,
               'seed': seed.seed,
+              'error': seed.error,
             }),
     );
     setState(() {
@@ -196,6 +199,58 @@ class _KeyringPageState extends State<KeyringPage> {
     });
   }
 
+  Future<void> _changePassword() async {
+    if (_testAcc == null) {
+      widget.showResult(
+        context,
+        'changePassword',
+        'should import keyPair to init test account.',
+      );
+      return;
+    }
+    setState(() {
+      _submitting = true;
+    });
+    final res = await widget.sdk.api.keyring
+        .changePassword(_testAcc, _testPass, 'a654321');
+//        .changePassword(_testAcc, 'a654321', _testPass);
+    widget.showResult(
+      context,
+      'changePassword',
+      res == null
+          ? 'null'
+          : JsonEncoder.withIndent('  ').convert(KeyPairData.toJson(res)),
+    );
+    setState(() {
+      _submitting = false;
+    });
+  }
+
+  Future<void> _changeName() async {
+    if (_testAcc == null) {
+      widget.showResult(
+        context,
+        'changeName',
+        'should import keyPair to init test account.',
+      );
+      return;
+    }
+    setState(() {
+      _submitting = true;
+    });
+    final res = await widget.sdk.api.keyring.changeName(_testAcc, 'newName');
+    widget.showResult(
+      context,
+      'changeName',
+      res == null
+          ? 'null'
+          : JsonEncoder.withIndent('  ').convert(KeyPairData.toJson(res)),
+    );
+    setState(() {
+      _submitting = false;
+    });
+  }
+
   Future<void> _checkDerivePath() async {
     setState(() {
       _submitting = true;
@@ -235,21 +290,21 @@ class _KeyringPageState extends State<KeyringPage> {
         child: ListView(
           children: [
             ListTile(
-              title: Text('generateMnemonic'),
-              subtitle: Text('sdk.api.keyring.generateMnemonic()'),
-              trailing: SubmitButton(
-                submitting: _submitting,
-                call: _generateMnemonic,
-              ),
-            ),
-            Divider(),
-            ListTile(
               title: Text('getAccountList'),
               subtitle: Text('''
 sdk.api.keyring.accountList'''),
               trailing: SubmitButton(
                 submitting: _submitting,
                 call: _getAccountList,
+              ),
+            ),
+            Divider(),
+            ListTile(
+              title: Text('generateMnemonic'),
+              subtitle: Text('sdk.api.keyring.generateMnemonic()'),
+              trailing: SubmitButton(
+                submitting: _submitting,
+                call: _generateMnemonic,
               ),
             ),
             Divider(),
@@ -299,6 +354,19 @@ sdk.api.keyring.importAccount(
             ),
             Divider(),
             ListTile(
+              title: Text('getDecryptedSeed'),
+              subtitle: Text('''
+sdk.api.keyring.getDecryptedSeed(
+    '${_testAcc?.toString()}',
+    'a123456',
+)'''),
+              trailing: SubmitButton(
+                submitting: _submitting,
+                call: _getDecryptedSeed,
+              ),
+            ),
+            Divider(),
+            ListTile(
               title: Text('deleteAccount'),
               subtitle: Text('''
 sdk.api.keyring.deleteAccount'''),
@@ -322,6 +390,33 @@ sdk.api.keyring.checkPassword(
             ),
             Divider(),
             ListTile(
+              title: Text('changePassword'),
+              subtitle: Text('''
+sdk.api.keyring.changePassword(
+    '${_testAcc?.toString()}',
+    'a123456',
+    'a654321',
+)'''),
+              trailing: SubmitButton(
+                submitting: _submitting,
+                call: _changePassword,
+              ),
+            ),
+            Divider(),
+            ListTile(
+              title: Text('changeName'),
+              subtitle: Text('''
+sdk.api.keyring.changeName(
+    '${_testAcc?.toString()}',
+    'newName',
+)'''),
+              trailing: SubmitButton(
+                submitting: _submitting,
+                call: _changeName,
+              ),
+            ),
+            Divider(),
+            ListTile(
               title: Text('checkDerivePath'),
               subtitle: Text('''
 sdk.api.keyring.checkDerivePath(
@@ -332,19 +427,6 @@ sdk.api.keyring.checkDerivePath(
               trailing: SubmitButton(
                 submitting: _submitting,
                 call: _checkDerivePath,
-              ),
-            ),
-            Divider(),
-            ListTile(
-              title: Text('getDecryptedSeed'),
-              subtitle: Text('''
-sdk.api.keyring.getDecryptedSeed(
-    '${_testAcc?.toString()}',
-    'a123456',
-)'''),
-              trailing: SubmitButton(
-                submitting: _submitting,
-                call: _getDecryptedSeed,
               ),
             ),
             Divider(),
