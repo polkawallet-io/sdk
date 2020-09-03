@@ -13,8 +13,17 @@ class ApiKeyring {
 
   final ServiceKeyring service;
 
-  List<KeyPairData> get keyPairs {
-    return service.accountList.map((e) => KeyPairData.fromJson(e)).toList();
+  List<KeyPairData> get list {
+    return service.list.map((e) => KeyPairData.fromJson(e)).toList();
+  }
+
+  /// Decrypt and get the backup of seed.
+  Future<SeedBackupData> getDecryptedSeed(KeyPairData acc, password) async {
+    final Map data = await service.getDecryptedSeed(acc.pubKey, password);
+    if (data == null) {
+      return null;
+    }
+    return SeedBackupData.fromJson(data);
   }
 
 //  Future<void> initAccounts() async {

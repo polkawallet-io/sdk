@@ -3,6 +3,7 @@ library polkawallet_sdk;
 import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/service/index.dart';
+import 'package:polkawallet_sdk/storage/localStorage.dart';
 
 enum Network { kusama, polkadot, acala, laminar }
 
@@ -16,7 +17,7 @@ class WalletSDK {
   /// param [jsCode] is customized js code of parachain,
   /// the api works without [jsCode] param in Kusama/Polkadot.
   Future<void> init([String jsCode]) async {
-    await GetStorage.init();
+    await GetStorage.init(sdk_storage_key);
 
     _service = SubstrateService();
     _service.init();

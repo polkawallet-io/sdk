@@ -39,7 +39,7 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
   Future<void> _msgHandler(Map msg) async {
     switch (msg['msgType']) {
       case 'pub(accounts.list)':
-        final List<KeyPairData> ls = widget.api.keyring.keyPairs;
+        final List<KeyPairData> ls = widget.api.keyring.list;
         ls.retainWhere((e) => e.encoding['content'][1] == 'sr25519');
         final List res = ls.map((e) {
           return {

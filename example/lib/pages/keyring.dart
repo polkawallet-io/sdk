@@ -33,7 +33,6 @@ class _KeyringPageState extends State<KeyringPage> {
 
   KeyPairData _testAcc;
 
-  bool _apiConnected = false;
   bool _submitting = false;
 
   Future<void> _generateMnemonic() async {
@@ -48,12 +47,42 @@ class _KeyringPageState extends State<KeyringPage> {
   }
 
   Future<void> _getAccountList() async {
-    final List<KeyPairData> ls = widget.sdk.api.keyring.keyPairs.toList();
+    final List<KeyPairData> ls = widget.sdk.api.keyring.list.toList();
     widget.showResult(
       context,
       'getAccountList',
       JsonEncoder.withIndent('  ').convert(ls.map((e) => e.address).toList()),
     );
+  }
+
+  Future<void> _getDecryptedSeed() async {
+    if (_testAcc == null) {
+      widget.showResult(
+        context,
+        'getDecryptedSeeds',
+        'should import keyPair to init test account.',
+      );
+      return;
+    }
+    setState(() {
+      _submitting = true;
+    });
+    final seed =
+        await widget.sdk.api.keyring.getDecryptedSeed(_testAcc, _testPass);
+    widget.showResult(
+      context,
+      'getAccountList',
+      seed == null
+          ? 'null'
+          : JsonEncoder.withIndent('  ').convert({
+              'address': _testAcc.address,
+              'type': seed.type,
+              'seed': seed.seed,
+            }),
+    );
+    setState(() {
+      _submitting = false;
+    });
   }
 
   Future<void> _importFromMnemonic() async {
@@ -83,7 +112,7 @@ class _KeyringPageState extends State<KeyringPage> {
       _submitting = true;
     });
     final KeyPairData acc = await widget.sdk.api.keyring.importAccount(
-      keyType: KeyType.mnemonic,
+      keyType: KeyType.rawSeed,
       key: 'Alice',
       name: 'testName02',
       password: _testPass,
@@ -121,6 +150,14 @@ class _KeyringPageState extends State<KeyringPage> {
   }
 
   Future<void> _deleteAccount() async {
+    if (_testAcc == null) {
+      widget.showResult(
+        context,
+        'deleteAccount',
+        'should import keyPair to init test account.',
+      );
+      return;
+    }
     setState(() {
       _submitting = true;
     });
@@ -137,7 +174,11 @@ class _KeyringPageState extends State<KeyringPage> {
 
   Future<void> _checkPassword() async {
     if (_testAcc == null) {
-      print('should import keyPair to init test account.');
+      widget.showResult(
+        context,
+        'checkPassword',
+        'should import keyPair to init test account.',
+      );
       return;
     }
     setState(() {
@@ -176,9 +217,9 @@ class _KeyringPageState extends State<KeyringPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.sdk.api.keyring.keyPairs.length > 0) {
+      if (widget.sdk.api.keyring.list.length > 0) {
         setState(() {
-          _testAcc = widget.sdk.api.keyring.keyPairs[0];
+          _testAcc = widget.sdk.api.keyring.list[0];
         });
       }
     });
@@ -291,6 +332,19 @@ sdk.api.keyring.checkDerivePath(
               trailing: SubmitButton(
                 submitting: _submitting,
                 call: _checkDerivePath,
+              ),
+            ),
+            Divider(),
+            ListTile(
+              title: Text('getDecryptedSeed'),
+              subtitle: Text('''
+sdk.api.keyring.getDecryptedSeed(
+    '${_testAcc?.toString()}',
+    'a123456',
+)'''),
+              trailing: SubmitButton(
+                submitting: _submitting,
+                call: _getDecryptedSeed,
               ),
             ),
             Divider(),

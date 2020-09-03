@@ -22,3 +22,16 @@ abstract class _KeyPairData {
   String memo = '';
   bool observation = false;
 }
+
+@JsonSerializable()
+class SeedBackupData extends _SeedBackupData {
+  static SeedBackupData fromJson(Map<String, dynamic> json) =>
+      _$SeedBackupDataFromJson(json);
+  static Map<String, dynamic> toJson(SeedBackupData acc) =>
+      _$SeedBackupDataToJson(acc);
+}
+
+abstract class _SeedBackupData {
+  String type = '';
+  String seed = '';
+}

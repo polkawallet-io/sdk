@@ -59,8 +59,14 @@ class SubstrateService {
 //  }
 
   void _startJSCode(String js) {
-    // inject js file to webview
+    // inject js file to webView
     _web.evalJavascript(js);
+
+    // load accounts to webView from storage
+    if (keyring.list.length > 0) {
+      final String pairs = jsonEncode(keyring.list.toList());
+      evalJavascript('account.initKeys($pairs, [0])');
+    }
   }
 
   Future<void> launchWebview({bool customNode = false}) async {
