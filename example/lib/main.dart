@@ -6,6 +6,7 @@ import 'package:polkawallet_sdk_example/pages/account.dart';
 import 'package:polkawallet_sdk_example/pages/dAppPage.dart';
 import 'package:polkawallet_sdk_example/pages/keyring.dart';
 import 'package:polkawallet_sdk_example/pages/setting.dart';
+import 'package:polkawallet_sdk_example/pages/tx.dart';
 
 void main() {
   runApp(MyApp());
@@ -68,6 +69,7 @@ class _MyAppState extends State<MyApp> {
         KeyringPage.route: (_) => KeyringPage(sdk, _showResult),
         SettingPage.route: (_) => SettingPage(sdk, _showResult),
         AccountPage.route: (_) => AccountPage(sdk, _showResult),
+        TxPage.route: (_) => TxPage(sdk, _showResult),
       },
     );
   }
@@ -93,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     final node = NetworkParams();
     node.name = 'Kusama';
-    node.endpoint = 'wss://kusama-rpc.polkadot.io/';
+    node.endpoint = 'wss://kusama-1.polkawallet.io:9944/';
     node.ss58 = 2;
     final res = await widget.sdk.api.connectNode(node);
     if (res != null) {
@@ -184,6 +186,16 @@ class _MyHomePageState extends State<MyHomePage> {
               onTap: () {
                 if (!widget.sdkReady) return;
                 Navigator.of(context).pushNamed(AccountPage.route);
+              },
+            ),
+            Divider(),
+            ListTile(
+              title: Text('sdk.tx'),
+              subtitle: Text('extrinsic actions'),
+              trailing: trailing,
+              onTap: () {
+                if (!widget.sdkReady) return;
+                Navigator.of(context).pushNamed(TxPage.route);
               },
             )
           ],

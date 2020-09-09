@@ -19,15 +19,6 @@ class ApiAccount {
     return res;
   }
 
-//  Future<Map> estimateTxFees(Map txInfo, List params, {String rawParam}) async {
-//    String param = rawParam != null ? rawParam : jsonEncode(params);
-//    print(txInfo);
-//    Map res = await apiRoot.evalJavascript(
-//        'account.txFeeEstimate(${jsonEncode(txInfo)}, $param)',
-//        allowRepeat: true);
-//    return res;
-//  }
-//
 //  Future<dynamic> _testSendTx() async {
 //    Completer c = new Completer();
 //    void onComplete(res) {

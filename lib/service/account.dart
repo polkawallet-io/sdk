@@ -24,20 +24,11 @@ class ServiceAccount {
 
   /// query staking info of a list of pubKeys
   Future<List> queryBonded(List<String> pubKeys) async {
-    List res = await serviceRoot
-        .evalJavascript('account.queryAccountsBonded(${jsonEncode(pubKeys)})');
+    List res = await serviceRoot.evalJavascript(
+        'account.queryAccountsBonded(api, ${jsonEncode(pubKeys)})');
     return res;
   }
 
-//  Future<Map> estimateTxFees(Map txInfo, List params, {String rawParam}) async {
-//    String param = rawParam != null ? rawParam : jsonEncode(params);
-//    print(txInfo);
-//    Map res = await apiRoot.evalJavascript(
-//        'account.txFeeEstimate(${jsonEncode(txInfo)}, $param)',
-//        allowRepeat: true);
-//    return res;
-//  }
-//
 //  Future<dynamic> _testSendTx() async {
 //    Completer c = new Completer();
 //    void onComplete(res) {
@@ -47,7 +38,7 @@ class ServiceAccount {
 //    Timer(Duration(seconds: 6), () => onComplete({'hash': '0x79867'}));
 //    return c.future;
 //  }
-//
+
 //  Future<dynamic> sendTx(
 //      Map txInfo, List params, String pageTile, String notificationTitle,
 //      {String rawParam}) async {
@@ -70,8 +61,8 @@ class ServiceAccount {
 
   /// Get on-chain account info of addresses
   Future<List> queryIndexInfo(List addresses) async {
-    var res = await serviceRoot
-        .evalJavascript('account.getAccountIndex(${jsonEncode(addresses)})');
+    var res = await serviceRoot.evalJavascript(
+        'account.getAccountIndex(api, ${jsonEncode(addresses)})');
     return res;
   }
 

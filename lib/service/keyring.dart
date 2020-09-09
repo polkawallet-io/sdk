@@ -30,10 +30,8 @@ class ServiceKeyring {
       ls.retainWhere((e) {
         // delete all storageOld data
         serviceRoot.storageOld.removeAccount(e['pubKey']);
-        if (e['mnemonic'] != null) {
+        if (e['mnemonic'] != null || e['rawSeed'] != null) {
           e.remove('mnemonic');
-        }
-        if (e['rawSeed'] != null) {
           e.remove('rawSeed');
         }
 

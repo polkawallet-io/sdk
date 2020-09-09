@@ -7,6 +7,7 @@ import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/service/account.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
 import 'package:polkawallet_sdk/service/setting.dart';
+import 'package:polkawallet_sdk/service/tx.dart';
 import 'package:polkawallet_sdk/storage/localStorage.dart';
 import 'package:polkawallet_sdk/utils/localStorage.dart';
 
@@ -21,6 +22,7 @@ class SubstrateService {
   ServiceKeyring keyring;
   ServiceSetting setting;
   ServiceAccount account;
+  ServiceTx tx;
 
   Map<String, Function> _msgHandlers = {};
   Map<String, Completer> _msgCompleters = {};
@@ -36,15 +38,9 @@ class SubstrateService {
 
     setting = ServiceSetting(this);
     account = ServiceAccount(this);
+    tx = ServiceTx(this);
 
     launchWebview();
-
-//    DefaultAssetBundle.of(context)
-//        .loadString('lib/js_as_extension/dist/main.js')
-//        .then((String js) {
-//      print('asExtensionJSCode loaded');
-//      asExtensionJSCode = js;
-//    });
   }
 
 //  Future<void> _checkJSCodeUpdate() async {
