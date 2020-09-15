@@ -111,7 +111,7 @@ class _AccountPageState extends State<AccountPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('keyring API'),
+        title: Text('account API'),
       ),
       body: SafeArea(
         child: ListView(

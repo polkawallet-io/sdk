@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
+import 'package:polkawallet_sdk/api/types/keyPairData.dart';
 import 'package:polkawallet_sdk_example/pages/keyring.dart';
 
 class TxPage extends StatefulWidget {
@@ -26,6 +27,8 @@ class _TxPageState extends State<TxPage> {
   final String _testAddressGav =
       'FcxNWVy5RESDsErjwyZmPCW6Z8Y3fbfLzmou34YZTrbcraL';
 
+  final _testPass = 'a123456';
+
   bool _submitting = false;
 
   Future<void> _estimateTxFee() async {
@@ -35,8 +38,10 @@ class _TxPageState extends State<TxPage> {
     final txInfo = TxInfoData();
     txInfo.module = 'balances';
     txInfo.call = 'transfer';
-    txInfo.pubKey = _testPubKey;
-    txInfo.address = _testAddress;
+    txInfo.keyPair = KeyPairData.fromJson({
+      'address': _testAddress,
+      'pubKey': _testPubKey,
+    });
     final res = await widget.sdk.api.tx.estimateTxFees(txInfo, [
       // params.to
       _testAddressGav,
@@ -45,6 +50,43 @@ class _TxPageState extends State<TxPage> {
     ]);
     widget.showResult(context, 'estimateTxFees',
         JsonEncoder.withIndent('  ').convert(TxFeeEstimateResult.toJson(res)));
+    setState(() {
+      _submitting = false;
+    });
+  }
+
+  Future<void> _sendTx() async {
+    if (widget.sdk.api.keyring.list.length == 0) {
+      widget.showResult(
+        context,
+        'sendTx',
+        'should import keyPair to init test account.',
+      );
+      return;
+    }
+    setState(() {
+      _submitting = true;
+    });
+    final txInfo = TxInfoData();
+    txInfo.module = 'balances';
+    txInfo.call = 'transfer';
+    txInfo.keyPair = widget.sdk.api.keyring.list[0];
+    try {
+      final hash = await widget.sdk.api.tx.sendTx(
+        txInfo,
+        [
+          // params.to
+          _testAddressGav,
+          // params.amount
+          '10000000000'
+        ],
+        _testPass,
+        onStatusChange: (status) => print(status),
+      );
+      widget.showResult(context, 'sendTx', hash);
+    } catch (err) {
+      widget.showResult(context, 'sendTx', err.toString());
+    }
     setState(() {
       _submitting = false;
     });
@@ -67,6 +109,16 @@ class _TxPageState extends State<TxPage> {
                 needConnect: !widget.sdk.api.isConnected,
                 submitting: _submitting,
                 call: _estimateTxFee,
+              ),
+            ),
+            Divider(),
+            ListTile(
+              title: Text('sendTx'),
+              subtitle: Text('sdk.api.tx.sendTx'),
+              trailing: SubmitButton(
+                needConnect: !widget.sdk.api.isConnected,
+                submitting: _submitting,
+                call: _sendTx,
               ),
             ),
             Divider(),

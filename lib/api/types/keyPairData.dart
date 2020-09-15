@@ -6,8 +6,7 @@ part 'keyPairData.g.dart';
 class KeyPairData extends _KeyPairData {
   static KeyPairData fromJson(Map<String, dynamic> json) =>
       _$KeyPairDataFromJson(json);
-  static Map<String, dynamic> toJson(KeyPairData acc) =>
-      _$KeyPairDataToJson(acc);
+  Map<String, dynamic> toJson() => _$KeyPairDataToJson(this);
 }
 
 abstract class _KeyPairData {
@@ -27,8 +26,7 @@ abstract class _KeyPairData {
 class SeedBackupData extends _SeedBackupData {
   static SeedBackupData fromJson(Map<String, dynamic> json) =>
       _$SeedBackupDataFromJson(json);
-  static Map<String, dynamic> toJson(SeedBackupData acc) =>
-      _$SeedBackupDataToJson(acc);
+  Map<String, dynamic> toJson() => _$SeedBackupDataToJson(this);
 }
 
 abstract class _SeedBackupData {

@@ -9,6 +9,22 @@ class ApiAccount {
   final PolkawalletApi apiRoot;
   final ServiceAccount service;
 
+  /// encode addresses to publicKeys
+  Future<Map> encodeAddress(List<String> pubKeys) async {
+    final int ss58 = apiRoot.connectedNode.ss58;
+    final Map res = await service.encodeAddress(pubKeys, [ss58]);
+    if (res != null) {
+      return res[ss58.toString()];
+    }
+    return null;
+  }
+
+  /// decode addresses to publicKeys
+  Future<Map> decodeAddress(List<String> addresses) async {
+    final Map res = await service.decodeAddress(addresses);
+    return res;
+  }
+
   /// query staking stash-controller relationship of a list of pubKeys,
   /// return list of [pubKey, controllerAddress, stashAddress].
   Future<List> queryBonded(List<String> pubKeys) async {
@@ -48,22 +64,6 @@ class ApiAccount {
 //    return res;
 //  }
 //
-
-  /// encode addresses to publicKeys
-  Future<Map> encodeAddress(List<String> pubKeys) async {
-    final int ss58 = apiRoot.connectedNode.ss58;
-    final Map res = await service.encodeAddress(pubKeys, [ss58]);
-    if (res != null) {
-      return res[ss58.toString()];
-    }
-    return null;
-  }
-
-  /// decode addresses to publicKeys
-  Future<Map> decodeAddress(List<String> addresses) async {
-    final Map res = await service.decodeAddress(addresses);
-    return res;
-  }
 
   /// Get on-chain account info of addresses
   Future<List> queryIndexInfo(List addresses) async {

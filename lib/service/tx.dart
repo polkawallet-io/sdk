@@ -10,7 +10,7 @@ class ServiceTx {
 
   Future<Map> estimateTxFees(Map txInfo, String params) async {
     Map res = await serviceRoot.evalJavascript(
-      'account.txFeeEstimate(api, ${jsonEncode(txInfo)}, $params)',
+      'keyring.txFeeEstimate(api, ${jsonEncode(txInfo)}, $params)',
     );
     return res;
   }
@@ -25,24 +25,15 @@ class ServiceTx {
 //    return c.future;
 //  }
 
-//  Future<dynamic> sendTx(
-//      Map txInfo, List params, String pageTile, String notificationTitle,
-//      {String rawParam}) async {
-//    String param = rawParam != null ? rawParam : jsonEncode(params);
-//    String call = 'account.sendTx(${jsonEncode(txInfo)}, $param)';
-////    print(call);
-//    Map res = await apiRoot.evalJavascript(call, allowRepeat: true);
-//
-//    if (res['hash'] != null) {
-//      String hash = res['hash'];
-//      NotificationPlugin.showNotification(
-//        int.parse(hash.substring(0, 6)),
-//        notificationTitle,
-//        '$pageTile - ${txInfo['module']}.${txInfo['call']}',
-//      );
-//    }
-//    return res;
-//  }
-//
+  Future<Map> sendTx(Map txInfo, String params, password,
+      Function(String) onStatusChange) async {
+    final msgId = "onStatusChange${serviceRoot.getEvalJavascriptUID()}";
+    serviceRoot.addMsgHandler(msgId, onStatusChange);
 
+    final Map res = await serviceRoot.evalJavascript(
+        'account.sendTx(api, ${jsonEncode(txInfo)}, $params, "$password", "$msgId")');
+    serviceRoot.removeMsgHandler(msgId);
+
+    return res;
+  }
 }

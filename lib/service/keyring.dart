@@ -24,6 +24,60 @@ class ServiceKeyring {
     return ls;
   }
 
+  Future<void> _migrateSeeds() async {
+    final res = await Future.wait([
+      serviceRoot.storageOld.getSeeds('mnemonic'),
+      serviceRoot.storageOld.getSeeds('rawSeed'),
+    ]);
+    if (res[0].keys.length > 0) {
+      final mnemonics = Map.of(serviceRoot.storage.encryptedMnemonics.val);
+      mnemonics.addAll(res[0]);
+      serviceRoot.storage.encryptedMnemonics.val = mnemonics;
+      serviceRoot.storageOld.setSeeds('mnemonic', {});
+    }
+    if (res[1].keys.length > 0) {
+      final seeds = Map.of(serviceRoot.storage.encryptedRawSeeds.val);
+      seeds.addAll(res[1]);
+      serviceRoot.storage.encryptedRawSeeds.val = seeds;
+      serviceRoot.storageOld.setSeeds('rawSeed', {});
+    }
+  }
+
+  Future<void> _encryptSeedAndSave(
+      String pubKey, seed, seedType, password) async {
+    final String key = Encrypt.passwordToEncryptKey(password);
+    final String encrypted = await FlutterAesEcbPkcs5.encryptString(seed, key);
+
+    // read old data from storage-old
+    final Map stored = await serviceRoot.storageOld.getSeeds(seedType);
+    stored[pubKey] = encrypted;
+    // and save to new storage
+    if (seedType == KeyType.mnemonic.toString().split('.')[1]) {
+      final mnemonics = Map.from(serviceRoot.storage.encryptedMnemonics.val);
+      mnemonics.addAll(stored);
+      serviceRoot.storage.encryptedMnemonics.val = mnemonics;
+      return;
+    }
+    if (seedType == KeyType.rawSeed.toString().split('.')[1]) {
+      final seeds = Map.from(serviceRoot.storage.encryptedRawSeeds.val);
+      seeds.addAll(stored);
+      serviceRoot.storage.encryptedRawSeeds.val = seeds;
+    }
+  }
+
+  Future<void> updatePubKeyAddressMap() async {
+    if (serviceRoot.connectedNode == null) return;
+
+    final List<String> pubKeys =
+        list.map((e) => e['pubKey'].toString()).toList();
+    final Map res = await serviceRoot.account
+        .encodeAddress(pubKeys, [serviceRoot.connectedNode.ss58]);
+    if (res != null && res[serviceRoot.connectedNode.ss58.toString()] != null) {
+      _pubKeyAddressMap = Map<String, String>.from(
+          res[serviceRoot.connectedNode.ss58.toString()]);
+    }
+  }
+
   Future<void> loadKeyPairsFromStorage() async {
     final ls = await serviceRoot.storageOld.getAccountList();
     if (ls.length > 0) {
@@ -50,42 +104,27 @@ class ServiceKeyring {
     }
   }
 
-  Future<void> _migrateSeeds() async {
-    final res = await Future.wait([
-      serviceRoot.storageOld.getSeeds('mnemonic'),
-      serviceRoot.storageOld.getSeeds('rawSeed'),
-    ]);
-    if (res[0].keys.length > 0) {
-      final mnemonics = Map.of(serviceRoot.storage.encryptedMnemonics.val);
-      mnemonics.addAll(res[0]);
-      serviceRoot.storage.encryptedMnemonics.val = mnemonics;
-      serviceRoot.storageOld.setSeeds('mnemonic', {});
-    }
-    if (res[1].keys.length > 0) {
-      final seeds = Map.of(serviceRoot.storage.encryptedRawSeeds.val);
-      seeds.addAll(res[1]);
-      serviceRoot.storage.encryptedRawSeeds.val = seeds;
-      serviceRoot.storageOld.setSeeds('rawSeed', {});
+  Future<void> injectKeyPairsToWebView() async {
+    if (list.length > 0) {
+      final String pairs = jsonEncode(list.toList());
+      serviceRoot.evalJavascript('keyring.initKeys($pairs, [0])');
     }
   }
 
-  Future<void> updatePubKeyAddressMap() async {
-    if (serviceRoot.connectedNode == null) return;
-
-    final List<String> pubKeys =
-        list.map((e) => e['pubKey'].toString()).toList();
-    final Map res = await serviceRoot.account
-        .encodeAddress(pubKeys, [serviceRoot.connectedNode.ss58]);
-    if (res != null && res[serviceRoot.connectedNode.ss58] != null) {
-      _pubKeyAddressMap =
-          Map<String, String>.of(res[serviceRoot.connectedNode.ss58]);
+  Map updateKeyPairMetaData(Map acc, String name) {
+    acc['name'] = name;
+    acc['meta']['name'] = name;
+    if (acc['meta']['whenCreated'] == null) {
+      acc['meta']['whenCreated'] = DateTime.now().millisecondsSinceEpoch;
     }
+    acc['meta']['whenEdited'] = DateTime.now().millisecondsSinceEpoch;
+    return acc;
   }
 
   /// Generate a set of new mnemonic.
   Future<String> generateMnemonic() async {
     final Map<String, dynamic> acc =
-        await serviceRoot.evalJavascript('account.gen()');
+        await serviceRoot.evalJavascript('keyring.gen()');
     return acc['mnemonic'];
   }
 
@@ -104,7 +143,7 @@ class ServiceKeyring {
     final String type = keyType.toString().split('.')[1];
     final String crypto = cryptoType.toString().split('.')[1];
     String code =
-        'account.recover("$type", "$crypto", \'$key$derivePath\', "$password")';
+        'keyring.recover("$type", "$crypto", \'$key$derivePath\', "$password")';
     code = code.replaceAll(RegExp(r'\t|\n|\r'), '');
     final Map<String, dynamic> acc = await serviceRoot.evalJavascript(code);
     if (acc == null || acc['error'] != null) {
@@ -131,38 +170,6 @@ class ServiceKeyring {
     await updatePubKeyAddressMap();
 
     return acc;
-  }
-
-  Map updateKeyPairMetaData(Map acc, String name) {
-    acc['name'] = name;
-    acc['meta']['name'] = name;
-    if (acc['meta']['whenCreated'] == null) {
-      acc['meta']['whenCreated'] = DateTime.now().millisecondsSinceEpoch;
-    }
-    acc['meta']['whenEdited'] = DateTime.now().millisecondsSinceEpoch;
-    return acc;
-  }
-
-  Future<void> _encryptSeedAndSave(
-      String pubKey, seed, seedType, password) async {
-    final String key = Encrypt.passwordToEncryptKey(password);
-    final String encrypted = await FlutterAesEcbPkcs5.encryptString(seed, key);
-
-    // read old data from storage-old
-    final Map stored = await serviceRoot.storageOld.getSeeds(seedType);
-    stored[pubKey] = encrypted;
-    // and save to new storage
-    if (seedType == KeyType.mnemonic.toString().split('.')[1]) {
-      final mnemonics = Map.from(serviceRoot.storage.encryptedMnemonics.val);
-      mnemonics.addAll(stored);
-      serviceRoot.storage.encryptedMnemonics.val = mnemonics;
-      return;
-    }
-    if (seedType == KeyType.rawSeed.toString().split('.')[1]) {
-      final seeds = Map.from(serviceRoot.storage.encryptedRawSeeds.val);
-      seeds.addAll(stored);
-      serviceRoot.storage.encryptedRawSeeds.val = seeds;
-    }
   }
 
   Future<Map<String, dynamic>> getDecryptedSeed(String pubKey, password) async {
@@ -215,7 +222,7 @@ class ServiceKeyring {
   /// check password of account
   Future<bool> checkPassword(String pubKey, pass) async {
     final res = await serviceRoot
-        .evalJavascript('account.checkPassword("$pubKey", "$pass")');
+        .evalJavascript('keyring.checkPassword("$pubKey", "$pass")');
     if (res == null) {
       return false;
     }
@@ -225,7 +232,7 @@ class ServiceKeyring {
   /// change password of account
   Future<Map> changePassword(String pubKey, passOld, passNew) async {
     final res = await serviceRoot.evalJavascript(
-        'account.changePassword("$pubKey", "$passOld", "$passNew")');
+        'keyring.changePassword("$pubKey", "$passOld", "$passNew")');
     if (res != null) {
       final seed = await getDecryptedSeed(pubKey, passOld);
       _encryptSeedAndSave(pubKey, seed['seed'], seed['type'], passNew);
@@ -237,59 +244,16 @@ class ServiceKeyring {
       String seed, path, CryptoType cryptoType) async {
     final String crypto = cryptoType.toString().split('.')[1];
     String res = await serviceRoot
-        .evalJavascript('account.checkDerivePath("$seed", "$path", "$crypto")');
+        .evalJavascript('keyring.checkDerivePath("$seed", "$path", "$crypto")');
     return res;
   }
-
-//  Future<Map> parseQrCode(String data) async {
-//    final res = await apiRoot.evalJavascript('account.parseQrCode("$data")');
-//    print('rawData: $data');
-//    return res;
-//  }
-//
-//  Future<Map> signAsync(String password) async {
-//    final res = await apiRoot.evalJavascript('account.signAsync("$password")');
-//    return res;
-//  }
-//
-//  Future<Map> makeQrCode(Map txInfo, List params, {String rawParam}) async {
-//    String param = rawParam != null ? rawParam : jsonEncode(params);
-//    final Map res = await apiRoot.evalJavascript(
-//      'account.makeTx(${jsonEncode(txInfo)}, $param)',
-//      allowRepeat: true,
-//    );
-//    return res;
-//  }
-//
-//  Future<Map> addSignatureAndSend(
-//    String signed,
-//    Map txInfo,
-//    String pageTile,
-//    String notificationTitle,
-//  ) async {
-//    final String address = store.account.currentAddress;
-//    final Map res = await apiRoot.evalJavascript(
-//      'account.addSignatureAndSend("$address", "$signed")',
-//      allowRepeat: true,
-//    );
-//
-//    if (res['hash'] != null) {
-//      String hash = res['hash'];
-//      NotificationPlugin.showNotification(
-//        int.parse(hash.substring(0, 6)),
-//        notificationTitle,
-//        '$pageTile - ${txInfo['module']}.${txInfo['call']}',
-//      );
-//    }
-//    return res;
-//  }
 
   Future<Map> signAsExtension(String password, Map args) async {
     final String call = args['msgType'] == 'pub(bytes.sign)'
         ? 'signBytesAsExtension'
         : 'signTxAsExtension';
     final res = await serviceRoot.evalJavascript(
-      'account.$call("$password", ${jsonEncode(args['request'])})',
+      'keyring.$call(api, "$password", ${jsonEncode(args['request'])})',
       allowRepeat: true,
     );
     return res;

@@ -29,9 +29,6 @@ class SubstrateService {
   FlutterWebviewPlugin _web;
   int _evalJavascriptUID = 0;
 
-  /// preload js code for opening dApps
-  String asExtensionJSCode;
-
   void init() {
     keyring = ServiceKeyring(this);
     keyring.loadKeyPairsFromStorage();
@@ -59,10 +56,7 @@ class SubstrateService {
     _web.evalJavascript(js);
 
     // load accounts to webView from storage
-    if (keyring.list.length > 0) {
-      final String pairs = jsonEncode(keyring.list.toList());
-      evalJavascript('account.initKeys($pairs, [0])');
-    }
+    keyring.injectKeyPairsToWebView();
   }
 
   Future<void> launchWebview({bool customNode = false}) async {
@@ -122,7 +116,7 @@ class SubstrateService {
     );
   }
 
-  int _getEvalJavascriptUID() {
+  int getEvalJavascriptUID() {
     return _evalJavascriptUID++;
   }
 
@@ -149,7 +143,7 @@ class SubstrateService {
 
     Completer c = new Completer();
 
-    String method = 'uid=${_getEvalJavascriptUID()};${code.split('(')[0]}';
+    String method = 'uid=${getEvalJavascriptUID()};${code.split('(')[0]}';
     _msgCompleters[method] = c;
 
     String script = '$code.then(function(res) {'
@@ -166,10 +160,12 @@ class SubstrateService {
     final String res =
         await evalJavascript('settings.connect("${params.endpoint}")');
     if (res != null) {
-      if (connectedNode != null && connectedNode.ss58 != params.ss58) {
+      connectedNode = params;
+      // update pubKeyAddress map after node connected,
+      // so we can have the correct address format
+      if (connectedNode != null) {
         keyring.updatePubKeyAddressMap();
       }
-      connectedNode = params;
     }
     return res;
   }
@@ -179,10 +175,12 @@ class SubstrateService {
         'settings.connectAll(${jsonEncode(nodes.map((e) => e.endpoint).toList())})');
     if (res != null) {
       final node = nodes.firstWhere((e) => e.endpoint == res);
-      if (connectedNode != null && connectedNode.ss58 != node.ss58) {
+      connectedNode = node;
+      // update pubKeyAddress map after node connected,
+      // so we can have the correct address format
+      if (connectedNode != null) {
         keyring.updatePubKeyAddressMap();
       }
-      connectedNode = node;
       return node;
     }
     return null;
@@ -199,11 +197,19 @@ class SubstrateService {
     String channel,
     Function callback,
   ) async {
-    _msgHandlers[channel] = callback;
+    addMsgHandler(channel, callback);
     evalJavascript(code);
   }
 
   Future<void> unsubscribeMessage(String channel) async {
     _web.evalJavascript('unsub$channel()');
+  }
+
+  void addMsgHandler(String channel, Function onMessage) {
+    _msgHandlers[channel] = onMessage;
+  }
+
+  void removeMsgHandler(String channel) {
+    _msgHandlers.remove(channel);
   }
 }

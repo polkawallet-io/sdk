@@ -16,6 +16,7 @@ class ApiTx {
       {String rawParam}) async {
     final String param = rawParam != null ? rawParam : jsonEncode(params);
     final Map tx = TxInfoData.toJson(txInfo);
+    print(tx);
     final res = await service.estimateTxFees(tx, param);
     return TxFeeEstimateResult.fromJson(res);
   }
@@ -29,36 +30,33 @@ class ApiTx {
 //    Timer(Duration(seconds: 6), () => onComplete({'hash': '0x79867'}));
 //    return c.future;
 //  }
-//
-//  Future<dynamic> sendTx(
-//      Map txInfo, List params, String pageTile, String notificationTitle,
-//      {String rawParam}) async {
-//    String param = rawParam != null ? rawParam : jsonEncode(params);
-//    String call = 'account.sendTx(${jsonEncode(txInfo)}, $param)';
-////    print(call);
-//    Map res = await apiRoot.evalJavascript(call, allowRepeat: true);
-//
-//    if (res['hash'] != null) {
-//      String hash = res['hash'];
-//      NotificationPlugin.showNotification(
-//        int.parse(hash.substring(0, 6)),
-//        notificationTitle,
-//        '$pageTile - ${txInfo['module']}.${txInfo['call']}',
-//      );
-//    }
-//    return res;
-//  }
-//
 
-//  Future<Map> makeQrCode(Map txInfo, List params, {String rawParam}) async {
-//    String param = rawParam != null ? rawParam : jsonEncode(params);
-//    final Map res = await apiRoot.evalJavascript(
-//      'account.makeTx(${jsonEncode(txInfo)}, $param)',
-//      allowRepeat: true,
-//    );
-//    return res;
-//  }
-//
+  /// Send tx, [params] will be ignored if we have [rawParam].
+  /// [onStatusChange] is a callback when tx status change.
+  /// @return txHash [string] if tx finalized success.
+  Future<String> sendTx(
+    TxInfoData txInfo,
+    List params,
+    String password, {
+    Function(String) onStatusChange,
+    String rawParam,
+  }) async {
+    final param = rawParam != null ? rawParam : jsonEncode(params);
+    final Map tx = TxInfoData.toJson(txInfo);
+    tx['address'] = txInfo.keyPair.address;
+    tx['pubKey'] = txInfo.keyPair.pubKey;
+    final res = await service.sendTx(
+      tx,
+      param,
+      password,
+      onStatusChange ?? (status) => print(status),
+    );
+    if (res['error']) {
+      throw Exception(res['error']);
+    }
+    return res['hash'];
+  }
+
 //  Future<Map> addSignatureAndSend(
 //    String signed,
 //    Map txInfo,

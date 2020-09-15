@@ -29,6 +29,8 @@ class PolkawalletApi {
   NetworkParams get connectedNode => service.connectedNode;
 
   /// connect to a specific node, return null if connect failed.
+  /// there is always only one webView instance in sdk,
+  /// so to connect to a new node, we don't need to disconnect the exist one.
   Future<NetworkParams> connectNode(NetworkParams params) async {
     final String res = await service.connectNode(params);
     if (res != null) {

@@ -102,7 +102,7 @@ class _KeyringPageState extends State<KeyringPage> {
     widget.showResult(
       context,
       'importFromMnemonic',
-      JsonEncoder.withIndent('  ').convert(KeyPairData.toJson(acc)),
+      JsonEncoder.withIndent('  ').convert(acc.toJson()),
     );
     setState(() {
       _submitting = false;
@@ -123,7 +123,7 @@ class _KeyringPageState extends State<KeyringPage> {
     widget.showResult(
       context,
       'importFromRawSeed',
-      JsonEncoder.withIndent('  ').convert(KeyPairData.toJson(acc)),
+      JsonEncoder.withIndent('  ').convert(acc.toJson()),
     );
     setState(() {
       _submitting = false;
@@ -144,7 +144,7 @@ class _KeyringPageState extends State<KeyringPage> {
     widget.showResult(
       context,
       'importFromKeystore',
-      JsonEncoder.withIndent('  ').convert(KeyPairData.toJson(acc)),
+      JsonEncoder.withIndent('  ').convert(acc.toJson()),
     );
     setState(() {
       _submitting = false;
@@ -218,9 +218,7 @@ class _KeyringPageState extends State<KeyringPage> {
     widget.showResult(
       context,
       'changePassword',
-      res == null
-          ? 'null'
-          : JsonEncoder.withIndent('  ').convert(KeyPairData.toJson(res)),
+      res == null ? 'null' : JsonEncoder.withIndent('  ').convert(res.toJson()),
     );
     setState(() {
       _submitting = false;
@@ -243,9 +241,7 @@ class _KeyringPageState extends State<KeyringPage> {
     widget.showResult(
       context,
       'changeName',
-      res == null
-          ? 'null'
-          : JsonEncoder.withIndent('  ').convert(KeyPairData.toJson(res)),
+      res == null ? 'null' : JsonEncoder.withIndent('  ').convert(res.toJson()),
     );
     setState(() {
       _submitting = false;

@@ -8,7 +8,7 @@ class ServiceSetting {
 
   Future<Map> queryNetworkConst() async {
     final Map res =
-        await serviceRoot.evalJavascript('settings.getNetworkConst()');
+        await serviceRoot.evalJavascript('settings.getNetworkConst(api)');
     return res;
   }
 
@@ -31,7 +31,7 @@ class ServiceSetting {
   Future<void> subscribeBestNumber(Function callback) async {
     final String channel = "BestNumber";
     serviceRoot.subscribeMessage(
-        'settings.subscribeMessage("chain", "bestNumber", [], "$channel")',
+        'settings.subscribeMessage(api, "chain", "bestNumber", [], "$channel")',
         channel,
         callback);
   }

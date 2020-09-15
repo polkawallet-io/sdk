@@ -17,78 +17,6 @@ class ApiKeyring {
     return service.list.map((e) => KeyPairData.fromJson(e)).toList();
   }
 
-  /// Decrypt and get the backup of seed.
-  Future<SeedBackupData> getDecryptedSeed(KeyPairData acc, password) async {
-    final Map data = await service.getDecryptedSeed(acc.pubKey, password);
-    if (data == null) {
-      return null;
-    }
-    if (data['seed'] == null) {
-      data['error'] = 'wrong password';
-    }
-    return SeedBackupData.fromJson(data);
-  }
-
-//  Future<void> initAccounts() async {
-//    if (apiRoot.storage.keyPairs.val.length > 0) {
-//      String accounts = jsonEncode(apiRoot.storage.keyPairs.val);
-//
-//      String ss58 = jsonEncode(network_ss58_map.values.toSet().toList());
-//      Map keys =
-//          await apiRoot.evalJavascript('account.initKeys($accounts, $ss58)');
-//      store.account.setPubKeyAddressMap(Map<String, Map>.from(keys));
-//
-//      // get accounts icons
-//      getPubKeyIcons(store.account.accountList.map((i) => i.pubKey).toList());
-//    }
-//
-//    // and contacts icons
-//    List<AccountData> contacts =
-//        List<AccountData>.of(store.settings.contactList);
-//    getAddressIcons(contacts.map((i) => i.address).toList());
-//    // set pubKeyAddressMap for observation accounts
-//    contacts.retainWhere((i) => i.observation);
-//    List<String> observations = contacts.map((i) => i.pubKey).toList();
-//    if (observations.length > 0) {
-//      encodeAddress(observations);
-//      getPubKeyIcons(observations);
-//    }
-//  }
-
-//  Future<void> changeCurrentAccount({
-//    String pubKey,
-//    bool fetchData = false,
-//  }) async {
-//    String current = pubKey;
-//    if (pubKey == null) {
-//      if (store.account.accountListAll.length > 0) {
-//        current = store.account.accountListAll[0].pubKey;
-//      } else {
-//        current = '';
-//      }
-//    }
-//    store.account.setCurrentAccount(current);
-//
-//    // refresh balance
-//    store.assets.clearTxs();
-//    store.assets.loadAccountCache();
-//    if (fetchData) {
-//      webApi.assets.fetchBalance();
-//    }
-//    if (store.settings.endpoint.info == networkEndpointAcala.info) {
-//      store.acala.setTransferTxs([], reset: true);
-//      store.acala.loadCache();
-//    } else {
-//      // refresh user's staking info if network is kusama or polkadot
-//      store.staking.clearState();
-//      store.staking.loadAccountCache();
-//      if (fetchData) {
-//        webApi.staking.fetchAccountStaking();
-//      }
-//    }
-//  }
-//
-
   /// Generate a set of new mnemonic.
   Future<String> generateMnemonic() async {
     final mnemonic = await service.generateMnemonic();
@@ -115,6 +43,18 @@ class ApiKeyring {
       derivePath: derivePath,
     );
     return KeyPairData.fromJson(acc);
+  }
+
+  /// Decrypt and get the backup of seed.
+  Future<SeedBackupData> getDecryptedSeed(KeyPairData acc, password) async {
+    final Map data = await service.getDecryptedSeed(acc.pubKey, password);
+    if (data == null) {
+      return null;
+    }
+    if (data['seed'] == null) {
+      data['error'] = 'wrong password';
+    }
+    return SeedBackupData.fromJson(data);
   }
 
   /// delete account from storage
@@ -147,7 +87,7 @@ class ApiKeyring {
 
   /// change name of account
   Future<KeyPairData> changeName(KeyPairData acc, String name) async {
-    final json = KeyPairData.toJson(acc);
+    final json = acc.toJson();
     // update json meta data
     service.updateKeyPairMetaData(json, name);
     // update keyPair date in storage
@@ -206,6 +146,7 @@ class ApiKeyring {
 //    return res;
 //  }
 
+  /// Open a new webView for a DApp, and interact with the DApp.
   Future<ExtensionSignResult> signBytesAsExtension(
       String password, SignBytesParam param) async {
     final signature = await service.signAsExtension(
@@ -219,6 +160,8 @@ class ApiKeyring {
     return res;
   }
 
+  /// Open a new webView for a DApp,
+  /// sign extrinsic for the DApp.
   Future<ExtensionSignResult> signExtrinsicAsExtension(
       String password, SignExtrinsicParam param) async {
     final signature = await service.signAsExtension(
