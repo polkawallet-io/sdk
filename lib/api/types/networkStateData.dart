@@ -6,8 +6,7 @@ part 'networkStateData.g.dart';
 class NetworkStateData extends _NetworkStateData {
   static NetworkStateData fromJson(Map<String, dynamic> json) =>
       _$NetworkStateDataFromJson(json);
-  static Map<String, dynamic> toJson(NetworkStateData net) =>
-      _$NetworkStateDataToJson(net);
+  Map<String, dynamic> toJson() => _$NetworkStateDataToJson(this);
 }
 
 abstract class _NetworkStateData {

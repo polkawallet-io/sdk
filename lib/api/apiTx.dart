@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:polkawallet_sdk/api/api.dart';
@@ -15,7 +14,7 @@ class ApiTx {
   Future<TxFeeEstimateResult> estimateTxFees(TxInfoData txInfo, List params,
       {String rawParam}) async {
     final String param = rawParam != null ? rawParam : jsonEncode(params);
-    final Map tx = TxInfoData.toJson(txInfo);
+    final Map tx = txInfo.toJson();
     print(tx);
     final res = await service.estimateTxFees(tx, param);
     return TxFeeEstimateResult.fromJson(res);
@@ -42,7 +41,7 @@ class ApiTx {
     String rawParam,
   }) async {
     final param = rawParam != null ? rawParam : jsonEncode(params);
-    final Map tx = TxInfoData.toJson(txInfo);
+    final Map tx = txInfo.toJson();
     tx['address'] = txInfo.keyPair.address;
     tx['pubKey'] = txInfo.keyPair.pubKey;
     final res = await service.sendTx(

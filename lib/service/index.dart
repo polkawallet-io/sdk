@@ -7,7 +7,9 @@ import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/service/account.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
 import 'package:polkawallet_sdk/service/setting.dart';
+import 'package:polkawallet_sdk/service/staking.dart';
 import 'package:polkawallet_sdk/service/tx.dart';
+import 'package:polkawallet_sdk/service/uos.dart';
 import 'package:polkawallet_sdk/storage/localStorage.dart';
 import 'package:polkawallet_sdk/utils/localStorage.dart';
 
@@ -24,6 +26,9 @@ class SubstrateService {
   ServiceAccount account;
   ServiceTx tx;
 
+  ServiceStaking staking;
+  ServiceUOS uos;
+
   Map<String, Function> _msgHandlers = {};
   Map<String, Completer> _msgCompleters = {};
   FlutterWebviewPlugin _web;
@@ -36,6 +41,8 @@ class SubstrateService {
     setting = ServiceSetting(this);
     account = ServiceAccount(this);
     tx = ServiceTx(this);
+    staking = ServiceStaking(this);
+    uos = ServiceUOS(this);
 
     launchWebview();
   }
@@ -202,6 +209,7 @@ class SubstrateService {
   }
 
   Future<void> unsubscribeMessage(String channel) async {
+    print('unsubscribe $channel');
     _web.evalJavascript('unsub$channel()');
   }
 

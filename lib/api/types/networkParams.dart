@@ -6,8 +6,7 @@ part 'networkParams.g.dart';
 class NetworkParams extends _NetworkParams {
   static NetworkParams fromJson(Map<String, dynamic> json) =>
       _$NetworkParamsFromJson(json);
-  static Map<String, dynamic> toJson(NetworkParams ins) =>
-      _$NetworkParamsToJson(ins);
+  Map<String, dynamic> toJson() => _$NetworkParamsToJson(this);
 }
 
 abstract class _NetworkParams {

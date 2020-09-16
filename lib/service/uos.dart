@@ -58,13 +58,13 @@ class ServiceUOS {
     return res;
   }
 
-//  Future<Map> makeQrCode(Map txInfo, List params, {String rawParam}) async {
-//    String param = rawParam != null ? rawParam : jsonEncode(params);
-//    final Map res = await apiRoot.evalJavascript(
-//      'account.makeTx(${jsonEncode(txInfo)}, $param)',
-//      allowRepeat: true,
-//    );
-//    return res;
-//  }
+  // Future<Map> makeQrCode(Map txInfo, List params, {String rawParam}) async {
+  //   String param = rawParam != null ? rawParam : jsonEncode(params);
+  //   final Map res = await apiRoot.evalJavascript(
+  //     'account.makeTx(${jsonEncode(txInfo)}, $param)',
+  //     allowRepeat: true,
+  //   );
+  //   return res;
+  // }
 
 }

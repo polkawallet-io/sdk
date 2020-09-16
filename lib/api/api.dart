@@ -1,7 +1,9 @@
 import 'package:polkawallet_sdk/api/apiAccount.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/api/apiSetting.dart';
+import 'package:polkawallet_sdk/api/apiStaking.dart';
 import 'package:polkawallet_sdk/api/apiTx.dart';
+import 'package:polkawallet_sdk/api/apiUOS.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 
@@ -15,11 +17,17 @@ class PolkawalletApi {
   ApiAccount account;
   ApiTx tx;
 
+  ApiStaking staking;
+  ApiUOS uos;
+
   void init() {
     keyring = ApiKeyring(service.keyring);
     setting = ApiSetting(this, service.setting);
     account = ApiAccount(this, service.account);
     tx = ApiTx(this, service.tx);
+
+    staking = ApiStaking(this, service.staking);
+    uos = ApiUOS(this, service.uos);
   }
 
   bool get isConnected {

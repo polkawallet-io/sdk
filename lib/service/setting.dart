@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:polkawallet_sdk/service/index.dart';
 
 class ServiceSetting {
@@ -26,17 +25,5 @@ class ServiceSetting {
     final Map props = res[0];
     props['name'] = res[1];
     return props;
-  }
-
-  Future<void> subscribeBestNumber(Function callback) async {
-    final String channel = "BestNumber";
-    serviceRoot.subscribeMessage(
-        'settings.subscribeMessage(api, "chain", "bestNumber", [], "$channel")',
-        channel,
-        callback);
-  }
-
-  Future<void> unsubscribeBestNumber() async {
-    serviceRoot.unsubscribeMessage('BestNumber');
   }
 }

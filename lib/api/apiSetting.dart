@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/api/types/networkStateData.dart';
 import 'package:polkawallet_sdk/service/setting.dart';
@@ -26,12 +24,14 @@ class ApiSetting {
   }
 
   /// subscribe best number.
-  Future<void> subscribeBestNumber(Function callback) async {
-    service.subscribeBestNumber(callback);
-  }
-
-  /// unsubscribe best number.
-  Future<void> unsubscribeBestNumber() async {
-    service.unsubscribeBestNumber();
+  /// @return [String] msgChannel, call unsubscribeMessage(msgChannel) to unsub.
+  Future<String> subscribeBestNumber(Function(num) callback) async {
+    final String msgChannel = "BestNumber";
+    apiRoot.subscribeMessage(
+      'settings.subscribeMessage(api.derive.chain.bestNumber, [], "$msgChannel")',
+      msgChannel,
+      callback,
+    );
+    return msgChannel;
   }
 }

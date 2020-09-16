@@ -49,7 +49,7 @@ class _TxPageState extends State<TxPage> {
       '10000000000'
     ]);
     widget.showResult(context, 'estimateTxFees',
-        JsonEncoder.withIndent('  ').convert(TxFeeEstimateResult.toJson(res)));
+        JsonEncoder.withIndent('  ').convert(res.toJson()));
     setState(() {
       _submitting = false;
     });

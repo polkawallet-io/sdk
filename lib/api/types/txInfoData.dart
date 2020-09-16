@@ -7,7 +7,7 @@ part 'txInfoData.g.dart';
 class TxInfoData extends _TxInfoData {
   static TxInfoData fromJson(Map<String, dynamic> json) =>
       _$TxInfoDataFromJson(json);
-  static Map<String, dynamic> toJson(TxInfoData tx) => _$TxInfoDataToJson(tx);
+  Map<String, dynamic> toJson() => _$TxInfoDataToJson(this);
 }
 
 /// call api.tx[module][call](...params) with polkadot-js/api
@@ -32,8 +32,7 @@ abstract class _TxInfoData {
 class TxFeeEstimateResult extends _TxFeeEstimateResult {
   static TxFeeEstimateResult fromJson(Map<String, dynamic> json) =>
       _$TxFeeEstimateResultFromJson(json);
-  static Map<String, dynamic> toJson(TxFeeEstimateResult res) =>
-      _$TxFeeEstimateResultToJson(res);
+  Map<String, dynamic> toJson() => _$TxFeeEstimateResultToJson(this);
 }
 
 abstract class _TxFeeEstimateResult {

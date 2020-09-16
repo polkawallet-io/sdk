@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
+import 'package:polkawallet_sdk/api/types/balanceData.dart';
 import 'package:polkawallet_sdk_example/pages/keyring.dart';
 
 class AccountPage extends StatefulWidget {
@@ -26,6 +27,9 @@ class _AccountPageState extends State<AccountPage> {
       'FcxNWVy5RESDsErjwyZmPCW6Z8Y3fbfLzmou34YZTrbcraL';
 
   bool _submitting = false;
+
+  BalanceData _balance;
+  String _msgChannel;
 
   Future<void> _encodeAddress() async {
     setState(() {
@@ -95,16 +99,48 @@ class _AccountPageState extends State<AccountPage> {
     });
   }
 
-  Future<void> _queryBonded() async {
+  Future<void> _queryBalance() async {
     setState(() {
       _submitting = true;
     });
-    final List res = await widget.sdk.api.account.queryBonded([_testPubKey]);
-    widget.showResult(
-        context, 'queryBonded', JsonEncoder.withIndent('  ').convert(res));
+    final res = await widget.sdk.api.account.queryBalance(_testAddress);
+    widget.showResult(context, 'queryBalance',
+        JsonEncoder.withIndent('  ').convert(res.toJson()));
     setState(() {
       _submitting = false;
     });
+  }
+
+  Future<void> _subscribeBalance() async {
+    final channel =
+        await widget.sdk.api.account.subscribeBalance(_testAddress, (res) {
+      setState(() {
+        _balance = res;
+      });
+    });
+    setState(() {
+      _msgChannel = channel;
+    });
+  }
+
+  // Future<void> _queryBonded() async {
+  //   setState(() {
+  //     _submitting = true;
+  //   });
+  //   final List res = await widget.sdk.api.account.queryBonded([_testPubKey]);
+  //   widget.showResult(
+  //       context, 'queryBonded', JsonEncoder.withIndent('  ').convert(res));
+  //   setState(() {
+  //     _submitting = false;
+  //   });
+  // }
+
+  @override
+  void dispose() {
+    if (_msgChannel != null) {
+      widget.sdk.api.unsubscribeMessage(_msgChannel);
+    }
+    super.dispose();
   }
 
   @override
@@ -116,6 +152,10 @@ class _AccountPageState extends State<AccountPage> {
       body: SafeArea(
         child: ListView(
           children: [
+            ListTile(
+              title: Text('subscribe balance: ${_balance?.freeBalance}'),
+            ),
+            Divider(),
             ListTile(
               title: Text('encodeAddress'),
               subtitle: Text('sdk.api.account.encodeAddress(["$_testPubKey"])'),
@@ -168,15 +208,36 @@ class _AccountPageState extends State<AccountPage> {
             ),
             Divider(),
             ListTile(
-              title: Text('queryBonded'),
-              subtitle: Text('sdk.api.account.queryBonded(["$_testPubKey"])'),
+              title: Text('queryBalance'),
+              subtitle: Text('sdk.api.account.queryBalance("$_testAddress")'),
               trailing: SubmitButton(
                 needConnect: !widget.sdk.api.isConnected,
                 submitting: _submitting,
-                call: _queryBonded,
+                call: _queryBalance,
               ),
             ),
             Divider(),
+            ListTile(
+              title: Text('subscribeBalance'),
+              subtitle: Text(
+                  'sdk.api.account.queryBalance("$_testAddress", onUpdate: (res) => {})'),
+              trailing: SubmitButton(
+                needConnect: !widget.sdk.api.isConnected,
+                submitting: _submitting,
+                call: _subscribeBalance,
+              ),
+            ),
+            Divider(),
+            // ListTile(
+            //   title: Text('queryBonded'),
+            //   subtitle: Text('sdk.api.account.queryBonded(["$_testPubKey"])'),
+            //   trailing: SubmitButton(
+            //     needConnect: !widget.sdk.api.isConnected,
+            //     submitting: _submitting,
+            //     call: _queryBonded,
+            //   ),
+            // ),
+            // Divider(),
           ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
