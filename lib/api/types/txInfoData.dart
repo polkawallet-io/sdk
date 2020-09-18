@@ -1,31 +1,48 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:polkawallet_sdk/api/types/keyPairData.dart';
 
 part 'txInfoData.g.dart';
-
-@JsonSerializable(explicitToJson: true)
-class TxInfoData extends _TxInfoData {
-  static TxInfoData fromJson(Map<String, dynamic> json) =>
-      _$TxInfoDataFromJson(json);
-  Map<String, dynamic> toJson() => _$TxInfoDataToJson(this);
-}
 
 /// call api.tx[module][call](...params) with polkadot-js/api
 /// see https://polkadot.js.org/api/substrate/extrinsics.html
 /// for all available calls and params.
-abstract class _TxInfoData {
+@JsonSerializable(explicitToJson: true)
+class TxInfoData {
+  TxInfoData(
+    this.module,
+    this.call,
+    this.sender, {
+    this.tip = '0',
+    this.isUnsigned = false,
+    this.proxy,
+    this.txName,
+  });
+
   String module;
   String call;
-  KeyPairData keyPair;
+  TxSenderData sender;
   String tip;
 
-  bool isUnsigned = false;
+  bool isUnsigned;
 
   /// proxy for calling recovery.asRecovered
-  KeyPairData proxy;
+  TxSenderData proxy;
 
   /// txName for calling treasury.approveProposal & treasury.rejectProposal
   String txName;
+
+  Map<String, dynamic> toJson() => _$TxInfoDataToJson(this);
+}
+
+@JsonSerializable()
+class TxSenderData {
+  TxSenderData(this.address, this.pubKey);
+
+  final String address;
+  final String pubKey;
+
+  static TxSenderData fromJson(Map<String, dynamic> json) =>
+      _$TxSenderDataFromJson(json);
+  Map<String, dynamic> toJson() => _$TxSenderDataToJson(this);
 }
 
 @JsonSerializable()

@@ -11,12 +11,11 @@ class ApiTx {
   final ServiceTx service;
 
   /// Estimate tx fees, [params] will be ignored if we have [rawParam].
-  Future<TxFeeEstimateResult> estimateTxFees(TxInfoData txInfo, List params,
+  Future<TxFeeEstimateResult> estimateFees(TxInfoData txInfo, List params,
       {String rawParam}) async {
     final String param = rawParam != null ? rawParam : jsonEncode(params);
     final Map tx = txInfo.toJson();
-    print(tx);
-    final res = await service.estimateTxFees(tx, param);
+    final res = await service.estimateFees(tx, param);
     return TxFeeEstimateResult.fromJson(res);
   }
 
@@ -33,7 +32,7 @@ class ApiTx {
   /// Send tx, [params] will be ignored if we have [rawParam].
   /// [onStatusChange] is a callback when tx status change.
   /// @return txHash [string] if tx finalized success.
-  Future<String> sendTx(
+  Future<String> signAndSend(
     TxInfoData txInfo,
     List params,
     String password, {
@@ -42,51 +41,16 @@ class ApiTx {
   }) async {
     final param = rawParam != null ? rawParam : jsonEncode(params);
     final Map tx = txInfo.toJson();
-    tx['address'] = txInfo.keyPair.address;
-    tx['pubKey'] = txInfo.keyPair.pubKey;
-    final res = await service.sendTx(
+    print(tx);
+    final res = await service.signAndSend(
       tx,
       param,
       password,
       onStatusChange ?? (status) => print(status),
     );
-    if (res['error']) {
+    if (res['error'] != null) {
       throw Exception(res['error']);
     }
     return res['hash'];
   }
-
-//  Future<Map> addSignatureAndSend(
-//    String signed,
-//    Map txInfo,
-//    String pageTile,
-//    String notificationTitle,
-//  ) async {
-//    final String address = store.account.currentAddress;
-//    final Map res = await apiRoot.evalJavascript(
-//      'account.addSignatureAndSend("$address", "$signed")',
-//      allowRepeat: true,
-//    );
-//
-//    if (res['hash'] != null) {
-//      String hash = res['hash'];
-//      NotificationPlugin.showNotification(
-//        int.parse(hash.substring(0, 6)),
-//        notificationTitle,
-//        '$pageTile - ${txInfo['module']}.${txInfo['call']}',
-//      );
-//    }
-//    return res;
-//  }
-//
-//  Future<Map> signAsExtension(String password, Map args) async {
-//    final String call = args['msgType'] == WalletExtensionSignPage.signTypeBytes
-//        ? 'signBytesAsExtension'
-//        : 'signTxAsExtension';
-//    final res = await apiRoot.evalJavascript(
-//      'account.$call("$password", ${jsonEncode(args['request'])})',
-//      allowRepeat: true,
-//    );
-//    return res;
-//  }
 }

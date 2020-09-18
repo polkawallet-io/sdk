@@ -7,7 +7,7 @@ class ServiceTx {
 
   final SubstrateService serviceRoot;
 
-  Future<Map> estimateTxFees(Map txInfo, String params) async {
+  Future<Map> estimateFees(Map txInfo, String params) async {
     Map res = await serviceRoot.evalJavascript(
       'keyring.txFeeEstimate(api, ${jsonEncode(txInfo)}, $params)',
     );
@@ -24,13 +24,14 @@ class ServiceTx {
 //    return c.future;
 //  }
 
-  Future<Map> sendTx(Map txInfo, String params, password,
+  Future<Map> signAndSend(Map txInfo, String params, password,
       Function(String) onStatusChange) async {
     final msgId = "onStatusChange${serviceRoot.getEvalJavascriptUID()}";
     serviceRoot.addMsgHandler(msgId, onStatusChange);
-
-    final Map res = await serviceRoot.evalJavascript(
-        'account.sendTx(api, ${jsonEncode(txInfo)}, $params, "$password", "$msgId")');
+    final code =
+        'keyring.sendTx(api, ${jsonEncode(txInfo)}, $params, "$password", "$msgId")';
+    // print(code);
+    final Map res = await serviceRoot.evalJavascript(code);
     serviceRoot.removeMsgHandler(msgId);
 
     return res;

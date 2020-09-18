@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
-import 'package:polkawallet_sdk/api/types/keyPairData.dart';
 import 'package:polkawallet_sdk_example/pages/keyring.dart';
 
 class TxPage extends StatefulWidget {
@@ -30,19 +29,15 @@ class _TxPageState extends State<TxPage> {
   final _testPass = 'a123456';
 
   bool _submitting = false;
+  String _status;
 
   Future<void> _estimateTxFee() async {
     setState(() {
       _submitting = true;
     });
-    final txInfo = TxInfoData();
-    txInfo.module = 'balances';
-    txInfo.call = 'transfer';
-    txInfo.keyPair = KeyPairData.fromJson({
-      'address': _testAddress,
-      'pubKey': _testPubKey,
-    });
-    final res = await widget.sdk.api.tx.estimateTxFees(txInfo, [
+    final sender = TxSenderData(_testAddress, _testPubKey);
+    final txInfo = TxInfoData('balances', 'transfer', sender);
+    final res = await widget.sdk.api.tx.estimateFees(txInfo, [
       // params.to
       _testAddressGav,
       // params.amount
@@ -67,23 +62,30 @@ class _TxPageState extends State<TxPage> {
     setState(() {
       _submitting = true;
     });
-    final txInfo = TxInfoData();
-    txInfo.module = 'balances';
-    txInfo.call = 'transfer';
-    txInfo.keyPair = widget.sdk.api.keyring.list[0];
+    final sender = TxSenderData(
+      widget.sdk.api.keyring.list[1].address,
+      widget.sdk.api.keyring.list[1].pubKey,
+    );
+    final txInfo = TxInfoData('balances', 'transfer', sender);
     try {
-      final hash = await widget.sdk.api.tx.sendTx(
+      final hash = await widget.sdk.api.tx.signAndSend(
         txInfo,
         [
           // params.to
-          _testAddressGav,
+          // _testAddressGav,
+          'GvrJix8vF8iKgsTAfuazEDrBibiM6jgG66C6sT2W56cEZr3',
           // params.amount
           '10000000000'
         ],
         _testPass,
-        onStatusChange: (status) => print(status),
+        onStatusChange: (status) {
+          print(status);
+          setState(() {
+            _status = status;
+          });
+        },
       );
-      widget.showResult(context, 'sendTx', hash);
+      widget.showResult(context, 'sendTx', hash.toString());
     } catch (err) {
       widget.showResult(context, 'sendTx', err.toString());
     }
@@ -101,6 +103,10 @@ class _TxPageState extends State<TxPage> {
       body: SafeArea(
         child: ListView(
           children: [
+            ListTile(
+              title: Text('send tx status: $_status'),
+            ),
+            Divider(),
             ListTile(
               title: Text('estimateTxFee'),
               subtitle: Text(
