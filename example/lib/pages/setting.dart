@@ -98,7 +98,7 @@ class _SettingPageState extends State<SettingPage> {
               trailing: SubmitButton(
                 submitting: _submitting,
                 call: _queryNetworkConst,
-                needConnect: !widget.sdk.api.isConnected,
+                needConnect: widget.sdk.api.connectedNode == null,
               ),
             ),
             Divider(),
@@ -108,7 +108,7 @@ class _SettingPageState extends State<SettingPage> {
               trailing: SubmitButton(
                 submitting: _submitting,
                 call: _queryNetworkProperties,
-                needConnect: !widget.sdk.api.isConnected,
+                needConnect: widget.sdk.api.connectedNode == null,
               ),
             ),
             Divider(),
@@ -118,7 +118,7 @@ class _SettingPageState extends State<SettingPage> {
               trailing: SubmitButton(
                 submitting: _submitting,
                 call: _subscribeBestNumber,
-                needConnect: !widget.sdk.api.isConnected,
+                needConnect: widget.sdk.api.connectedNode == null,
               ),
             ),
             Divider(),
@@ -128,7 +128,7 @@ class _SettingPageState extends State<SettingPage> {
               trailing: SubmitButton(
                 submitting: _submitting,
                 call: _unsubscribeBestNumber,
-                needConnect: !widget.sdk.api.isConnected,
+                needConnect: widget.sdk.api.connectedNode == null,
               ),
             ),
             Divider(),

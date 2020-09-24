@@ -1,5 +1,6 @@
 import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/service/uos.dart';
+import 'package:polkawallet_sdk/storage/keyring.dart';
 
 /// Steps to complete offline-signature as a cold-wallet:
 /// 1. parseQrCode: parse raw data of QR code, and get signer address from it.
@@ -15,16 +16,14 @@ class ApiUOS {
 
   /// parse data of QR code.
   /// @return: signer pubKey [String]
-  Future<String> parseQrCode(String data) async {
-    final res = await service.parseQrCode(data);
-    return res;
+  Future<String> parseQrCode(Keyring keyring, String data) async {
+    return service.parseQrCode(keyring.store.list.toList(), data);
   }
 
   /// this function must be called after parseQrCode.
   /// @return: signature [String]
   Future<String> signAsync(String password) async {
-    final res = await service.signAsync(password);
-    return res;
+    return service.signAsync(password);
   }
 
   /// [onStatusChange] is a callback when tx status change.

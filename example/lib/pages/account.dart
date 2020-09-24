@@ -160,7 +160,7 @@ class _AccountPageState extends State<AccountPage> {
               title: Text('encodeAddress'),
               subtitle: Text('sdk.api.account.encodeAddress(["$_testPubKey"])'),
               trailing: SubmitButton(
-                needConnect: !widget.sdk.api.isConnected,
+                needConnect: widget.sdk.api.connectedNode == null,
                 submitting: _submitting,
                 call: _encodeAddress,
               ),
@@ -201,7 +201,7 @@ class _AccountPageState extends State<AccountPage> {
               subtitle: Text(
                   'sdk.api.account.queryIndexInfo(["$_testAddress", "$_testAddressGav"])'),
               trailing: SubmitButton(
-                needConnect: !widget.sdk.api.isConnected,
+                needConnect: widget.sdk.api.connectedNode == null,
                 submitting: _submitting,
                 call: _queryIndexInfo,
               ),
@@ -211,7 +211,7 @@ class _AccountPageState extends State<AccountPage> {
               title: Text('queryBalance'),
               subtitle: Text('sdk.api.account.queryBalance("$_testAddress")'),
               trailing: SubmitButton(
-                needConnect: !widget.sdk.api.isConnected,
+                needConnect: widget.sdk.api.connectedNode == null,
                 submitting: _submitting,
                 call: _queryBalance,
               ),
@@ -222,7 +222,7 @@ class _AccountPageState extends State<AccountPage> {
               subtitle: Text(
                   'sdk.api.account.queryBalance("$_testAddress", onUpdate: (res) => {})'),
               trailing: SubmitButton(
-                needConnect: !widget.sdk.api.isConnected,
+                needConnect: widget.sdk.api.connectedNode == null,
                 submitting: _submitting,
                 call: _subscribeBalance,
               ),

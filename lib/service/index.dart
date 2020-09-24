@@ -10,16 +10,10 @@ import 'package:polkawallet_sdk/service/setting.dart';
 import 'package:polkawallet_sdk/service/staking.dart';
 import 'package:polkawallet_sdk/service/tx.dart';
 import 'package:polkawallet_sdk/service/uos.dart';
-import 'package:polkawallet_sdk/storage/localStorage.dart';
-import 'package:polkawallet_sdk/utils/localStorage.dart';
+import 'package:polkawallet_sdk/storage/keyring.dart';
 
 class SubstrateService {
   SubstrateService();
-
-  final KeyringStorage storage = KeyringStorage();
-  final LocalStorage storageOld = LocalStorage();
-
-  NetworkParams connectedNode;
 
   ServiceKeyring keyring;
   ServiceSetting setting;
@@ -34,17 +28,15 @@ class SubstrateService {
   FlutterWebviewPlugin _web;
   int _evalJavascriptUID = 0;
 
-  void init() {
+  void init(Keyring keyringStorage) {
     keyring = ServiceKeyring(this);
-    keyring.loadKeyPairsFromStorage();
-
     setting = ServiceSetting(this);
     account = ServiceAccount(this);
     tx = ServiceTx(this);
     staking = ServiceStaking(this);
     uos = ServiceUOS(this);
 
-    launchWebview();
+    launchWebView(keyringStorage);
   }
 
 //  Future<void> _checkJSCodeUpdate() async {
@@ -58,15 +50,19 @@ class SubstrateService {
 //    }
 //  }
 
-  void _startJSCode(String js) {
+  Future<void> _startJSCode(String js, Keyring keyringStorage) async {
     // inject js file to webView
-    _web.evalJavascript(js);
+    await _web.evalJavascript(js);
 
     // load accounts to webView from storage
-    keyring.injectKeyPairsToWebView();
+    final res = await keyring.injectKeyPairsToWebView(
+        keyringStorage.keyPairs, keyringStorage.store.ss58List);
+    if (res != null) {
+      keyringStorage.store.updatePubKeyAddressMap(Map<String, Map>.from(res));
+    }
   }
 
-  Future<void> launchWebview({bool customNode = false}) async {
+  Future<void> launchWebView(Keyring keyring, {bool customNode = false}) async {
 //    _msgHandlers = {'txStatusChange': store.account.setTxStatus};
 
     _evalJavascriptUID = 0;
@@ -88,7 +84,7 @@ class SubstrateService {
             .loadString('packages/polkawallet_sdk/js_api/dist/main.js')
             .then((String js) {
           print('js file loaded');
-          _startJSCode(js);
+          _startJSCode(js, keyring);
         });
       }
     });
@@ -164,16 +160,7 @@ class SubstrateService {
   }
 
   Future<String> connectNode(NetworkParams params) async {
-    final String res =
-        await evalJavascript('settings.connect("${params.endpoint}")');
-    if (res != null) {
-      connectedNode = params;
-      // update pubKeyAddress map after node connected,
-      // so we can have the correct address format
-      if (connectedNode != null) {
-        keyring.updatePubKeyAddressMap();
-      }
-    }
+    final res = await evalJavascript('settings.connect("${params.endpoint}")');
     return res;
   }
 
@@ -182,12 +169,6 @@ class SubstrateService {
         'settings.connectAll(${jsonEncode(nodes.map((e) => e.endpoint).toList())})');
     if (res != null) {
       final node = nodes.firstWhere((e) => e.endpoint == res);
-      connectedNode = node;
-      // update pubKeyAddress map after node connected,
-      // so we can have the correct address format
-      if (connectedNode != null) {
-        keyring.updatePubKeyAddressMap();
-      }
       return node;
     }
     return null;
@@ -196,7 +177,6 @@ class SubstrateService {
   Future<void> disconnect() async {
     _web.close();
     _web.dispose();
-    connectedNode = null;
   }
 
   Future<void> subscribeMessage(

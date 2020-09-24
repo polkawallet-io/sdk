@@ -13,7 +13,7 @@ class ServiceUOS {
 
   /// parse data of QR code.
   /// @return: signer pubKey [String]
-  Future<String> parseQrCode(String data) async {
+  Future<String> parseQrCode(List keyPairs, String data) async {
     final res =
         await serviceRoot.evalJavascript('keyring.parseQrCode("$data")');
     if (res['error'] != null) {
@@ -23,8 +23,7 @@ class ServiceUOS {
     final pubKeyAddressMap =
         await serviceRoot.account.decodeAddress([res['signer']]);
     final pubKey = pubKeyAddressMap.keys.toList()[0];
-    final accIndex =
-        serviceRoot.keyring.list.indexWhere((e) => e['pubKey'] == pubKey);
+    final accIndex = keyPairs.indexWhere((e) => e['pubKey'] == pubKey);
     if (accIndex < 0) {
       throw Exception('signer: ${res['signer']} not found.');
     }

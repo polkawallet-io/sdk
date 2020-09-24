@@ -1,14 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
+import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/webviewWithExtension/webviewWithExtension.dart';
 
 class DAppPage extends StatefulWidget {
-  DAppPage(this.sdk);
+  DAppPage(this.sdk, this.keyring);
 
   static const String route = '/extension/app';
 
   final WalletSDK sdk;
+  final Keyring keyring;
 
   @override
   _DAppPageState createState() => _DAppPageState();
@@ -33,6 +35,7 @@ class _DAppPageState extends State<DAppPage> {
             WebViewWithExtension(
               widget.sdk.api,
               url,
+              widget.keyring,
               onPageFinished: (url) {
                 setState(() {
                   _loading = false;

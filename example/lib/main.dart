@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
+import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk_example/pages/account.dart';
 import 'package:polkawallet_sdk_example/pages/dAppPage.dart';
@@ -19,11 +20,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final WalletSDK sdk = WalletSDK();
+  final Keyring keyring = Keyring();
 
   bool _sdkReady = false;
 
   Future<void> _initApi() async {
-    await sdk.init();
+    await keyring.init();
+
+    sdk.init(keyring);
     setState(() {
       _sdkReady = true;
     });
@@ -63,22 +67,23 @@ class _MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(sdk, _sdkReady),
+      home: MyHomePage(sdk, keyring, _sdkReady),
       routes: {
-        DAppPage.route: (_) => DAppPage(sdk),
-        KeyringPage.route: (_) => KeyringPage(sdk, _showResult),
+        DAppPage.route: (_) => DAppPage(sdk, keyring),
+        KeyringPage.route: (_) => KeyringPage(sdk, keyring, _showResult),
         SettingPage.route: (_) => SettingPage(sdk, _showResult),
         AccountPage.route: (_) => AccountPage(sdk, _showResult),
-        TxPage.route: (_) => TxPage(sdk, _showResult),
+        TxPage.route: (_) => TxPage(sdk, keyring, _showResult),
       },
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage(this.sdk, this.sdkReady);
+  MyHomePage(this.sdk, this.keyring, this.sdkReady);
 
   final WalletSDK sdk;
+  final Keyring keyring;
   final bool sdkReady;
 
   @override
@@ -97,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
     node.name = 'Kusama';
     node.endpoint = 'wss://kusama-1.polkawallet.io:9944/';
     node.ss58 = 2;
-    final res = await widget.sdk.api.connectNode(node);
+    final res = await widget.sdk.api.connectNode(widget.keyring, node);
     if (res != null) {
       setState(() {
         _apiConnected = true;

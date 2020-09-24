@@ -4,12 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
+import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk_example/pages/keyring.dart';
 
 class TxPage extends StatefulWidget {
-  TxPage(this.sdk, this.showResult);
+  TxPage(this.sdk, this.keyring, this.showResult);
 
   final WalletSDK sdk;
+  final Keyring keyring;
   final Function(BuildContext, String, String) showResult;
 
   static const String route = '/tx';
@@ -51,7 +53,7 @@ class _TxPageState extends State<TxPage> {
   }
 
   Future<void> _sendTx() async {
-    if (widget.sdk.api.keyring.list.length == 0) {
+    if (widget.keyring.keyPairs.length == 0) {
       widget.showResult(
         context,
         'sendTx',
@@ -63,8 +65,8 @@ class _TxPageState extends State<TxPage> {
       _submitting = true;
     });
     final sender = TxSenderData(
-      widget.sdk.api.keyring.list[1].address,
-      widget.sdk.api.keyring.list[1].pubKey,
+      widget.keyring.keyPairs[1].address,
+      widget.keyring.keyPairs[1].pubKey,
     );
     final txInfo = TxInfoData('balances', 'transfer', sender);
     try {
@@ -112,7 +114,7 @@ class _TxPageState extends State<TxPage> {
               subtitle: Text(
                   'sdk.api.tx.estimateTxFee(txInfo, ["$_testAddress", "10000000000"])'),
               trailing: SubmitButton(
-                needConnect: !widget.sdk.api.isConnected,
+                needConnect: widget.sdk.api.connectedNode == null,
                 submitting: _submitting,
                 call: _estimateTxFee,
               ),
@@ -122,7 +124,7 @@ class _TxPageState extends State<TxPage> {
               title: Text('sendTx'),
               subtitle: Text('sdk.api.tx.sendTx'),
               trailing: SubmitButton(
-                needConnect: !widget.sdk.api.isConnected,
+                needConnect: widget.sdk.api.connectedNode == null,
                 submitting: _submitting,
                 call: _sendTx,
               ),

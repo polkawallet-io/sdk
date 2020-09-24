@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:polkawallet_sdk/api/types/keyPairData.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
+import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
 
 enum KeyType { mnemonic, rawSeed, keystore }
@@ -13,10 +14,6 @@ class ApiKeyring {
 
   final ServiceKeyring service;
 
-  List<KeyPairData> get list {
-    return service.list.map((e) => KeyPairData.fromJson(e)).toList();
-  }
-
   /// Generate a set of new mnemonic.
   Future<String> generateMnemonic() async {
     final mnemonic = await service.generateMnemonic();
@@ -26,7 +23,8 @@ class ApiKeyring {
   /// Import account from mnemonic/rawSeed/keystore.
   /// param [cryptoType] can be `sr25519`(default) or `ed25519`.
   /// return [null] if import failed.
-  Future<KeyPairData> importAccount({
+  Future<KeyPairData> importAccount(
+    Keyring keyring, {
     @required KeyType keyType,
     @required String key,
     @required String name,
@@ -42,12 +40,43 @@ class ApiKeyring {
       cryptoType: cryptoType,
       derivePath: derivePath,
     );
+
+    // save seed and remove it before add account
+    if (keyType == KeyType.mnemonic || keyType == KeyType.rawSeed) {
+      final String type = keyType.toString().split('.')[1];
+      final String seed = acc[type];
+      if (seed != null && seed.isNotEmpty) {
+        keyring.store
+            .encryptSeedAndSave(acc['pubKey'], acc[type], type, password);
+        acc.remove(type);
+      }
+    }
+
+    // save keystore to storage
+    await keyring.store.addAccount(acc);
+
+    updatePubKeyAddressMap(keyring);
+
     return KeyPairData.fromJson(acc);
   }
 
+  /// Every time we change the keyPairs, we need to update the
+  /// pubKey-address map.
+  Future<void> updatePubKeyAddressMap(Keyring keyring) async {
+    // get new addresses from webView.
+    final res = await service.updatePubKeyAddressMap(
+        keyring.store.list, keyring.store.ss58List);
+
+    // set new addresses to Keyring instance.
+    if (res != null && res[keyring.ss58.toString()] != null) {
+      keyring.store.updatePubKeyAddressMap(Map<String, Map>.from(res));
+    }
+  }
+
   /// Decrypt and get the backup of seed.
-  Future<SeedBackupData> getDecryptedSeed(KeyPairData acc, password) async {
-    final Map data = await service.getDecryptedSeed(acc.pubKey, password);
+  Future<SeedBackupData> getDecryptedSeed(
+      Keyring keyring, KeyPairData acc, password) async {
+    final Map data = await keyring.store.getDecryptedSeed(acc.pubKey, password);
     if (data == null) {
       return null;
     }
@@ -58,9 +87,9 @@ class ApiKeyring {
   }
 
   /// delete account from storage
-  Future<void> deleteAccount(KeyPairData account) async {
+  Future<void> deleteAccount(Keyring keyring, KeyPairData account) async {
     if (account != null) {
-      await service.deleteAccount(account.pubKey);
+      await keyring.store.deleteAccount(account.pubKey);
     }
   }
 
@@ -72,26 +101,34 @@ class ApiKeyring {
 
   /// change password of account
   Future<KeyPairData> changePassword(
-      KeyPairData acc, String passOld, passNew) async {
-    // change password of keyPair in webView
+    Keyring keyring,
+    KeyPairData acc,
+    String passOld,
+    passNew,
+  ) async {
+    // 1. change password of keyPair in webView
     final res = await service.changePassword(acc.pubKey, passOld, passNew);
     if (res == null) {
       return null;
     }
+    // 2. if success in webView, then update encrypted seed in local storage.
+    keyring.store.updateEncryptedSeed(acc.pubKey, passOld, passNew);
+
     // update json meta data
     service.updateKeyPairMetaData(res, acc.name);
     // update keyPair date in storage
-    service.updateAccount(res);
+    keyring.store.updateAccount(res);
     return KeyPairData.fromJson(res);
   }
 
   /// change name of account
-  Future<KeyPairData> changeName(KeyPairData acc, String name) async {
+  Future<KeyPairData> changeName(
+      Keyring keyring, KeyPairData acc, String name) async {
     final json = acc.toJson();
     // update json meta data
     service.updateKeyPairMetaData(json, name);
     // update keyPair date in storage
-    service.updateAccount(json);
+    keyring.store.updateAccount(json);
     return KeyPairData.fromJson(json);
   }
 

@@ -6,14 +6,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:polkawallet_sdk/api/api.dart';
-import 'package:polkawallet_sdk/api/types/keyPairData.dart';
+import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewWithExtension extends StatefulWidget {
   WebViewWithExtension(
     this.api,
-    this.initialUrl, {
+    this.initialUrl,
+    this.keyring, {
     this.onPageFinished,
     this.onExtensionReady,
     this.onSignBytesRequest,
@@ -22,6 +24,7 @@ class WebViewWithExtension extends StatefulWidget {
 
   final String initialUrl;
   final PolkawalletApi api;
+  final Keyring keyring;
   final Function(String) onPageFinished;
   final Function onExtensionReady;
   final Future<ExtensionSignResult> Function(SignBytesParam) onSignBytesRequest;
@@ -39,7 +42,7 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
   Future<void> _msgHandler(Map msg) async {
     switch (msg['msgType']) {
       case 'pub(accounts.list)':
-        final List<KeyPairData> ls = widget.api.keyring.list;
+        final List<KeyPairData> ls = widget.keyring.keyPairs;
         ls.retainWhere((e) => e.encoding['content'][1] == 'sr25519');
         final List res = ls.map((e) {
           return {

@@ -6,11 +6,14 @@ import 'package:polkawallet_sdk/api/apiTx.dart';
 import 'package:polkawallet_sdk/api/apiUOS.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/service/index.dart';
+import 'package:polkawallet_sdk/storage/keyring.dart';
 
 class PolkawalletApi {
   PolkawalletApi(this.service);
 
   final SubstrateService service;
+
+  NetworkParams _connectedNode;
 
   ApiKeyring keyring;
   ApiSetting setting;
@@ -30,26 +33,34 @@ class PolkawalletApi {
     uos = ApiUOS(this, service.uos);
   }
 
-  bool get isConnected {
-    return service.connectedNode != null;
-  }
-
-  NetworkParams get connectedNode => service.connectedNode;
+  NetworkParams get connectedNode => _connectedNode;
 
   /// connect to a specific node, return null if connect failed.
   /// there is always only one webView instance in sdk,
   /// so to connect to a new node, we don't need to disconnect the exist one.
-  Future<NetworkParams> connectNode(NetworkParams params) async {
+  Future<NetworkParams> connectNode(
+      Keyring keyringStorage, NetworkParams params) async {
     final String res = await service.connectNode(params);
+
+    // update pubKeyAddress map after node connected,
+    // so we can have the correct address format
     if (res != null) {
+      _connectedNode = params;
       return params;
     }
     return null;
   }
 
   /// connect to a list of nodes, return null if connect failed.
-  Future<NetworkParams> connectNodeAll(List<NetworkParams> nodes) async {
+  Future<NetworkParams> connectNodeAll(
+      Keyring keyringStorage, List<NetworkParams> nodes) async {
     final NetworkParams res = await service.connectNodeAll(nodes);
+
+    // update pubKeyAddress map after node connected,
+    // so we can have the correct address format
+    if (res != null) {
+      _connectedNode = res;
+    }
     return res;
   }
 

@@ -4,12 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
-import 'package:polkawallet_sdk/api/types/keyPairData.dart';
+import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 class KeyringPage extends StatefulWidget {
-  KeyringPage(this.sdk, this.showResult);
+  KeyringPage(this.sdk, this.keyring, this.showResult);
 
   final WalletSDK sdk;
+  final Keyring keyring;
   final Function(BuildContext, String, String) showResult;
 
   static const String route = '/keyring';
@@ -32,8 +34,16 @@ class _KeyringPageState extends State<KeyringPage> {
   final String _testPass = 'a123456';
 
   KeyPairData _testAcc;
+  int _ss58 = 0;
 
   bool _submitting = false;
+
+  void _setSS58(int ss58) {
+    final res = widget.keyring.setSS58(ss58);
+    setState(() {
+      _ss58 = res;
+    });
+  }
 
   Future<void> _generateMnemonic() async {
     setState(() {
@@ -47,7 +57,7 @@ class _KeyringPageState extends State<KeyringPage> {
   }
 
   Future<void> _getAccountList() async {
-    final List<KeyPairData> ls = widget.sdk.api.keyring.list.toList();
+    final List<KeyPairData> ls = widget.keyring.keyPairs;
     widget.showResult(
       context,
       'getAccountList',
@@ -68,8 +78,8 @@ class _KeyringPageState extends State<KeyringPage> {
     setState(() {
       _submitting = true;
     });
-    final seed =
-        await widget.sdk.api.keyring.getDecryptedSeed(_testAcc, _testPass);
+    final seed = await widget.sdk.api.keyring
+        .getDecryptedSeed(widget.keyring, _testAcc, _testPass);
 //        await widget.sdk.api.keyring.getDecryptedSeed(_testAcc, 'a654321');
     widget.showResult(
       context,
@@ -93,6 +103,7 @@ class _KeyringPageState extends State<KeyringPage> {
       _submitting = true;
     });
     final KeyPairData acc = await widget.sdk.api.keyring.importAccount(
+      widget.keyring,
       keyType: KeyType.mnemonic,
       key:
           'wing know chapter eight shed lens mandate lake twenty useless bless glory',
@@ -115,6 +126,7 @@ class _KeyringPageState extends State<KeyringPage> {
       _submitting = true;
     });
     final KeyPairData acc = await widget.sdk.api.keyring.importAccount(
+      widget.keyring,
       keyType: KeyType.rawSeed,
       key: 'Alice',
       name: 'testName02',
@@ -136,6 +148,7 @@ class _KeyringPageState extends State<KeyringPage> {
       _submitting = true;
     });
     final KeyPairData acc = await widget.sdk.api.keyring.importAccount(
+      widget.keyring,
       keyType: KeyType.keystore,
       key: _testJson,
       name: 'testName03',
@@ -164,7 +177,7 @@ class _KeyringPageState extends State<KeyringPage> {
     setState(() {
       _submitting = true;
     });
-    await widget.sdk.api.keyring.deleteAccount(_testAcc);
+    await widget.sdk.api.keyring.deleteAccount(widget.keyring, _testAcc);
     widget.showResult(
       context,
       'deleteAccount',
@@ -213,8 +226,8 @@ class _KeyringPageState extends State<KeyringPage> {
       _submitting = true;
     });
     final res = await widget.sdk.api.keyring
-//        .changePassword(_testAcc, _testPass, 'a654321');
-        .changePassword(_testAcc, 'a654321', _testPass);
+//        .changePassword(widget.keyring, _testAcc, _testPass, 'a654321');
+        .changePassword(widget.keyring, _testAcc, 'a654321', _testPass);
     widget.showResult(
       context,
       'changePassword',
@@ -237,7 +250,8 @@ class _KeyringPageState extends State<KeyringPage> {
     setState(() {
       _submitting = true;
     });
-    final res = await widget.sdk.api.keyring.changeName(_testAcc, 'newName');
+    final res = await widget.sdk.api.keyring
+        .changeName(widget.keyring, _testAcc, 'newName');
     widget.showResult(
       context,
       'changeName',
@@ -269,9 +283,9 @@ class _KeyringPageState extends State<KeyringPage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.sdk.api.keyring.list.length > 0) {
+      if (widget.keyring.keyPairs.length > 0) {
         setState(() {
-          _testAcc = widget.sdk.api.keyring.list[0];
+          _testAcc = widget.keyring.keyPairs[0];
         });
       }
     });
@@ -286,6 +300,39 @@ class _KeyringPageState extends State<KeyringPage> {
       body: SafeArea(
         child: ListView(
           children: [
+            Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('address ss58Format: ${widget.keyring.ss58}'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      RaisedButton(
+                        child: Text('Polkadot: 0'),
+                        color:
+                            _ss58 == 0 ? Theme.of(context).primaryColor : null,
+                        onPressed: () => _setSS58(0),
+                      ),
+                      RaisedButton(
+                        child: Text('Kusama: 2'),
+                        color:
+                            _ss58 == 2 ? Theme.of(context).primaryColor : null,
+                        onPressed: () => _setSS58(2),
+                      ),
+                      RaisedButton(
+                        child: Text('Substrate: 42'),
+                        color:
+                            _ss58 == 42 ? Theme.of(context).primaryColor : null,
+                        onPressed: () => _setSS58(42),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
+            Divider(),
             ListTile(
               title: Text('getAccountList'),
               subtitle: Text('''

@@ -1,30 +1,23 @@
 library polkawallet_sdk;
 
-import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/service/index.dart';
-import 'package:polkawallet_sdk/storage/localStorage.dart';
+import 'package:polkawallet_sdk/storage/keyring.dart';
 
-enum Network { kusama, polkadot, acala, laminar }
-
+/// SDK launch a hidden webView to run polkadot.js/api for interacting
+/// with the substrate-based block-chain network.
 class WalletSDK {
   PolkawalletApi api;
 
   SubstrateService _service;
 
-  bool isReady = false;
-
   /// param [jsCode] is customized js code of parachain,
   /// the api works without [jsCode] param in Kusama/Polkadot.
-  Future<void> init([String jsCode]) async {
-    await GetStorage.init(sdk_storage_key);
-
+  void init(Keyring keyring, [String jsCode]) {
     _service = SubstrateService();
-    _service.init();
+    _service.init(keyring);
 
     api = PolkawalletApi(_service);
     api.init();
-
-    isReady = true;
   }
 }
