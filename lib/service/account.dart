@@ -9,40 +9,40 @@ class ServiceAccount {
 
   /// encode addresses to publicKeys
   Future<Map> encodeAddress(List<String> pubKeys, ss58List) async {
-    Map res = await serviceRoot.evalJavascript(
+    Map res = await serviceRoot.webView.evalJavascript(
         'account.encodeAddress(${jsonEncode(pubKeys)}, ${jsonEncode(ss58List)})');
     return res;
   }
 
   /// decode addresses to publicKeys
   Future<Map> decodeAddress(List<String> addresses) async {
-    Map res = await serviceRoot
+    Map res = await serviceRoot.webView
         .evalJavascript('account.decodeAddress(${jsonEncode(addresses)})');
     return res;
   }
 
   /// query balance
   Future<Map> queryBalance(String address) async {
-    final res =
-        await serviceRoot.evalJavascript('account.getBalance(api, "$address")');
+    final res = await serviceRoot.webView
+        .evalJavascript('account.getBalance(api, "$address")');
     return res;
   }
 
   /// Get on-chain account info of addresses
   Future<List> queryIndexInfo(List addresses) async {
-    var res = await serviceRoot.evalJavascript(
+    var res = await serviceRoot.webView.evalJavascript(
         'account.getAccountIndex(api, ${jsonEncode(addresses)})');
     return res;
   }
 
   Future<List> getPubKeyIcons(List<String> keys) async {
-    List res = await serviceRoot
+    List res = await serviceRoot.webView
         .evalJavascript('account.genPubKeyIcons(${jsonEncode(keys)})');
     return res;
   }
 
   Future<List> getAddressIcons(List<String> addresses) async {
-    List res = await serviceRoot
+    List res = await serviceRoot.webView
         .evalJavascript('account.genIcons(${jsonEncode(addresses)})');
     return res;
   }
