@@ -40,7 +40,8 @@ class PolkawalletApi {
   /// so to connect to a new node, we don't need to disconnect the exist one.
   Future<NetworkParams> connectNode(
       Keyring keyringStorage, NetworkParams params) async {
-    final String res = await service.connectNode(params);
+    _connectedNode = null;
+    final String res = await service.webView.connectNode(params);
 
     // update pubKeyAddress map after node connected,
     // so we can have the correct address format
@@ -54,7 +55,8 @@ class PolkawalletApi {
   /// connect to a list of nodes, return null if connect failed.
   Future<NetworkParams> connectNodeAll(
       Keyring keyringStorage, List<NetworkParams> nodes) async {
-    final NetworkParams res = await service.connectNodeAll(nodes);
+    _connectedNode = null;
+    final NetworkParams res = await service.webView.connectNodeAll(nodes);
 
     // update pubKeyAddress map after node connected,
     // so we can have the correct address format
@@ -64,33 +66,17 @@ class PolkawalletApi {
     return res;
   }
 
-  /// disconnect to node.
-  Future<void> disconnect() async {
-    await service.disconnect();
-  }
-
-//  Future<void> _checkJSCodeUpdate() async {
-//    // check js code update
-//    final network = store.settings.endpoint.info;
-//    final jsVersion = await WalletApi.fetchPolkadotJSVersion(network);
-//    final bool needUpdate =
-//        await UI.checkJSCodeUpdate(context, jsVersion, network);
-//    if (needUpdate) {
-//      await UI.updateJSCode(context, jsStorage, network, jsVersion);
-//    }
-//  }
-
   /// subscribe message.
   Future<void> subscribeMessage(
     String code,
     String channel,
     Function callback,
   ) async {
-    service.subscribeMessage(code, channel, callback);
+    service.webView.subscribeMessage(code, channel, callback);
   }
 
   /// unsubscribe message.
   Future<void> unsubscribeMessage(String channel) async {
-    service.unsubscribeMessage(channel);
+    service.webView.unsubscribeMessage(channel);
   }
 }

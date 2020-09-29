@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> _initApi() async {
     await keyring.init();
 
-    sdk.init(keyring);
+    await sdk.init(keyring);
     setState(() {
       _sdkReady = true;
     });

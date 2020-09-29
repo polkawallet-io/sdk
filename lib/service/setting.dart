@@ -6,16 +6,16 @@ class ServiceSetting {
   final SubstrateService serviceRoot;
 
   Future<Map> queryNetworkConst() async {
-    final Map res =
-        await serviceRoot.evalJavascript('settings.getNetworkConst(api)');
+    final Map res = await serviceRoot.webView
+        .evalJavascript('settings.getNetworkConst(api)');
     return res;
   }
 
   Future<Map> queryNetworkProps() async {
     // fetch network info
     List<dynamic> res = await Future.wait([
-      serviceRoot.evalJavascript('api.rpc.system.properties()'),
-      serviceRoot.evalJavascript('api.rpc.system.chain()'),
+      serviceRoot.webView.evalJavascript('api.rpc.system.properties()'),
+      serviceRoot.webView.evalJavascript('api.rpc.system.chain()'),
     ]);
 
     if (res[0] == null || res[1] == null) {

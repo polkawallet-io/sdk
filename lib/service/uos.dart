@@ -14,8 +14,8 @@ class ServiceUOS {
   /// parse data of QR code.
   /// @return: signer pubKey [String]
   Future<String> parseQrCode(List keyPairs, String data) async {
-    final res =
-        await serviceRoot.evalJavascript('keyring.parseQrCode("$data")');
+    final res = await serviceRoot.webView
+        .evalJavascript('keyring.parseQrCode("$data")');
     if (res['error'] != null) {
       throw Exception(res['error']);
     }
@@ -33,8 +33,8 @@ class ServiceUOS {
   /// this function must be called after parseQrCode.
   /// @return: signature [String]
   Future<String> signAsync(String password) async {
-    final res =
-        await serviceRoot.evalJavascript('keyring.signAsync(api, "$password")');
+    final res = await serviceRoot.webView
+        .evalJavascript('keyring.signAsync(api, "$password")');
     if (res['error'] != null) {
       throw Exception(res['error']);
     }
@@ -47,12 +47,12 @@ class ServiceUOS {
     signed,
     Function(String) onStatusChange,
   ) async {
-    final msgId = "onStatusChange${serviceRoot.getEvalJavascriptUID()}";
-    serviceRoot.addMsgHandler(msgId, onStatusChange);
+    final msgId = "onStatusChange${serviceRoot.webView.getEvalJavascriptUID()}";
+    serviceRoot.webView.addMsgHandler(msgId, onStatusChange);
 
-    final Map res = await serviceRoot
+    final Map res = await serviceRoot.webView
         .evalJavascript('account.addSignatureAndSend("$address", "$signed")');
-    serviceRoot.removeMsgHandler(msgId);
+    serviceRoot.webView.removeMsgHandler(msgId);
 
     return res;
   }

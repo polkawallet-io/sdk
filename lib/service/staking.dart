@@ -9,7 +9,7 @@ class ServiceStaking {
 
   /// query staking info of a list of pubKeys
   Future<List> queryBonded(List<String> pubKeys) async {
-    List res = await serviceRoot.evalJavascript(
+    List res = await serviceRoot.webView.evalJavascript(
         'account.queryAccountsBonded(api, ${jsonEncode(pubKeys)})');
     return res;
   }
