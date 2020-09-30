@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
@@ -37,6 +38,10 @@ abstract class PolkawalletPluginBase {
   /// Plugin should define a list of node to connect
   /// for users of Polkawallet App.
   List<NetworkParams> get nodeList => List<NetworkParams>();
+
+  /// Plugin should retrieve [balances] from sdk
+  /// for display in Assets page of Polkawallet App.
+  final balances = BalancesStore();
 
   /// The [navItems] getter returns a list of [HomeNavItem] which defines
   /// the [Widget] to be used in home page of polkawallet App.
