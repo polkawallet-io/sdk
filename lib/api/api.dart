@@ -76,7 +76,7 @@ class PolkawalletApi {
   }
 
   /// unsubscribe message.
-  Future<void> unsubscribeMessage(String channel) async {
+  void unsubscribeMessage(String channel) {
     service.webView.unsubscribeMessage(channel);
   }
 }

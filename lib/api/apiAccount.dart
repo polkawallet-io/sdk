@@ -43,6 +43,12 @@ class ApiAccount {
     return msgChannel;
   }
 
+  /// unsubscribe balance
+  void unsubscribeBalance() {
+    final msgChannel = 'Balance';
+    apiRoot.unsubscribeMessage(msgChannel);
+  }
+
   /// Get on-chain account info of addresses
   Future<List> queryIndexInfo(List addresses) async {
     if (addresses == null || addresses.length == 0) {

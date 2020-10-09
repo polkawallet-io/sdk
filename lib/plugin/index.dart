@@ -1,18 +1,21 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:polkawallet_sdk/api/types/balanceData.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/service/webViewRunner.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   /// for plugin page route.
-  Future<dynamic> routePushNamed(BuildContext context, String route,
+  Future<Object> routePushNamed(BuildContext context, String route,
       {Object arguments}) async {
-    Navigator.of(context).pushNamed('$name/$route', arguments: arguments);
+    return Navigator.of(context)
+        .pushNamed('$name/$route', arguments: arguments);
   }
 
   /// we don't really need this method, calling webView.launch
@@ -55,5 +58,12 @@ abstract class PolkawalletPluginBase {
     await sdk.init(keyring, webView: webView);
     final res = await sdk.api.connectNodeAll(keyring, []);
     return res;
+  }
+
+  /// subscribe balances & set balancesStore
+  void subscribeBalances(KeyPairData keyPair) {
+    sdk.api.account.subscribeBalance(keyPair.address, (BalanceData data) {
+      balances.setBalance(data);
+    });
   }
 }

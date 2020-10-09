@@ -14,7 +14,7 @@ class ServiceSetting {
   Future<Map> queryNetworkProps() async {
     // fetch network info
     List<dynamic> res = await Future.wait([
-      serviceRoot.webView.evalJavascript('api.rpc.system.properties()'),
+      serviceRoot.webView.evalJavascript('settings.getNetworkProperties(api)'),
       serviceRoot.webView.evalJavascript('api.rpc.system.chain()'),
     ]);
 

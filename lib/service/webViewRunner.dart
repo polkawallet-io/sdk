@@ -167,7 +167,7 @@ class WebViewRunner {
     evalJavascript(code);
   }
 
-  Future<void> unsubscribeMessage(String channel) async {
+  void unsubscribeMessage(String channel) {
     print('unsubscribe $channel');
     _web.evalJavascript('unsub$channel()');
   }
