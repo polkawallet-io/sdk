@@ -95,7 +95,7 @@ class WebViewRunner {
 
     // load accounts to webView from storage
     final res = await keyring.injectKeyPairsToWebView(
-        keyringStorage.keyPairs, keyringStorage.store.ss58List);
+        keyringStorage.store.list, keyringStorage.store.ss58List);
     if (res != null) {
       keyringStorage.store.updatePubKeyAddressMap(Map<String, Map>.from(res));
     }

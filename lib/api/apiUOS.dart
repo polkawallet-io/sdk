@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:polkawallet_sdk/api/api.dart';
+import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_sdk/service/uos.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 
@@ -41,13 +44,10 @@ class ApiUOS {
     return res;
   }
 
-  // Future<Map> makeQrCode(Map txInfo, List params, {String rawParam}) async {
-  //   String param = rawParam != null ? rawParam : jsonEncode(params);
-  //   final Map res = await apiRoot.evalJavascript(
-  //     'account.makeTx(${jsonEncode(txInfo)}, $param)',
-  //     allowRepeat: true,
-  //   );
-  //   return res;
-  // }
-
+  Future<Map> makeQrCode(TxInfoData txInfo, List params,
+      {String rawParam}) async {
+    final Map res =
+        await service.makeQrCode(txInfo.toJson(), params, rawParam: rawParam);
+    return res;
+  }
 }

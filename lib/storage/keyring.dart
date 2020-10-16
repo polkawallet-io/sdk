@@ -19,8 +19,22 @@ class Keyring {
     return ss58;
   }
 
+  KeyPairData get current {
+    final list = keyPairs;
+    list.addAll(externals);
+    return list.firstWhere((e) => e.pubKey == store.currentPubKey);
+  }
+
+  void setCurrent(KeyPairData acc) {
+    store.setCurrentPubKey(acc.pubKey);
+  }
+
   List<KeyPairData> get keyPairs {
     return store.list.map((e) => KeyPairData.fromJson(e)).toList();
+  }
+
+  List<KeyPairData> get externals {
+    return store.externals.map((e) => KeyPairData.fromJson(e)).toList();
   }
 
   Future<void> init() async {
@@ -34,17 +48,31 @@ class KeyringPrivateStore {
   final List<int> ss58List = [0, 2, 42];
 
   Map<String, Map> _pubKeyAddressMap = {};
+  Map<String, String> _iconsMap = {};
 
   int ss58 = 0;
 
+  String get currentPubKey => _storage.currentPubKey.val;
+  void setCurrentPubKey(String pubKey) {
+    _storage.currentPubKey.val = pubKey;
+  }
+
   List get list {
-    final ls = _storage.keyPairs.val.toList();
+    return _formatAccount(_storage.keyPairs.val.toList());
+  }
+
+  List get externals {
+    return _formatAccount(_storage.externals.val.toList());
+  }
+
+  List _formatAccount(List ls) {
     ls.forEach((e) {
       final networkSS58 = ss58.toString();
       if (_pubKeyAddressMap[networkSS58] != null &&
           _pubKeyAddressMap[networkSS58][e['pubKey']] != null) {
         e['address'] = _pubKeyAddressMap[networkSS58][e['pubKey']];
       }
+      e['icon'] = _iconsMap[e['pubKey']];
     });
     return ls;
   }
@@ -77,6 +105,13 @@ class KeyringPrivateStore {
       pairs.add(ls);
       _storage.keyPairs.val = pairs;
 
+      // load current account pubKey
+      final curr = await _storageOld.getCurrentAccount();
+      if (curr != null && curr.isNotEmpty) {
+        setCurrentPubKey(curr);
+        _storageOld.setCurrentAccount('');
+      }
+
       // and move all encrypted seeds to new storage
       _migrateSeeds();
     }
@@ -86,23 +121,61 @@ class KeyringPrivateStore {
     _pubKeyAddressMap = data;
   }
 
+  void updateIconsMap(Map<String, String> data) {
+    _iconsMap.addAll(data);
+  }
+
   Future<void> addAccount(Map acc) async {
+    if (acc['observation'] ?? false) {
+      _addExternal(acc);
+    } else {
+      _addKeyPair(acc);
+    }
+
+    setCurrentPubKey(acc['pubKey']);
+  }
+
+  Future<void> _addKeyPair(Map acc) async {
     final List pairs = _storage.keyPairs.val.toList();
     pairs.add(acc);
     _storage.keyPairs.val = pairs;
   }
 
-  Future<void> updateAccount(Map acc) async {
+  Future<void> _addExternal(Map acc) async {
+    final List externals = _storage.externals.val.toList();
+    externals.add(acc);
+    _storage.externals.val = externals;
+  }
+
+  Future<void> updateAccount(Map acc, {bool isExternal: false}) async {
+    if (isExternal) {
+      _updateExternal(acc);
+    } else {
+      _updateKeyPair(acc);
+    }
+  }
+
+  Future<void> _updateKeyPair(Map acc) async {
     final List pairs = _storage.keyPairs.val.toList();
     pairs.removeWhere((e) => e['pubKey'] == acc['pubKey']);
     pairs.add(acc);
     _storage.keyPairs.val = pairs;
   }
 
-  Future<void> deleteAccount(String pubKey) async {
-    final List pairs = _storage.keyPairs.val.toList();
-    pairs.removeWhere((e) => e['pubKey'] == pubKey);
-    _storage.keyPairs.val = pairs;
+  Future<void> _updateExternal(Map acc) async {
+    final List externals = _storage.externals.val.toList();
+    externals.removeWhere((e) => e['pubKey'] == acc['pubKey']);
+    externals.add(acc);
+    _storage.externals.val = externals;
+  }
+
+  Future<void> deleteAccount(String pubKey, {bool isExternal: false}) async {
+    if (isExternal) {
+      _deleteExternal(pubKey);
+      return;
+    } else {
+      _deleteKeyPair(pubKey);
+    }
 
     final mnemonics = Map.of(_storage.encryptedMnemonics.val);
     mnemonics.removeWhere((key, _) => key == pubKey);
@@ -110,6 +183,30 @@ class KeyringPrivateStore {
     final seeds = Map.of(_storage.encryptedRawSeeds.val);
     seeds.removeWhere((key, _) => key == pubKey);
     _storage.encryptedRawSeeds.val = seeds;
+  }
+
+  Future<void> _deleteKeyPair(String pubKey) async {
+    final List pairs = _storage.keyPairs.val.toList();
+    pairs.removeWhere((e) => e['pubKey'] == pubKey);
+    _storage.keyPairs.val = pairs;
+
+    if (pairs.length > 0) {
+      setCurrentPubKey(pairs[0]['pubKey']);
+    } else {
+      setCurrentPubKey('');
+    }
+  }
+
+  Future<void> _deleteExternal(String pubKey) async {
+    final List externals = _storage.externals.val.toList();
+    externals.removeWhere((e) => e['pubKey'] == pubKey);
+    _storage.externals.val = externals;
+
+    if (externals.length > 0) {
+      setCurrentPubKey(externals[0]['pubKey']);
+    } else {
+      setCurrentPubKey('');
+    }
   }
 
   Future<void> encryptSeedAndSave(

@@ -20,6 +20,9 @@ abstract class _KeyPairData {
 
   String memo = '';
   bool observation = false;
+
+  /// address avatar in svg format
+  String icon = '';
 }
 
 @JsonSerializable()

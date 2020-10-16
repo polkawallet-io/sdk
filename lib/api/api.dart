@@ -1,9 +1,11 @@
 import 'package:polkawallet_sdk/api/apiAccount.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
+import 'package:polkawallet_sdk/api/apiRecovery.dart';
 import 'package:polkawallet_sdk/api/apiSetting.dart';
 import 'package:polkawallet_sdk/api/apiStaking.dart';
 import 'package:polkawallet_sdk/api/apiTx.dart';
 import 'package:polkawallet_sdk/api/apiUOS.dart';
+import 'package:polkawallet_sdk/api/subscan.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
@@ -22,6 +24,9 @@ class PolkawalletApi {
 
   ApiStaking staking;
   ApiUOS uos;
+  ApiRecovery recovery;
+
+  final SubScanApi subScan = SubScanApi();
 
   void init() {
     keyring = ApiKeyring(service.keyring);
@@ -31,6 +36,7 @@ class PolkawalletApi {
 
     staking = ApiStaking(this, service.staking);
     uos = ApiUOS(this, service.uos);
+    recovery = ApiRecovery(this, service.recovery);
   }
 
   NetworkParams get connectedNode => _connectedNode;

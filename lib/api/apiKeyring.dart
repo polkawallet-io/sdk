@@ -56,20 +56,52 @@ class ApiKeyring {
     await keyring.store.addAccount(acc);
 
     updatePubKeyAddressMap(keyring);
+    _updatePubKeyIconsMap(keyring, [acc['pubKey']]);
 
     return KeyPairData.fromJson(acc);
+  }
+
+  /// Add an observation account from address.
+  Future<KeyPairData> addExternal(Keyring keyring, Map acc) async {
+    final pubKey =
+        await service.serviceRoot.account.decodeAddress([acc['address']]);
+    acc['pubKey'] = pubKey.keys.toList()[0];
+
+    // save keystore to storage
+    await keyring.store.addAccount(acc);
+
+    updatePubKeyAddressMap(keyring);
+    _updatePubKeyIconsMap(keyring, [acc['pubKey']]);
+
+    return KeyPairData.fromJson(Map<String, dynamic>.from(acc));
   }
 
   /// Every time we change the keyPairs, we need to update the
   /// pubKey-address map.
   Future<void> updatePubKeyAddressMap(Keyring keyring) async {
+    final ls = keyring.store.list.toList();
+    ls.addAll(keyring.store.externals);
     // get new addresses from webView.
-    final res = await service.updatePubKeyAddressMap(
-        keyring.store.list, keyring.store.ss58List);
+    final res =
+        await service.updatePubKeyAddressMap(ls, keyring.store.ss58List);
 
     // set new addresses to Keyring instance.
     if (res != null && res[keyring.ss58.toString()] != null) {
       keyring.store.updatePubKeyAddressMap(Map<String, Map>.from(res));
+    }
+  }
+
+  Future<void> _updatePubKeyIconsMap(Keyring keyring, List pubKeys) async {
+    if (pubKeys.length == 0) return;
+    // get icons from webView.
+    final res = await service.updatePubKeyIconsMap(List<String>.from(pubKeys));
+    // set new icons to Keyring instance.
+    if (res != null) {
+      final data = {};
+      res.forEach((e) {
+        data[e[0]] = e[1];
+      });
+      keyring.store.updateIconsMap(Map<String, String>.from(data));
     }
   }
 
@@ -89,7 +121,8 @@ class ApiKeyring {
   /// delete account from storage
   Future<void> deleteAccount(Keyring keyring, KeyPairData account) async {
     if (account != null) {
-      await keyring.store.deleteAccount(account.pubKey);
+      await keyring.store.deleteAccount(account.pubKey,
+          isExternal: account.observation ?? false);
     }
   }
 

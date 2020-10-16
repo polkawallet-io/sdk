@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/types/balanceData.dart';
+import 'package:polkawallet_sdk/api/types/networkStateData.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
@@ -46,17 +47,25 @@ abstract class PolkawalletPluginBase {
   /// for display in Assets page of Polkawallet App.
   final balances = BalancesStore();
 
+  /// Plugin should retrieve [networkState] & [networkConst] while start
+  NetworkStateData networkState;
+  Map networkConst;
+
   /// The [navItems] getter returns a list of [HomeNavItem] which defines
   /// the [Widget] to be used in home page of polkawallet App.
-  List<HomeNavItem> get navItems => List<HomeNavItem>();
+  List<HomeNavItem> getNavItems(Keyring keyring) => List<HomeNavItem>();
 
   /// App will add plugin's pages with custom [routes].
-  Map<String, WidgetBuilder> get routes => Map<String, WidgetBuilder>();
+  Map<String, WidgetBuilder> getRoutes(Keyring keyring) =>
+      Map<String, WidgetBuilder>();
 
   /// init the plugin runtime & connect to nodes
+  /// retrieve network const & state
   Future<NetworkParams> start(Keyring keyring, {WebViewRunner webView}) async {
     await sdk.init(keyring, webView: webView);
     final res = await sdk.api.connectNodeAll(keyring, []);
+    networkConst = await sdk.api.setting.queryNetworkConst();
+    networkState = await sdk.api.setting.queryNetworkProps();
     return res;
   }
 

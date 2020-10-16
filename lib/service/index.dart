@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:polkawallet_sdk/service/account.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
+import 'package:polkawallet_sdk/service/recovery.dart';
 import 'package:polkawallet_sdk/service/setting.dart';
 import 'package:polkawallet_sdk/service/staking.dart';
 import 'package:polkawallet_sdk/service/tx.dart';
@@ -16,6 +17,7 @@ class SubstrateService {
 
   ServiceStaking staking;
   ServiceUOS uos;
+  ServiceRecovery recovery;
 
   WebViewRunner _web;
 
@@ -33,6 +35,7 @@ class SubstrateService {
     tx = ServiceTx(this);
     staking = ServiceStaking(this);
     uos = ServiceUOS(this);
+    recovery = ServiceRecovery(this);
 
     _web = webViewParam ?? WebViewRunner();
     await _web.launch(keyring, keyringStorage, onInitiated, jsCode: jsCode);
