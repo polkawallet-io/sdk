@@ -33,6 +33,14 @@ class WalletSDK {
       webViewParam: webView,
       jsCode: jsCode,
       onInitiated: () {
+        /// inject keyPairs after webView launched
+        _service.keyring.injectKeyPairsToWebView(
+            keyring.store.list, keyring.store.ss58List);
+
+        /// and initiate pubKeyAddressMap & pubKeyIconsMap
+        api.keyring.updatePubKeyAddressMap(keyring);
+        api.keyring.updatePubKeyIconsMap(keyring);
+
         if (!c.isCompleted) {
           c.complete();
         }

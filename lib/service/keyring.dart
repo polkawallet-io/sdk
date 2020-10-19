@@ -9,13 +9,13 @@ class ServiceKeyring {
 
   final SubstrateService serviceRoot;
 
-  Future<Map> updatePubKeyAddressMap(List keyPairs, List<int> ss58) async {
+  Future<Map> getPubKeyAddressMap(List keyPairs, List<int> ss58) async {
     final List<String> pubKeys =
         keyPairs.map((e) => e['pubKey'].toString()).toList();
     return await serviceRoot.account.encodeAddress(pubKeys, ss58);
   }
 
-  Future<List> updatePubKeyIconsMap(List<String> pubKeys) async {
+  Future<List> getPubKeyIconsMap(List<String> pubKeys) async {
     return await serviceRoot.account.getPubKeyIcons(pubKeys);
   }
 
@@ -24,9 +24,6 @@ class ServiceKeyring {
       final String pairs = jsonEncode(list);
       final res = await serviceRoot.webView
           .evalJavascript('keyring.initKeys($pairs, ${jsonEncode(ss58)})');
-      // get pubKey icons after keypairs injected
-      await serviceRoot.account
-          .getPubKeyIcons(list.map((e) => e['pubKey'].toString()).toList());
       return res;
     }
     return null;

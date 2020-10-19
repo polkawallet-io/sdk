@@ -22,7 +22,7 @@ class Keyring {
   KeyPairData get current {
     final list = keyPairs;
     list.addAll(externals);
-    return list.firstWhere((e) => e.pubKey == store.currentPubKey);
+    return list.length > 0 ? list.firstWhere((e) => e.pubKey == store.currentPubKey): null;
   }
 
   void setCurrent(KeyPairData acc) {

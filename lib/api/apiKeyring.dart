@@ -56,7 +56,7 @@ class ApiKeyring {
     await keyring.store.addAccount(acc);
 
     updatePubKeyAddressMap(keyring);
-    _updatePubKeyIconsMap(keyring, [acc['pubKey']]);
+    updatePubKeyIconsMap(keyring, [acc['pubKey']]);
 
     return KeyPairData.fromJson(acc);
   }
@@ -71,7 +71,7 @@ class ApiKeyring {
     await keyring.store.addAccount(acc);
 
     updatePubKeyAddressMap(keyring);
-    _updatePubKeyIconsMap(keyring, [acc['pubKey']]);
+    updatePubKeyIconsMap(keyring, [acc['pubKey']]);
 
     return KeyPairData.fromJson(Map<String, dynamic>.from(acc));
   }
@@ -82,8 +82,7 @@ class ApiKeyring {
     final ls = keyring.store.list.toList();
     ls.addAll(keyring.store.externals);
     // get new addresses from webView.
-    final res =
-        await service.updatePubKeyAddressMap(ls, keyring.store.ss58List);
+    final res = await service.getPubKeyAddressMap(ls, keyring.store.ss58List);
 
     // set new addresses to Keyring instance.
     if (res != null && res[keyring.ss58.toString()] != null) {
@@ -91,10 +90,18 @@ class ApiKeyring {
     }
   }
 
-  Future<void> _updatePubKeyIconsMap(Keyring keyring, List pubKeys) async {
-    if (pubKeys.length == 0) return;
+  Future<void> updatePubKeyIconsMap(Keyring keyring, [List pubKeys]) async {
+    final ls = List<String>();
+    if (pubKeys != null) {
+      ls.addAll(List<String>.from(pubKeys));
+    } else {
+      ls.addAll(keyring.keyPairs.map((e) => e.pubKey).toList());
+      ls.addAll(keyring.externals.map((e) => e.pubKey).toList());
+    }
+
+    if (ls.length == 0) return;
     // get icons from webView.
-    final res = await service.updatePubKeyIconsMap(List<String>.from(pubKeys));
+    final res = await service.getPubKeyIconsMap(ls);
     // set new icons to Keyring instance.
     if (res != null) {
       final data = {};

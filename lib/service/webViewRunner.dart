@@ -93,13 +93,6 @@ class WebViewRunner {
     // inject js file to webView
     await _web.evalJavascript(js);
 
-    // load accounts to webView from storage
-    final res = await keyring.injectKeyPairsToWebView(
-        keyringStorage.store.list, keyringStorage.store.ss58List);
-    if (res != null) {
-      keyringStorage.store.updatePubKeyAddressMap(Map<String, Map>.from(res));
-    }
-
     _onLaunched();
   }
 
