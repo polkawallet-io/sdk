@@ -10,19 +10,19 @@ class KeyPairData extends _KeyPairData {
 }
 
 abstract class _KeyPairData {
-  String name = '';
-  String address = '';
-  String encoded = '';
-  String pubKey = '';
+  String name;
+  String address;
+  String encoded;
+  String pubKey;
 
   Map<String, dynamic> encoding = Map<String, dynamic>();
   Map<String, dynamic> meta = Map<String, dynamic>();
 
-  String memo = '';
+  String memo;
   bool observation = false;
 
   /// address avatar in svg format
-  String icon = '';
+  String icon;
 }
 
 @JsonSerializable()

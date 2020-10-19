@@ -48,8 +48,8 @@ abstract class PolkawalletPluginBase {
   final balances = BalancesStore();
 
   /// Plugin should retrieve [networkState] & [networkConst] while start
-  NetworkStateData networkState;
-  Map networkConst;
+  NetworkStateData networkState = NetworkStateData();
+  Map networkConst = {};
 
   /// The [navItems] getter returns a list of [HomeNavItem] which defines
   /// the [Widget] to be used in home page of polkawallet App.
