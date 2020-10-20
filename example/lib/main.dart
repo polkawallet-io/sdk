@@ -102,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
     node.name = 'Kusama';
     node.endpoint = 'wss://kusama-1.polkawallet.io:9944/';
     node.ss58 = 2;
-    final res = await widget.sdk.api.connectNode(widget.keyring, node);
+    final res = await widget.sdk.api.connectNode(widget.keyring, [node]);
     if (res != null) {
       setState(() {
         _apiConnected = true;

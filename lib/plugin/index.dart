@@ -63,7 +63,7 @@ abstract class PolkawalletPluginBase {
   /// retrieve network const & state
   Future<NetworkParams> start(Keyring keyring, {WebViewRunner webView}) async {
     await sdk.init(keyring, webView: webView);
-    final res = await sdk.api.connectNodeAll(keyring, []);
+    final res = await sdk.api.connectNode(keyring, []);
     networkConst = await sdk.api.setting.queryNetworkConst();
     networkState = await sdk.api.setting.queryNetworkProps();
     return res;

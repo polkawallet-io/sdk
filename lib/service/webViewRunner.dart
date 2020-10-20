@@ -136,14 +136,9 @@ class WebViewRunner {
     return c.future;
   }
 
-  Future<String> connectNode(NetworkParams params) async {
-    final res = await evalJavascript('settings.connect("${params.endpoint}")');
-    return res;
-  }
-
-  Future<NetworkParams> connectNodeAll(List<NetworkParams> nodes) async {
+  Future<NetworkParams> connectNode(List<NetworkParams> nodes) async {
     final String res = await evalJavascript(
-        'settings.connectAll(${jsonEncode(nodes.map((e) => e.endpoint).toList())})');
+        'settings.connect(${jsonEncode(nodes.map((e) => e.endpoint).toList())})');
     if (res != null) {
       final node = nodes.firstWhere((e) => e.endpoint == res);
       return node;

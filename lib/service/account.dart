@@ -35,6 +35,13 @@ class ServiceAccount {
     return res;
   }
 
+  /// query address with account index
+  Future<List> queryAddressWithAccountIndex(String index, int ss58) async {
+    final res = await serviceRoot.webView.evalJavascript(
+        'account.queryAddressWithAccountIndex(api, "$index", $ss58)');
+    return res;
+  }
+
   Future<List> getPubKeyIcons(List<String> keys) async {
     List res = await serviceRoot.webView
         .evalJavascript('account.genPubKeyIcons(${jsonEncode(keys)})');

@@ -59,6 +59,16 @@ class ApiAccount {
     return res;
   }
 
+  /// query address with account index
+  Future<String> queryAddressWithAccountIndex(String index) async {
+    final res = await service.queryAddressWithAccountIndex(
+        index, apiRoot.connectedNode.ss58);
+    if (res != null) {
+      return res[0];
+    }
+    return null;
+  }
+
   /// Get icons of pubKeys
   /// return svg strings
   Future<List> getPubKeyIcons(List<String> keys) async {

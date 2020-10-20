@@ -41,28 +41,11 @@ class PolkawalletApi {
 
   NetworkParams get connectedNode => _connectedNode;
 
-  /// connect to a specific node, return null if connect failed.
-  /// there is always only one webView instance in sdk,
-  /// so to connect to a new node, we don't need to disconnect the exist one.
-  Future<NetworkParams> connectNode(
-      Keyring keyringStorage, NetworkParams params) async {
-    _connectedNode = null;
-    final String res = await service.webView.connectNode(params);
-
-    // update pubKeyAddress map after node connected,
-    // so we can have the correct address format
-    if (res != null) {
-      _connectedNode = params;
-      return params;
-    }
-    return null;
-  }
-
   /// connect to a list of nodes, return null if connect failed.
-  Future<NetworkParams> connectNodeAll(
+  Future<NetworkParams> connectNode(
       Keyring keyringStorage, List<NetworkParams> nodes) async {
     _connectedNode = null;
-    final NetworkParams res = await service.webView.connectNodeAll(nodes);
+    final NetworkParams res = await service.webView.connectNode(nodes);
 
     // update pubKeyAddress map after node connected,
     // so we can have the correct address format
