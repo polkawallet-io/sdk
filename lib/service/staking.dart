@@ -54,4 +54,10 @@ class ServiceStaking {
         'staking.loadAccountRewardsData(api, "$address", $eras)');
     return res;
   }
+
+  Future<int> getSlashingSpans(String stashId) async {
+    final int spans = await serviceRoot.webView
+        .evalJavascript('staking.getSlashingSpans(api, "$stashId")');
+    return spans;
+  }
 }

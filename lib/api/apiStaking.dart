@@ -47,4 +47,9 @@ class ApiStaking {
     final Map res = await service.fetchAccountRewards(address, eras);
     return res;
   }
+
+  Future<int> getSlashingSpans(String stashId) async {
+    final int spans = await service.getSlashingSpans(stashId);
+    return spans;
+  }
 }
