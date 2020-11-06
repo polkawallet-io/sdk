@@ -48,7 +48,7 @@ class ServiceAccount {
     return res;
   }
 
-  Future<List> getAddressIcons(List<String> addresses) async {
+  Future<List> getAddressIcons(List addresses) async {
     List res = await serviceRoot.webView
         .evalJavascript('account.genIcons(${jsonEncode(addresses)})');
     return res;

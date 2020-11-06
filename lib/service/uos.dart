@@ -52,17 +52,18 @@ class ServiceUOS {
     final msgId = "onStatusChange${serviceRoot.webView.getEvalJavascriptUID()}";
     serviceRoot.webView.addMsgHandler(msgId, onStatusChange);
 
-    final Map res = await serviceRoot.webView
-        .evalJavascript('account.addSignatureAndSend("$address", "$signed")');
+    final Map res = await serviceRoot.webView.evalJavascript(
+        'keyring.addSignatureAndSend(api, "$address", "$signed")');
     serviceRoot.webView.removeMsgHandler(msgId);
 
     return res;
   }
 
-  Future<Map> makeQrCode(Map txInfo, List params, {String rawParam}) async {
+  Future<Map> makeQrCode(Map txInfo, List params,
+      {String rawParam, int ss58}) async {
     String param = rawParam != null ? rawParam : jsonEncode(params);
     final Map res = await serviceRoot.webView.evalJavascript(
-      'account.makeTx(${jsonEncode(txInfo)}, $param)',
+      'keyring.makeTx(api, ${jsonEncode(txInfo)}, $param, $ss58)',
     );
     return res;
   }

@@ -81,7 +81,7 @@ class ApiAccount {
 
   /// Get icons of addresses
   /// return svg strings
-  Future<List> getAddressIcons(List<String> addresses) async {
+  Future<List> getAddressIcons(List addresses) async {
     if (addresses == null || addresses.length == 0) {
       return [];
     }

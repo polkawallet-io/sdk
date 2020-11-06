@@ -46,8 +46,12 @@ class ApiUOS {
 
   Future<Map> makeQrCode(TxInfoData txInfo, List params,
       {String rawParam}) async {
-    final Map res =
-        await service.makeQrCode(txInfo.toJson(), params, rawParam: rawParam);
+    final Map res = await service.makeQrCode(
+      txInfo.toJson(),
+      params,
+      rawParam: rawParam,
+      ss58: apiRoot.connectedNode.ss58,
+    );
     return res;
   }
 }
