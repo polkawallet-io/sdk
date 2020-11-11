@@ -66,7 +66,7 @@ class ServiceKeyring {
     final Map<String, dynamic> acc =
         await serviceRoot.webView.evalJavascript(code);
     if (acc == null || acc['error'] != null) {
-      return null;
+      return acc;
     }
 
     // add metadata to json

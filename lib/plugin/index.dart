@@ -12,13 +12,6 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 abstract class PolkawalletPlugin implements PolkawalletPluginBase {
-  /// for plugin page route.
-  Future<Object> routePushNamed(BuildContext context, String route,
-      {Object arguments}) async {
-    return Navigator.of(context)
-        .pushNamed('$name/$route', arguments: arguments);
-  }
-
   /// we don't really need this method, calling webView.launch
   /// more than once will cause some exception.
   /// We just pass a [webViewParam] instance to the sdk.init function,
@@ -59,19 +52,35 @@ abstract class PolkawalletPluginBase {
   Map<String, WidgetBuilder> getRoutes(Keyring keyring) =>
       Map<String, WidgetBuilder>();
 
-  /// init the plugin runtime & connect to nodes
-  /// retrieve network const & state
+  /// This method will be called while App switched to your plugin.
+  /// In this method, the plugin should do:
+  /// 1. init the plugin runtime & connect to nodes.
+  /// 2. retrieve network const & state.
+  /// 3. subscribe balances & set balancesStore.
+  /// 4. setup other plugin state if needed.
   Future<NetworkParams> start(Keyring keyring, {WebViewRunner webView}) async {
     await sdk.init(keyring, webView: webView);
     final res = await sdk.api.connectNode(keyring, []);
     networkConst = await sdk.api.setting.queryNetworkConst();
     networkState = await sdk.api.setting.queryNetworkProps();
+
+    if (keyring.current != null) {
+      sdk.api.account.subscribeBalance(keyring.current.address,
+          (BalanceData data) {
+        balances.setBalance(data);
+      });
+    }
+
     return res;
   }
 
-  /// subscribe balances & set balancesStore
-  void subscribeBalances(KeyPairData keyPair) {
-    sdk.api.account.subscribeBalance(keyPair.address, (BalanceData data) {
+  /// This method will be called while App user changes account.
+  /// In this method, the plugin should do:
+  /// 1. update balance subscription to update balancesStore.
+  /// 2. update other user state of plugin if needed.
+  void onChangeAccount(KeyPairData account) {
+    sdk.api.account.unsubscribeBalance();
+    sdk.api.account.subscribeBalance(account.address, (BalanceData data) {
       balances.setBalance(data);
     });
   }

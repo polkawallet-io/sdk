@@ -40,6 +40,12 @@ class ApiKeyring {
       cryptoType: cryptoType,
       derivePath: derivePath,
     );
+    if (acc == null) {
+      throw Exception('import account failed');
+    }
+    if (acc['error'] != null) {
+      throw Exception(acc['error']);
+    }
 
     // save seed and remove it before add account
     if (keyType == KeyType.mnemonic || keyType == KeyType.rawSeed) {
