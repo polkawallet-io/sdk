@@ -23,6 +23,9 @@ abstract class _KeyPairData {
 
   /// address avatar in svg format
   String icon;
+
+  /// indexInfo
+  Map indexInfo;
 }
 
 @JsonSerializable()

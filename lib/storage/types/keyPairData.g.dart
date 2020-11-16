@@ -16,7 +16,8 @@ KeyPairData _$KeyPairDataFromJson(Map<String, dynamic> json) {
     ..meta = json['meta'] as Map<String, dynamic>
     ..memo = json['memo'] as String
     ..observation = json['observation'] as bool
-    ..icon = json['icon'] as String;
+    ..icon = json['icon'] as String
+    ..indexInfo = json['indexInfo'] as Map<String, dynamic>;
 }
 
 Map<String, dynamic> _$KeyPairDataToJson(KeyPairData instance) =>
@@ -30,6 +31,7 @@ Map<String, dynamic> _$KeyPairDataToJson(KeyPairData instance) =>
       'memo': instance.memo,
       'observation': instance.observation,
       'icon': instance.icon,
+      'indexInfo': instance.indexInfo,
     };
 
 SeedBackupData _$SeedBackupDataFromJson(Map<String, dynamic> json) {

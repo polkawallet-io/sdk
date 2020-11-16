@@ -29,7 +29,7 @@ class PolkawalletApi {
   final SubScanApi subScan = SubScanApi();
 
   void init() {
-    keyring = ApiKeyring(service.keyring);
+    keyring = ApiKeyring(this, service.keyring);
     setting = ApiSetting(this, service.setting);
     account = ApiAccount(this, service.account);
     tx = ApiTx(this, service.tx);
@@ -46,11 +46,11 @@ class PolkawalletApi {
       Keyring keyringStorage, List<NetworkParams> nodes) async {
     _connectedNode = null;
     final NetworkParams res = await service.webView.connectNode(nodes);
-
-    // update pubKeyAddress map after node connected,
-    // so we can have the correct address format
     if (res != null) {
       _connectedNode = res;
+
+      // update indices of keyPairs after connect
+      keyring.updateIndicesMap(keyringStorage);
     }
     return res;
   }

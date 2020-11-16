@@ -5,7 +5,7 @@ author: shawn@polkawallet.io
 homepage: polkawallet.io
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.10.0 <3.0.0"
   flutter: ">=1.17.0 <2.0.0"
 
 dependencies:
@@ -28,6 +28,8 @@ dev_dependencies:
   build_runner: ^1.10.1
   json_serializable: ^3.0.0
 
+dependency_overrides:
+  analyzer: 0.39.15
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

@@ -22,7 +22,9 @@ class Keyring {
   KeyPairData get current {
     final list = keyPairs;
     list.addAll(externals);
-    return list.length > 0 ? list.firstWhere((e) => e.pubKey == store.currentPubKey): null;
+    return list.length > 0
+        ? list.firstWhere((e) => e.pubKey == store.currentPubKey)
+        : null;
   }
 
   void setCurrent(KeyPairData acc) {
@@ -49,6 +51,7 @@ class KeyringPrivateStore {
 
   Map<String, Map> _pubKeyAddressMap = {};
   Map<String, String> _iconsMap = {};
+  Map<String, Map> _indicesMap = {};
 
   int ss58 = 0;
 
@@ -73,6 +76,7 @@ class KeyringPrivateStore {
         e['address'] = _pubKeyAddressMap[networkSS58][e['pubKey']];
       }
       e['icon'] = _iconsMap[e['pubKey']];
+      e['indexInfo'] = _indicesMap[e['pubKey']];
     });
     return ls;
   }
@@ -102,7 +106,7 @@ class KeyringPrivateStore {
         return i < 0;
       });
       final List pairs = _storage.keyPairs.val.toList();
-      pairs.add(ls);
+      pairs.addAll(ls);
       _storage.keyPairs.val = pairs;
 
       // load current account pubKey
@@ -112,6 +116,7 @@ class KeyringPrivateStore {
         _storageOld.setCurrentAccount('');
       }
 
+      print(_storage.keyPairs.val);
       // and move all encrypted seeds to new storage
       _migrateSeeds();
     }
@@ -123,6 +128,10 @@ class KeyringPrivateStore {
 
   void updateIconsMap(Map<String, String> data) {
     _iconsMap.addAll(data);
+  }
+
+  void updateIndicesMap(Map<String, Map> data) {
+    _indicesMap = data;
   }
 
   Future<void> addAccount(Map acc) async {

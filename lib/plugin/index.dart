@@ -44,7 +44,11 @@ abstract class PolkawalletPluginBase {
   NetworkStateData networkState = NetworkStateData();
   Map networkConst = {};
 
-  /// The [navItems] getter returns a list of [HomeNavItem] which defines
+  /// Plugin should provide [tokenIcons]
+  /// for display in Assets page of Polkawallet App.
+  Map<String, Widget> getTokenIcons(BuildContext context) => {};
+
+  /// The [getNavItems] method returns a list of [HomeNavItem] which defines
   /// the [Widget] to be used in home page of polkawallet App.
   List<HomeNavItem> getNavItems(Keyring keyring) => List<HomeNavItem>();
 

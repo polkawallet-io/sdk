@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
@@ -10,8 +11,9 @@ enum KeyType { mnemonic, rawSeed, keystore }
 enum CryptoType { sr25519, ed25519 }
 
 class ApiKeyring {
-  ApiKeyring(this.service);
+  ApiKeyring(this.apiRoot, this.service);
 
+  final PolkawalletApi apiRoot;
   final ServiceKeyring service;
 
   /// Generate a set of new mnemonic.
@@ -22,7 +24,8 @@ class ApiKeyring {
 
   /// Import account from mnemonic/rawSeed/keystore.
   /// param [cryptoType] can be `sr25519`(default) or `ed25519`.
-  /// return [null] if import failed.
+  /// throw error if import failed.
+  /// return null if keystore password check failed.
   Future<KeyPairData> importAccount(
     Keyring keyring, {
     @required KeyType keyType,
@@ -41,7 +44,7 @@ class ApiKeyring {
       derivePath: derivePath,
     );
     if (acc == null) {
-      throw Exception('import account failed');
+      return null;
     }
     if (acc['error'] != null) {
       throw Exception(acc['error']);
@@ -63,6 +66,7 @@ class ApiKeyring {
 
     updatePubKeyAddressMap(keyring);
     updatePubKeyIconsMap(keyring, [acc['pubKey']]);
+    updateIndicesMap(keyring, [acc['address']]);
 
     return KeyPairData.fromJson(acc);
   }
@@ -78,6 +82,7 @@ class ApiKeyring {
 
     updatePubKeyAddressMap(keyring);
     updatePubKeyIconsMap(keyring, [acc['pubKey']]);
+    updateIndicesMap(keyring, [acc['address']]);
 
     return KeyPairData.fromJson(Map<String, dynamic>.from(acc));
   }
@@ -115,6 +120,28 @@ class ApiKeyring {
         data[e[0]] = e[1];
       });
       keyring.store.updateIconsMap(Map<String, String>.from(data));
+    }
+  }
+
+  Future<void> updateIndicesMap(Keyring keyring, [List addresses]) async {
+    final ls = List<String>();
+    if (addresses != null) {
+      ls.addAll(List<String>.from(addresses));
+    } else {
+      ls.addAll(keyring.keyPairs.map((e) => e.address).toList());
+      ls.addAll(keyring.externals.map((e) => e.address).toList());
+    }
+
+    if (ls.length == 0) return;
+    // get account indices from webView.
+    final res = await apiRoot.account.queryIndexInfo(ls);
+    // set new indices to Keyring instance.
+    if (res != null) {
+      final data = {};
+      res.forEach((e) {
+        data[e['accountId']] = e;
+      });
+      keyring.store.updateIndicesMap(Map<String, Map>.from(data));
     }
   }
 
