@@ -39,6 +39,13 @@ class Keyring {
     return store.externals.map((e) => KeyPairData.fromJson(e)).toList();
   }
 
+  List<KeyPairData> get optionals {
+    final res = keyPairs;
+    res.addAll(externals);
+    res.removeWhere((e) => e.pubKey == current.pubKey);
+    return res;
+  }
+
   Future<void> init() async {
     await store.init();
   }
@@ -66,6 +73,10 @@ class KeyringPrivateStore {
 
   List get externals {
     return _formatAccount(_storage.externals.val.toList());
+  }
+
+  Map<String, Map> get pubKeyAddressMap {
+    return _pubKeyAddressMap;
   }
 
   List _formatAccount(List ls) {
