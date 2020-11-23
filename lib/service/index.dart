@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:polkawallet_sdk/service/account.dart';
+import 'package:polkawallet_sdk/service/gov.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
 import 'package:polkawallet_sdk/service/recovery.dart';
 import 'package:polkawallet_sdk/service/setting.dart';
@@ -16,6 +17,7 @@ class SubstrateService {
   ServiceTx tx;
 
   ServiceStaking staking;
+  ServiceGov gov;
   ServiceUOS uos;
   ServiceRecovery recovery;
 
@@ -34,6 +36,7 @@ class SubstrateService {
     account = ServiceAccount(this);
     tx = ServiceTx(this);
     staking = ServiceStaking(this);
+    gov = ServiceGov(this);
     uos = ServiceUOS(this);
     recovery = ServiceRecovery(this);
 

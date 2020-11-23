@@ -135,7 +135,7 @@ abstract class PolkawalletPluginBase {
 
   /// The [getNavItems] method returns a list of [HomeNavItem] which defines
   /// the [Widget] to be used in home page of polkawallet App.
-  List<HomeNavItem> getNavItems(Keyring keyring) => List<HomeNavItem>();
+  List<HomeNavItem> getNavItems(BuildContext context, Keyring keyring) => List<HomeNavItem>();
 
   /// App will add plugin's pages with custom [routes].
   Map<String, WidgetBuilder> getRoutes(Keyring keyring) =>

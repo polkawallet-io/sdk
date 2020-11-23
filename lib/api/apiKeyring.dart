@@ -71,17 +71,17 @@ class ApiKeyring {
     return KeyPairData.fromJson(acc);
   }
 
-  /// Add an observation account from address.
-  Future<KeyPairData> addExternal(Keyring keyring, Map acc) async {
+  /// Add a contact.
+  Future<KeyPairData> addContact(Keyring keyring, Map acc) async {
     final pubKey =
         await service.serviceRoot.account.decodeAddress([acc['address']]);
     acc['pubKey'] = pubKey.keys.toList()[0];
 
     // save keystore to storage
-    await keyring.store.addAccount(acc);
+    await keyring.store.addContact(acc);
 
-    updatePubKeyAddressMap(keyring);
-    updatePubKeyIconsMap(keyring, [acc['pubKey']]);
+    await updatePubKeyAddressMap(keyring);
+    await updatePubKeyIconsMap(keyring, [acc['pubKey']]);
     updateIndicesMap(keyring, [acc['address']]);
 
     return KeyPairData.fromJson(Map<String, dynamic>.from(acc));
@@ -91,7 +91,7 @@ class ApiKeyring {
   /// pubKey-address map.
   Future<void> updatePubKeyAddressMap(Keyring keyring) async {
     final ls = keyring.store.list.toList();
-    ls.addAll(keyring.store.externals);
+    ls.addAll(keyring.store.contacts);
     // get new addresses from webView.
     final res = await service.getPubKeyAddressMap(ls, keyring.store.ss58List);
 
@@ -107,7 +107,7 @@ class ApiKeyring {
       ls.addAll(List<String>.from(pubKeys));
     } else {
       ls.addAll(keyring.keyPairs.map((e) => e.pubKey).toList());
-      ls.addAll(keyring.externals.map((e) => e.pubKey).toList());
+      ls.addAll(keyring.contacts.map((e) => e.pubKey).toList());
     }
 
     if (ls.length == 0) return;
@@ -128,8 +128,7 @@ class ApiKeyring {
     if (addresses != null) {
       ls.addAll(List<String>.from(addresses));
     } else {
-      ls.addAll(keyring.keyPairs.map((e) => e.address).toList());
-      ls.addAll(keyring.externals.map((e) => e.address).toList());
+      ls.addAll(keyring.allWithContacts.map((e) => e.address).toList());
     }
 
     if (ls.length == 0) return;
@@ -146,9 +145,9 @@ class ApiKeyring {
   }
 
   /// Decrypt and get the backup of seed.
-  Future<SeedBackupData> getDecryptedSeed(
-      Keyring keyring, KeyPairData acc, password) async {
-    final Map data = await keyring.store.getDecryptedSeed(acc.pubKey, password);
+  Future<SeedBackupData> getDecryptedSeed(Keyring keyring, password) async {
+    final Map data =
+        await keyring.store.getDecryptedSeed(keyring.current.pubKey, password);
     if (data == null) {
       return null;
     }
@@ -161,8 +160,7 @@ class ApiKeyring {
   /// delete account from storage
   Future<void> deleteAccount(Keyring keyring, KeyPairData account) async {
     if (account != null) {
-      await keyring.store.deleteAccount(account.pubKey,
-          isExternal: account.observation ?? false);
+      await keyring.store.deleteAccount(account.pubKey);
     }
   }
 
@@ -174,11 +172,8 @@ class ApiKeyring {
 
   /// change password of account
   Future<KeyPairData> changePassword(
-    Keyring keyring,
-    KeyPairData acc,
-    String passOld,
-    passNew,
-  ) async {
+      Keyring keyring, String passOld, passNew) async {
+    final acc = keyring.current;
     // 1. change password of keyPair in webView
     final res = await service.changePassword(acc.pubKey, passOld, passNew);
     if (res == null) {
@@ -195,9 +190,8 @@ class ApiKeyring {
   }
 
   /// change name of account
-  Future<KeyPairData> changeName(
-      Keyring keyring, KeyPairData acc, String name) async {
-    final json = acc.toJson();
+  Future<KeyPairData> changeName(Keyring keyring, String name) async {
+    final json = keyring.current.toJson();
     // update json meta data
     service.updateKeyPairMetaData(json, name);
     // update keyPair date in storage

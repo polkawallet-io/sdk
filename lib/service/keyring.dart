@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/service/index.dart';
+import 'package:polkawallet_sdk/storage/keyring.dart';
 
 class ServiceKeyring {
   ServiceKeyring(this.serviceRoot);
@@ -19,11 +20,13 @@ class ServiceKeyring {
     return await serviceRoot.account.getPubKeyIcons(pubKeys);
   }
 
-  Future<Map> injectKeyPairsToWebView(List list, List<int> ss58) async {
-    if (list.length > 0) {
-      final String pairs = jsonEncode(list);
+  Future<Map> injectKeyPairsToWebView(Keyring keyring) async {
+    if (keyring.store.list.length > 0) {
+      final String pairs = jsonEncode(keyring.store.list);
+      final ss58 = keyring.store.ss58List;
       final res = await serviceRoot.webView
           .evalJavascript('keyring.initKeys($pairs, ${jsonEncode(ss58)})');
+      keyring.store.updatePubKeyAddressMap(Map<String, Map>.from(res));
       return res;
     }
     return null;
