@@ -22,7 +22,6 @@ class _SettingPageState extends State<SettingPage> {
   bool _submitting = false;
 
   int _bestNumber;
-  String _bestNumberMsgChannel;
 
   Future<void> _queryNetworkConst() async {
     setState(() {
@@ -56,20 +55,15 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   Future<void> _subscribeBestNumber() async {
-    final msgChannel = await widget.sdk.api.setting.subscribeBestNumber((res) {
+    widget.sdk.api.setting.subscribeBestNumber((res) {
       setState(() {
         _bestNumber = res;
       });
     });
-    setState(() {
-      _bestNumberMsgChannel = msgChannel;
-    });
   }
 
   Future<void> _unsubscribeBestNumber() async {
-    if (_bestNumberMsgChannel != null) {
-      widget.sdk.api.unsubscribeMessage(_bestNumberMsgChannel);
-    }
+    widget.sdk.api.setting.unsubscribeBestNumber();
   }
 
   @override
