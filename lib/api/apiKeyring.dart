@@ -209,9 +209,8 @@ class ApiKeyring {
 
   /// Open a new webView for a DApp, and interact with the DApp.
   Future<ExtensionSignResult> signBytesAsExtension(
-      String password, SignBytesParam param) async {
-    final signature = await service.signAsExtension(
-        password, SignBytesRequest.toJson(param.request));
+      String password, SignAsExtensionParam param) async {
+    final signature = await service.signAsExtension(password, param.request);
     if (signature == null) {
       return null;
     }
@@ -224,9 +223,8 @@ class ApiKeyring {
   /// Open a new webView for a DApp,
   /// sign extrinsic for the DApp.
   Future<ExtensionSignResult> signExtrinsicAsExtension(
-      String password, SignExtrinsicParam param) async {
-    final signature = await service.signAsExtension(
-        password, SignExtrinsicRequest.toJson(param.request));
+      String password, SignAsExtensionParam param) async {
+    final signature = await service.signAsExtension(password, param.request);
     if (signature == null) {
       return null;
     }

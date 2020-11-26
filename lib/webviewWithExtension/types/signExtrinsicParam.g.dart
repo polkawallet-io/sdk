@@ -6,18 +6,16 @@ part of 'signExtrinsicParam.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-SignExtrinsicParam _$SignExtrinsicParamFromJson(Map<String, dynamic> json) {
-  return SignExtrinsicParam()
+SignAsExtensionParam _$SignAsExtensionParamFromJson(Map<String, dynamic> json) {
+  return SignAsExtensionParam()
     ..id = json['id'] as String
     ..url = json['url'] as String
     ..msgType = json['msgType'] as String
-    ..request = json['request'] == null
-        ? null
-        : SignExtrinsicRequest.fromJson(
-            json['request'] as Map<String, dynamic>);
+    ..request = json['request'];
 }
 
-Map<String, dynamic> _$SignExtrinsicParamToJson(SignExtrinsicParam instance) =>
+Map<String, dynamic> _$SignAsExtensionParamToJson(
+        SignAsExtensionParam instance) =>
     <String, dynamic>{
       'id': instance.id,
       'url': instance.url,
@@ -57,24 +55,6 @@ Map<String, dynamic> _$SignExtrinsicRequestToJson(
       'tip': instance.tip,
       'transactionVersion': instance.transactionVersion,
       'version': instance.version,
-    };
-
-SignBytesParam _$SignBytesParamFromJson(Map<String, dynamic> json) {
-  return SignBytesParam()
-    ..id = json['id'] as String
-    ..url = json['url'] as String
-    ..msgType = json['msgType'] as String
-    ..request = json['request'] == null
-        ? null
-        : SignBytesRequest.fromJson(json['request'] as Map<String, dynamic>);
-}
-
-Map<String, dynamic> _$SignBytesParamToJson(SignBytesParam instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'url': instance.url,
-      'msgType': instance.msgType,
-      'request': instance.request,
     };
 
 SignBytesRequest _$SignBytesRequestFromJson(Map<String, dynamic> json) {

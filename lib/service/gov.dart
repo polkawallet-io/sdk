@@ -73,4 +73,16 @@ class ServiceGov {
         await serviceRoot.webView.evalJavascript('gov.getCouncilMotions(api)');
     return data;
   }
+
+  Future<Map> queryTreasuryOverview() async {
+    final Map data = await serviceRoot.webView
+        .evalJavascript('gov.getTreasuryOverview(api)');
+    return data;
+  }
+
+  Future<List> queryTreasuryTips() async {
+    final List data =
+        await serviceRoot.webView.evalJavascript('gov.getTreasuryTips(api)');
+    return data;
+  }
 }

@@ -3,18 +3,18 @@ import 'package:json_annotation/json_annotation.dart';
 part 'signExtrinsicParam.g.dart';
 
 @JsonSerializable()
-class SignExtrinsicParam extends _SignExtrinsicParam {
-  static SignExtrinsicParam fromJson(Map<String, dynamic> json) =>
-      _$SignExtrinsicParamFromJson(json);
-  static Map<String, dynamic> toJson(SignExtrinsicParam params) =>
-      _$SignExtrinsicParamToJson(params);
+class SignAsExtensionParam extends _SignAsExtensionParam {
+  static SignAsExtensionParam fromJson(Map<String, dynamic> json) =>
+      _$SignAsExtensionParamFromJson(json);
+  static Map<String, dynamic> toJson(SignAsExtensionParam params) =>
+      _$SignAsExtensionParamToJson(params);
 }
 
-abstract class _SignExtrinsicParam {
+abstract class _SignAsExtensionParam {
   String id;
   String url;
   String msgType;
-  SignExtrinsicRequest request;
+  dynamic request;
 }
 
 @JsonSerializable()
@@ -38,21 +38,6 @@ abstract class _SignExtrinsicRequest {
   String tip;
   String transactionVersion;
   int version;
-}
-
-@JsonSerializable()
-class SignBytesParam extends _SignBytesParam {
-  static SignBytesParam fromJson(Map<String, dynamic> json) =>
-      _$SignBytesParamFromJson(json);
-  static Map<String, dynamic> toJson(SignBytesParam params) =>
-      _$SignBytesParamToJson(params);
-}
-
-abstract class _SignBytesParam {
-  String id;
-  String url;
-  String msgType;
-  SignBytesRequest request;
 }
 
 @JsonSerializable()
