@@ -74,8 +74,8 @@ class ApiKeyring {
     // save keystore to storage
     await keyring.store.addAccount(acc);
 
+    await updatePubKeyIconsMap(keyring, [acc['pubKey']]);
     updatePubKeyAddressMap(keyring);
-    updatePubKeyIconsMap(keyring, [acc['pubKey']]);
     updateIndicesMap(keyring, [acc['address']]);
 
     return KeyPairData.fromJson(acc);
