@@ -102,12 +102,18 @@ class _KeyringPageState extends State<KeyringPage> {
     setState(() {
       _submitting = true;
     });
-    final KeyPairData acc = await widget.sdk.api.keyring.importAccount(
+    final json = await widget.sdk.api.keyring.importAccount(
       widget.keyring,
       keyType: KeyType.mnemonic,
       key:
           'wing know chapter eight shed lens mandate lake twenty useless bless glory',
       name: 'testName01',
+      password: _testPass,
+    );
+    final acc = await widget.sdk.api.keyring.addAccount(
+      widget.keyring,
+      keyType: KeyType.mnemonic,
+      acc: json,
       password: _testPass,
     );
     widget.showResult(
@@ -125,11 +131,17 @@ class _KeyringPageState extends State<KeyringPage> {
     setState(() {
       _submitting = true;
     });
-    final KeyPairData acc = await widget.sdk.api.keyring.importAccount(
+    final json = await widget.sdk.api.keyring.importAccount(
       widget.keyring,
       keyType: KeyType.rawSeed,
       key: 'Alice',
       name: 'testName02',
+      password: _testPass,
+    );
+    final acc = await widget.sdk.api.keyring.addAccount(
+      widget.keyring,
+      keyType: KeyType.mnemonic,
+      acc: json,
       password: _testPass,
     );
     widget.showResult(
@@ -147,11 +159,17 @@ class _KeyringPageState extends State<KeyringPage> {
     setState(() {
       _submitting = true;
     });
-    final KeyPairData acc = await widget.sdk.api.keyring.importAccount(
+    final json = await widget.sdk.api.keyring.importAccount(
       widget.keyring,
       keyType: KeyType.keystore,
       key: _testJson,
       name: 'testName03',
+      password: _testPass,
+    );
+    final acc = await widget.sdk.api.keyring.addAccount(
+      widget.keyring,
+      keyType: KeyType.mnemonic,
+      acc: json,
       password: _testPass,
     );
     widget.showResult(

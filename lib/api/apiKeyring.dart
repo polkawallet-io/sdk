@@ -26,7 +26,7 @@ class ApiKeyring {
   /// param [cryptoType] can be `sr25519`(default) or `ed25519`.
   /// throw error if import failed.
   /// return null if keystore password check failed.
-  Future<KeyPairData> importAccount(
+  Future<Map> importAccount(
     Keyring keyring, {
     @required KeyType keyType,
     @required String key,
@@ -50,6 +50,16 @@ class ApiKeyring {
       throw Exception(acc['error']);
     }
 
+    return acc;
+  }
+
+  /// Add account to local storage.
+  Future<KeyPairData> addAccount(
+    Keyring keyring, {
+    @required KeyType keyType,
+    @required Map acc,
+    @required String password,
+  }) async {
     // save seed and remove it before add account
     if (keyType == KeyType.mnemonic || keyType == KeyType.rawSeed) {
       final String type = keyType.toString().split('.')[1];
@@ -207,24 +217,12 @@ class ApiKeyring {
     return res;
   }
 
-  /// Open a new webView for a DApp, and interact with the DApp.
-  Future<ExtensionSignResult> signBytesAsExtension(
-      String password, SignAsExtensionParam param) async {
-    final signature = await service.signAsExtension(password, param.request);
-    if (signature == null) {
-      return null;
-    }
-    final ExtensionSignResult res = ExtensionSignResult();
-    res.id = param.id;
-    res.signature = signature['signature'];
-    return res;
-  }
-
   /// Open a new webView for a DApp,
-  /// sign extrinsic for the DApp.
-  Future<ExtensionSignResult> signExtrinsicAsExtension(
+  /// sign extrinsic or msg for the DApp.
+  Future<ExtensionSignResult> signAsExtension(
       String password, SignAsExtensionParam param) async {
-    final signature = await service.signAsExtension(password, param.request);
+    final signature = await service.signAsExtension(
+        password, SignAsExtensionParam.toJson(param));
     if (signature == null) {
       return null;
     }

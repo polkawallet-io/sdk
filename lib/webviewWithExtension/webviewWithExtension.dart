@@ -128,13 +128,13 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
           widget.onPageFinished(url);
         }
         print('Page finished loading: $url');
-        print('Inject extension js code...');
 
         if (_jsInjected) return;
         setState(() {
           _jsInjected = true;
         });
 
+        print('Inject extension js code...');
         _controller.evaluateJavascript(_jsCode);
         print('js code injected');
         if (widget.onExtensionReady != null) {
