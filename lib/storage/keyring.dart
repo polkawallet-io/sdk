@@ -178,6 +178,10 @@ class KeyringPrivateStore {
     final ls = _storage.contacts.val.toList();
     ls.add(acc);
     _storage.contacts.val = ls;
+    
+    if (acc['observation'] ?? false) {
+      setCurrentPubKey(acc['pubKey']);
+    }
   }
 
   Future<void> updateAccount(Map acc, {bool isExternal: false}) async {
