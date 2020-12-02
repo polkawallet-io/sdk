@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:polkawallet_sdk/api/apiAccount.dart';
 import 'package:polkawallet_sdk/api/apiGov.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
@@ -60,11 +62,16 @@ class PolkawalletApi {
 
   /// subscribe message.
   Future<void> subscribeMessage(
-    String code,
+    String JSCall,
+    List params,
     String channel,
     Function callback,
   ) async {
-    service.webView.subscribeMessage(code, channel, callback);
+    service.webView.subscribeMessage(
+      'settings.subscribeMessage($JSCall, ${jsonEncode(params)}, "$channel")',
+      channel,
+      callback,
+    );
   }
 
   /// unsubscribe message.

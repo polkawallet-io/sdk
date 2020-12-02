@@ -168,6 +168,8 @@ class KeyringPrivateStore {
 
   Future<void> addAccount(Map acc) async {
     final pairs = _storage.keyPairs.val.toList();
+    // remove duplicated account and add a new one
+    pairs.retainWhere((e) => e['pubKey'] != acc['pubKey']);
     pairs.add(acc);
     _storage.keyPairs.val = pairs;
 
@@ -178,7 +180,7 @@ class KeyringPrivateStore {
     final ls = _storage.contacts.val.toList();
     ls.add(acc);
     _storage.contacts.val = ls;
-    
+
     if (acc['observation'] ?? false) {
       setCurrentPubKey(acc['pubKey']);
     }
@@ -224,6 +226,8 @@ class KeyringPrivateStore {
 
     if (pairs.length > 0) {
       setCurrentPubKey(pairs[0]['pubKey']);
+    } else if (externals.length > 0) {
+      setCurrentPubKey(externals[0]['pubKey']);
     } else {
       setCurrentPubKey('');
     }

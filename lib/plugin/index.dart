@@ -46,11 +46,8 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
     _cache.write(_getNetworkCacheKey(net_state_cache_key), state[1]);
   }
 
-  void updateBalances(KeyPairData acc, BalanceData data,
-      {List<TokenBalanceData> tokens, List<ExtraTokenData> extraTokens}) {
+  void updateBalances(KeyPairData acc, BalanceData data) {
     balances.setBalance(data);
-    balances.setTokens(tokens);
-    balances.setExtraTokens(extraTokens);
 
     _cache.write(_getBalanceCacheKey(acc.pubKey), data.toJson());
   }
@@ -69,15 +66,16 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   /// 2. retrieve network const & state.
   /// 3. subscribe balances & set balancesStore.
   /// 4. setup other plugin state if needed.
-  Future<NetworkParams> start(Keyring keyring, {WebViewRunner webView}) async {
-    await sdk.init(keyring, webView: webView);
+  Future<NetworkParams> start(Keyring keyring,
+      {WebViewRunner webView, String jsCode}) async {
+    await sdk.init(keyring, webView: webView, jsCode: jsCode);
 
     await beforeStart(keyring);
 
     final res = await sdk.api.connectNode(keyring, nodeList);
     updateNetworkState();
 
-    if (keyring.current != null) {
+    if (keyring.current.address != null) {
       loadBalances(keyring.current);
       sdk.api.account.subscribeBalance(keyring.current.address,
           (BalanceData data) {
@@ -91,9 +89,6 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   }
 
   /// This method will be called while App user changes account.
-  /// In this method, the plugin should do:
-  /// 1. update balance subscription to update balancesStore.
-  /// 2. update other user state of plugin if needed.
   void changeAccount(KeyPairData account) {
     sdk.api.account.unsubscribeBalance();
     loadBalances(account);
@@ -104,12 +99,16 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
     onAccountChanged(account);
   }
 
+  /// This method will be called before plugin start
   Future<void> beforeStart(Keyring keyring) async => null;
 
-  /// This method will be called while plugin stated
+  /// This method will be called after plugin started
   Future<void> onStarted(Keyring keyring) async => null;
 
-  /// This method will be called while plugin stated
+  /// This method will be called while App user changes account.
+  /// In this method, the plugin should do:
+  /// 1. update balance subscription to update balancesStore.
+  /// 2. update other user state of plugin if needed.
   Future<void> onAccountChanged(KeyPairData account) async => null;
 
   /// we don't really need this method, calling webView.launch
@@ -135,7 +134,8 @@ abstract class PolkawalletPluginBase {
 
   /// The [getNavItems] method returns a list of [HomeNavItem] which defines
   /// the [Widget] to be used in home page of polkawallet App.
-  List<HomeNavItem> getNavItems(BuildContext context, Keyring keyring) => List<HomeNavItem>();
+  List<HomeNavItem> getNavItems(BuildContext context, Keyring keyring) =>
+      List<HomeNavItem>();
 
   /// App will add plugin's pages with custom [routes].
   Map<String, WidgetBuilder> getRoutes(Keyring keyring) =>

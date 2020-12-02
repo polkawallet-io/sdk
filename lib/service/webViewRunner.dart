@@ -157,7 +157,8 @@ class WebViewRunner {
 
   void unsubscribeMessage(String channel) {
     print('unsubscribe $channel');
-    _web.evalJavascript('unsub$channel()');
+    final unsubCall = 'unsub$channel';
+    _web.evalJavascript('$unsubCall && $unsubCall()');
   }
 
   void addMsgHandler(String channel, Function onMessage) {
