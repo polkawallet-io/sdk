@@ -60,20 +60,21 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
     );
   }
 
+  Future<void> beforeStart(Keyring keyring, {WebViewRunner webView}) async {
+    await sdk.init(keyring, webView: webView, jsCode: await loadJSCode());
+    await onWillStart(keyring);
+  }
+
   /// This method will be called while App switched to your plugin.
   /// In this method, the plugin should do:
   /// 1. init the plugin runtime & connect to nodes.
   /// 2. retrieve network const & state.
   /// 3. subscribe balances & set balancesStore.
   /// 4. setup other plugin state if needed.
-  Future<NetworkParams> start(Keyring keyring,
-      {WebViewRunner webView, String jsCode}) async {
-    await sdk.init(keyring, webView: webView, jsCode: jsCode);
-
-    await beforeStart(keyring);
-
+  Future<NetworkParams> start(Keyring keyring) async {
     final res = await sdk.api.connectNode(keyring, nodeList);
-    updateNetworkState();
+    keyring.setSS58(res.ss58);
+    await updateNetworkState();
 
     if (keyring.current.address != null) {
       loadBalances(keyring.current);
@@ -100,7 +101,7 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   }
 
   /// This method will be called before plugin start
-  Future<void> beforeStart(Keyring keyring) async => null;
+  Future<void> onWillStart(Keyring keyring) async => null;
 
   /// This method will be called after plugin started
   Future<void> onStarted(Keyring keyring) async => null;
@@ -140,14 +141,24 @@ abstract class PolkawalletPluginBase {
   /// App will add plugin's pages with custom [routes].
   Map<String, WidgetBuilder> getRoutes(Keyring keyring) =>
       Map<String, WidgetBuilder>();
+
+  /// App will inject plugin's [jsCode] into webview to connect.
+  Future<String> loadJSCode() => null;
 }
 
 class PluginBasicData {
-  PluginBasicData(
-      {this.name, this.ss58, this.primaryColor, this.icon, this.iconDisabled});
+  PluginBasicData({
+    this.name,
+    this.ss58,
+    this.primaryColor,
+    this.icon,
+    this.iconDisabled,
+    this.isTestNet = true,
+  });
   final String name;
   final int ss58;
   final MaterialColor primaryColor;
   final Widget icon;
   final Widget iconDisabled;
+  final bool isTestNet;
 }
