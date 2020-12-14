@@ -1,4 +1,6 @@
 import 'package:polkawallet_sdk/api/api.dart';
+import 'package:polkawallet_sdk/api/types/staking/accountBondedInfo.dart';
+import 'package:polkawallet_sdk/api/types/staking/ownStashInfo.dart';
 import 'package:polkawallet_sdk/service/staking.dart';
 
 class ApiStaking {
@@ -19,17 +21,22 @@ class ApiStaking {
 
   /// query staking stash-controller relationship of a list of pubKeys,
   /// return list of [pubKey, controllerAddress, stashAddress].
-  Future<List> queryBonded(List<String> pubKeys) async {
+  Future<Map<String, AccountBondedInfo>> queryBonded(
+      List<String> pubKeys) async {
     if (pubKeys == null || pubKeys.length == 0) {
-      return [];
+      return {};
     }
-    List res = await service.queryBonded(pubKeys);
+    final res = Map<String, AccountBondedInfo>();
+    final List data = await service.queryBonded(pubKeys);
+    data.forEach((e) {
+      res[e[0]] = AccountBondedInfo(e[0], e[1], e[2]);
+    });
     return res;
   }
 
-  Future<Map> queryOwnStashInfo(String accountId) async {
-    Map data = await service.queryOwnStashInfo(accountId);
-    return data;
+  Future<OwnStashInfoData> queryOwnStashInfo(String accountId) async {
+    final Map data = await service.queryOwnStashInfo(accountId);
+    return OwnStashInfoData.fromJson(Map<String, dynamic>.of(data));
   }
 
   Future<Map> loadValidatorRewardsData(String validatorId) async {

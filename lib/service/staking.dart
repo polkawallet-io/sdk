@@ -9,8 +9,10 @@ class ServiceStaking {
 
   Future<Map> queryOverview() async {
     List res = await Future.wait([
-      serviceRoot.webView.evalJavascript('api.derive.staking.currentPoints()'),
-      serviceRoot.webView.evalJavascript('staking.fetchStakingOverview(api)'),
+      serviceRoot.webView.evalJavascript('api.derive.staking.currentPoints()',
+          allowRepeat: false),
+      serviceRoot.webView.evalJavascript('staking.fetchStakingOverview(api)',
+          allowRepeat: false),
     ]);
     if (res[0] == null || res[1] == null) return null;
     final Map overview = res[1];
@@ -20,7 +22,7 @@ class ServiceStaking {
 
   Future<Map> queryElectedInfo() async {
     Map data = await serviceRoot.webView
-        .evalJavascript('api.derive.staking.electedInfo()');
+        .evalJavascript('api.derive.staking.electedInfo()', allowRepeat: false);
     return data;
   }
 

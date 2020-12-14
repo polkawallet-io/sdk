@@ -40,6 +40,11 @@ class SubScanRequestParams {
 }
 
 class SubScanApi {
+  final String moduleBalances = 'Balances';
+  final String moduleStaking = 'Staking';
+  final String moduleDemocracy = 'Democracy';
+  final String moduleRecovery = 'Recovery';
+
   static String getSnEndpoint(String network) {
     if (network.contains('polkadot')) {
       network = 'polkadot';
@@ -94,6 +99,7 @@ class SubScanApi {
           sendPort: receivePort.sendPort,
           network: network,
           module: module,
+          call: call,
           address: sender,
           page: page,
           row: tx_list_page_size,

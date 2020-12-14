@@ -25,6 +25,8 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   /// for display in Assets page of Polkawallet App.
   final balances = BalancesStore();
 
+  final recoveryEnabled = false;
+
   /// Plugin should retrieve [networkState] & [networkConst] while start
   NetworkStateData get networkState =>
       NetworkStateData.fromJson(Map<String, dynamic>.from(

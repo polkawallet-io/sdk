@@ -15,48 +15,42 @@ class ServiceRecovery {
     return res;
   }
 
-//  Future<List> queryRecoverableList(List<String> addresses) async {
-//    List queries =
-//        addresses.map((e) => 'api.query.recovery.recoverable("$e")').toList();
-//    final List ls = await apiRoot.evalJavascript(
-//      'Promise.all([${queries.join(',')}])',
-//      allowRepeat: true,
-//    );
-//
-//    List res = [];
-//    ls.asMap().forEach((k, v) {
-//      if (v != null) {
-//        v['address'] = addresses[k];
-//      }
-//      res.add(v);
-//    });
-//
-//    return res;
-//  }
-//
-//  Future<List> queryActiveRecoveryAttempts(
-//      String address, List<String> addressNew) async {
-//    List queries = addressNew
-//        .map((e) => 'api.query.recovery.activeRecoveries("$address", "$e")')
-//        .toList();
-//    final res = await apiRoot.evalJavascript(
-//      'Promise.all([${queries.join(',')}])',
-//      allowRepeat: true,
-//    );
-//    return res;
-//  }
-//
-//  Future<List> queryActiveRecoveries(
-//      List<String> addresses, String addressNew) async {
-//    List queries = addresses
-//        .map((e) => 'api.query.recovery.activeRecoveries("$e", "$addressNew")')
-//        .toList();
-//    final res = await apiRoot.evalJavascript(
-//      'Promise.all([${queries.join(',')}])',
-//      allowRepeat: true,
-//    );
-//    return res;
-//  }
+  Future<List> queryRecoverableList(List<String> addresses) async {
+    final queries =
+        addresses.map((e) => 'api.query.recovery.recoverable("$e")').toList();
+    final List ls = await serviceRoot.webView
+        .evalJavascript('Promise.all([${queries.join(',')}])');
+
+    final res = [];
+    ls.asMap().forEach((k, v) {
+      if (v != null) {
+        v['address'] = addresses[k];
+      }
+      res.add(v);
+    });
+
+    return res;
+  }
+
+  Future<List> queryActiveRecoveryAttempts(
+      String address, List<String> addressNew) async {
+    List queries = addressNew
+        .map((e) => 'api.query.recovery.activeRecoveries("$address", "$e")')
+        .toList();
+    final res = await serviceRoot.webView
+        .evalJavascript('Promise.all([${queries.join(',')}])');
+    return res;
+  }
+
+  Future<List> queryActiveRecoveries(
+      List<String> addresses, String addressNew) async {
+    List queries = addresses
+        .map((e) => 'api.query.recovery.activeRecoveries("$e", "$addressNew")')
+        .toList();
+    final res = await serviceRoot.webView
+        .evalJavascript('Promise.all([${queries.join(',')}])');
+    return res;
+  }
 
   Future<List> queryRecoveryProxies(List<String> addresses) async {
     List queries =
