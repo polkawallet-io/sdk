@@ -1,0 +1,52 @@
+{
+  "name": "@polkawallet/js-api",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "Apache-2.0",
+  "keywords": [
+    "Polkadot",
+    "Polkawallet"
+  ],
+  "author": "Shawn yang <dhryxy@gmail.com>",
+  "maintainers": [
+    "Shawn Yang <dhryxy@gmail.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/polkawallet-io/js_api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/polkawallet-io/js_api/issues"
+  },
+  "scripts": {
+    "clean": "rm -rf dist/*",
+    "build": "webpack -p --mode production",
+    "build-dev": "webpack -d --mode development"
+  },
+  "dependencies": {
+    "@polkadot/api": "^2.8.1",
+    "@polkadot/keyring": "^4.2.1",
+    "@polkadot/ui-shared": "^0.57.3",
+    "@polkadot/util": "^4.2.1",
+    "@polkadot/util-crypto": "^4.2.1",
+    "bn.js": "^5.1.2",
+    "oo7-substrate": "^0.8.0",
+    "secp256k1": "^3.8.0",
+    "typescript": "^4.0.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.3",
+    "@babel/polyfill": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "@babel/preset-typescript": "^7.10.4",
+    "@webpack-cli/info": "^0.2.0",
+    "@webpack-cli/init": "^0.3.0",
+    "babel-loader": "^8.0.6",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "prettier": "^1.19.1",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
+  }
+}
