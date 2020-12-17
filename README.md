@@ -135,3 +135,33 @@ Load the `polkadot-js/api` wrapper you built in step 2.
   Future<String> loadJSCode() => rootBundle.loadString(
       'packages/polkawallet_plugin_acala/lib/js_service_acala/dist/main.js');
 ```
+
+#### 3.7. override plugin life-circle methods
+ - onWillStart(), you may want to prepare your plugin state data here.
+ - onStarted(), remote node connected, you may fetch data from network.
+ - onAccountChanged(), user just changed account, you may clear
+ cache of the prev account and query data for new account.
+
+Examples:
+ - [kusama/polkadot](https://github.com/polkawallet-io/polkawallet_plugin_kusama/blob/master/lib/polkawallet_plugin_kusama.dart)
+ - [acala](https://github.com/polkawallet-io/polkawallet_plugin_acala/blob/master/lib/polkawallet_plugin_acala.dart)
+
+## 4. Fetch data and build pages
+
+We use [https://pub.dev/packages/mobx](https://pub.dev/packages/mobx) as the App state management tool.
+ So the directories in a plugin looks like this:
+
+```
+__ lib
+    |__ pages (the UI)
+    |__ store (the MobX store)
+    |__ service (the Actions fired by UI to mutate the store)
+    |__ ...
+```
+
+## 5. Run your pages in `example/` app
+You may want to run an example app in dev while building your plugin pages.
+
+See the `kusama/polkadot` and `acala` examples:
+ - [kusama/polkado](https://github.com/polkawallet-io/polkawallet_plugin_kusama)
+ - [acala](https://github.com/polkawallet-io/polkawallet_plugin_acala)
