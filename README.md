@@ -36,7 +36,7 @@ Examples:
 
 Modify the plugin entry file(eg. polkwalllet_plugin_acala.dart),
 create a `PluginFoo` class extending `PolkawalletPlugin`:
-```
+```dart
 class PluginAcala extends PolkawalletPlugin {
   /// define your own plugin
 }
@@ -59,7 +59,7 @@ class PluginAcala extends PolkawalletPlugin {
 #### 3.2. override `PolkawalletPlugin.tokenIcons`
 Define the icon widgets so the Polkawallet App can display tokens
 of your para-chain with token icons.
-```
+```dart
   @override
   final Map<String, Widget> tokenIcons = {
     'KSM': Image.asset(
@@ -90,7 +90,7 @@ const node_list = [
 #### 3.4. override `PolkawalletPlugin.getNavItems(BuildContext, Keyring)`
 Define your custom navigation-item in `BottomNavigationBar` of Polkawallet App.
 The `HomeNavItem.content` is the page content widget displayed while your navItem was selected.
-```
+```dart
   @override
   List<HomeNavItem> getNavItems(BuildContext context, Keyring keyring) {
     return [
@@ -110,7 +110,7 @@ The `HomeNavItem.content` is the page content widget displayed while your navIte
 
 #### 3.5. override `PolkawalletPlugin.getRoutes(Keyring)`
 Define navigation route for your plugin pages.
-```
+```dart
   @override
   Map<String, WidgetBuilder> getRoutes(Keyring keyring) {
     return {
@@ -130,7 +130,7 @@ Define navigation route for your plugin pages.
 
 #### 3.6. override `PolkawalletPlugin.loadJSCode()` method
 Load the `polkadot-js/api` wrapper you built in step 2.
-```
+```dart
   @override
   Future<String> loadJSCode() => rootBundle.loadString(
       'packages/polkawallet_plugin_acala/lib/js_service_acala/dist/main.js');
@@ -145,6 +145,7 @@ Load the `polkadot-js/api` wrapper you built in step 2.
 Examples:
  - [kusama/polkadot](https://github.com/polkawallet-io/polkawallet_plugin_kusama/blob/master/lib/polkawallet_plugin_kusama.dart)
  - [acala](https://github.com/polkawallet-io/polkawallet_plugin_acala/blob/master/lib/polkawallet_plugin_acala.dart)
+ - [laminar](https://github.com/polkawallet-io/polkawallet_plugin_laminar/blob/master/lib/polkawallet_plugin_laminar.dart)
 
 ## 4. Fetch data and build pages
 
@@ -158,10 +159,33 @@ __ lib
     |__ service (the Actions fired by UI to mutate the store)
     |__ ...
 ```
+To query data through `PolkawalletPlugin.sdk.api`:
+
+(`polkawallet-io/polkawallet_plugin_kusama/lib/service/gov.dart`)
+```dart
+  Future<List> queryReferendums() async {
+    final data = await api.gov.queryReferendums(keyring.current.address);
+    store.gov.setReferendums(data);
+    return data;
+  }
+```
+To query data by calling JS directly:
+
+(`polkawallet-io/polkawallet_plugin_kusama/lib/service/gov.dart`)
+```dart
+  Future<void> updateBestNumber() async {
+    final int bestNumber = await api.service.webView
+        .evalJavascript('api.derive.chain.bestNumber()');
+    store.gov.setBestNumber(bestNumber);
+  }
+```
+
+While we set data to MobX store, the MobX Observer Flutter Widget will rebuild with new data.
 
 ## 5. Run your pages in `example/` app
 You may want to run an example app in dev while building your plugin pages.
 
-See the `kusama/polkadot` and `acala` examples:
+See the `kusama/polkadot` or `acala` or `laminar` examples:
  - [kusama/polkado](https://github.com/polkawallet-io/polkawallet_plugin_kusama)
  - [acala](https://github.com/polkawallet-io/polkawallet_plugin_acala)
+ - [laminar](https://github.com/polkawallet-io/polkawallet_plugin_laminar)
