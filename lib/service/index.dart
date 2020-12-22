@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/service/account.dart';
 import 'package:polkawallet_sdk/service/gov.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
@@ -10,6 +11,8 @@ import 'package:polkawallet_sdk/service/uos.dart';
 import 'package:polkawallet_sdk/service/webViewRunner.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 
+/// The service calling JavaScript API of `polkadot-js/api` directly
+/// through [WebViewRunner], providing APIs for [PolkawalletApi].
 class SubstrateService {
   ServiceKeyring keyring;
   ServiceSetting setting;

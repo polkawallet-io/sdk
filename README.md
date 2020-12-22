@@ -186,6 +186,6 @@ While we set data to MobX store, the MobX Observer Flutter Widget will rebuild w
 You may want to run an example app in dev while building your plugin pages.
 
 See the `kusama/polkadot` or `acala` or `laminar` examples:
- - [kusama/polkado](https://github.com/polkawallet-io/polkawallet_plugin_kusama)
+ - [kusama/polkadot](https://github.com/polkawallet-io/polkawallet_plugin_kusama)
  - [acala](https://github.com/polkawallet-io/polkawallet_plugin_acala)
  - [laminar](https://github.com/polkawallet-io/polkawallet_plugin_laminar)

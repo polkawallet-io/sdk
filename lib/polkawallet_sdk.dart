@@ -7,7 +7,7 @@ import 'package:polkawallet_sdk/service/index.dart';
 import 'package:polkawallet_sdk/service/webViewRunner.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 
-/// SDK launch a hidden webView to run polkadot.js/api for interacting
+/// SDK launchs a hidden webView to run polkadot.js/api for interacting
 /// with the substrate-based block-chain network.
 class WalletSDK {
   PolkawalletApi api;
@@ -33,10 +33,10 @@ class WalletSDK {
       webViewParam: webView,
       jsCode: jsCode,
       onInitiated: () {
-        /// inject keyPairs after webView launched
+        // inject keyPairs after webView launched
         _service.keyring.injectKeyPairsToWebView(keyring);
 
-        /// and initiate pubKeyIconsMap
+        // and initiate pubKeyIconsMap
         api.keyring.updatePubKeyIconsMap(keyring);
 
         if (!c.isCompleted) {

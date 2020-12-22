@@ -10,6 +10,7 @@ import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.da
 enum KeyType { mnemonic, rawSeed, keystore }
 enum CryptoType { sr25519, ed25519 }
 
+/// Keyring API manages keyPairs for through `polkadot-js/keyring`
 class ApiKeyring {
   ApiKeyring(this.apiRoot, this.service);
 
@@ -111,6 +112,8 @@ class ApiKeyring {
     }
   }
 
+  /// This method query account icons and set icons to [Keyring.store]
+  /// so we can get icon of an account from [Keyring] instance.
   Future<void> updatePubKeyIconsMap(Keyring keyring, [List pubKeys]) async {
     final ls = List<String>();
     if (pubKeys != null) {
@@ -133,6 +136,8 @@ class ApiKeyring {
     }
   }
 
+  /// This method query account indices and set data to [Keyring.store]
+  /// so we can get index info of an account from [Keyring] instance.
   Future<void> updateIndicesMap(Keyring keyring, [List addresses]) async {
     final ls = List<String>();
     if (addresses != null) {
