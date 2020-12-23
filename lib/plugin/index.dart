@@ -155,12 +155,28 @@ class PluginBasicData {
     this.primaryColor,
     this.icon,
     this.iconDisabled,
+    this.jsCodeVersion,
+    this.jsCodeVersionMin,
     this.isTestNet = true,
   });
   final String name;
   final int ss58;
   final MaterialColor primaryColor;
+
+  /// The icons will be displayed in network-select page
+  /// in Polkawallet App.
   final Widget icon;
   final Widget iconDisabled;
+
+  /// JavaScript code version of your plugin.
+  ///
+  /// - Polkawallet App will perform hot-update for the js code
+  ///  of your plugin with it.
+  /// - The App will not show plugin pages if the old version
+  ///  lower than [jsCodeVersionMin].
+  final int jsCodeVersion;
+  final int jsCodeVersionMin;
+
+  /// Your plugin is connected to a para-chain testNet by default.
   final bool isTestNet;
 }
