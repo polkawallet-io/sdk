@@ -41,7 +41,8 @@ Map<String, dynamic> _$BalanceDataToJson(BalanceData instance) =>
       'frozenMisc': instance.frozenMisc,
       'isVesting': instance.isVesting,
       'lockedBalance': instance.lockedBalance,
-      'lockedBreakdown': instance.lockedBreakdown,
+      'lockedBreakdown':
+          instance.lockedBreakdown?.map((e) => e?.toJson())?.toList(),
       'reservedBalance': instance.reservedBalance,
       'vestedBalance': instance.vestedBalance,
       'vestedClaimable': instance.vestedClaimable,

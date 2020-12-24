@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'balanceData.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class BalanceData extends _BalanceData {
   static BalanceData fromJson(Map<String, dynamic> json) =>
       _$BalanceDataFromJson(json);
