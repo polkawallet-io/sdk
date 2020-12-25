@@ -85,6 +85,8 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   /// 3. subscribe balances & set balancesStore.
   Future<NetworkParams> start(Keyring keyring) async {
     final res = await sdk.api.connectNode(keyring, nodeList);
+    if (res == null) return null;
+
     keyring.setSS58(res.ss58);
     await updateNetworkState();
 
