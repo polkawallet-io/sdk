@@ -62,17 +62,27 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
     );
   }
 
-  Future<void> beforeStart(Keyring keyring, {WebViewRunner webView}) async {
-    await sdk.init(keyring, webView: webView, jsCode: await loadJSCode());
+  /// This method will be called while App switched to a plugin.
+  /// In this method, the plugin will init [WalletSDK] and start
+  /// a webView for running `polkadot-js/api`.
+  Future<void> beforeStart(
+    Keyring keyring, {
+    WebViewRunner webView,
+    String jsCode,
+  }) async {
+    await sdk.init(
+      keyring,
+      webView: webView,
+      jsCode: jsCode ?? (await loadJSCode()),
+    );
     await onWillStart(keyring);
   }
 
-  /// This method will be called while App switched to your plugin.
-  /// In this method, the plugin should do:
-  /// 1. init the plugin runtime & connect to nodes.
+  /// This method will be called while App switched to a plugin.
+  /// In this method, the plugin will:
+  /// 1. connect to nodes.
   /// 2. retrieve network const & state.
   /// 3. subscribe balances & set balancesStore.
-  /// 4. setup other plugin state if needed.
   Future<NetworkParams> start(Keyring keyring) async {
     final res = await sdk.api.connectNode(keyring, nodeList);
     keyring.setSS58(res.ss58);

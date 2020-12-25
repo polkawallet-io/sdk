@@ -9,3 +9,7 @@
 ## [0.0.3] - 20201224
 
 * fix balance data json serialization
+
+## [0.0.4] - 20201225
+
+* add params [jsCode] for beforeStart() method for js hot update.

@@ -13,10 +13,7 @@ cd polkwalllet_plugin_acala/
 add dependencies in pubspec.yaml
 ```yaml
 dependencies:
-  polkawallet_sdk:
-    git:
-      url: https://github.com/polkawallet-io/sdk.git
-      ref: master
+  polkawallet_sdk: ^0.0.4
 ```
 and install the dependencies.
 ```shell
@@ -30,7 +27,8 @@ to connect to remote node.
 
 Examples:
  - kusama/polkadot: [https://github.com/polkawallet-io/js_api](https://github.com/polkawallet-io/js_api)
- - acala-network: [https://github.com/polkawallet-io/polkawallet_plugin_acala/tree/master/lib/js_service_acala](https://github.com/polkawallet-io/polkawallet_plugin_acala/tree/master/lib/js_service_acala)
+ - acala: [https://github.com/polkawallet-io/polkawallet_plugin_acala/tree/master/lib/js_service_acala](https://github.com/polkawallet-io/polkawallet_plugin_acala/tree/master/lib/js_service_acala)
+ - laminar: [https://github.com/polkawallet-io/polkawallet_plugin_laminar/tree/master/lib/polkawallet_plugin_laminar](https://github.com/polkawallet-io/polkawallet_plugin_laminar/tree/master/lib/polkawallet_plugin_laminar)
 
 ## 3. Implement your plugin class
 
