@@ -14,3 +14,7 @@
 
 * add params [jsCode] for beforeStart() method for js hot update.
 * handle connect failed in start() method.
+
+## [0.0.6] - 20210108
+
+* update staking APIs for validators return.
