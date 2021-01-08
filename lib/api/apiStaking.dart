@@ -9,14 +9,14 @@ class ApiStaking {
   final PolkawalletApi apiRoot;
   final ServiceStaking service;
 
-  Future<Map> queryOverview() async {
-    final res = await service.queryOverview();
-    return res;
-  }
-
   Future<Map> queryElectedInfo() async {
     Map data = await service.queryElectedInfo();
     return data;
+  }
+
+  Future<Map> queryNominations() async {
+    final res = await service.queryNominations();
+    return res;
   }
 
   /// query staking stash-controller relationship of a list of pubKeys,

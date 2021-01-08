@@ -11,7 +11,7 @@ class BalanceData extends _BalanceData {
 
 abstract class _BalanceData {
   String accountId;
-  int accountNonce;
+  dynamic accountNonce;
   dynamic availableBalance;
   dynamic freeBalance;
   dynamic frozenFee;

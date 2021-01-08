@@ -1,8 +1,7 @@
 import { ApiPromise } from "@polkadot/api";
 import { DeriveCollectiveProposal, DeriveReferendumExt, DeriveCouncilVotes } from "@polkadot/api-derive/types";
 import { SubmittableExtrinsic } from "@polkadot/api/types";
-import { GenericCall, getTypeDef, Option } from "@polkadot/types";
-import { CallFunction } from "@polkadot/types/types";
+import { GenericCall, getTypeDef, Option, Bytes } from "@polkadot/types";
 import { OpenTip, AccountId, FunctionMetadataLatest } from "@polkadot/types/interfaces";
 import { formatBalance, stringToU8a, BN_ZERO, hexToString } from "@polkadot/util";
 import BN from "bn.js";
@@ -184,9 +183,9 @@ async function getTreasuryOverview(api: ApiPromise) {
  * Query tips of treasury.
  */
 async function getTreasuryTips(api: ApiPromise) {
-  const tipKeys = await api.query.treasury.tips.keys();
+  const tipKeys = await (api.query.tips || api.query.treasury).tips.keys();
   const tipHashes = tipKeys.map((key) => key.args[0].toHex());
-  const optTips = (await api.query.treasury.tips.multi(tipHashes)) as Option<OpenTip>[];
+  const optTips = (await (api.query.tips || api.query.treasury).tips.multi(tipHashes)) as Option<OpenTip>[];
   const tips = optTips
     .map((opt, index) => [tipHashes[index], opt.unwrapOr(null)])
     .filter((val) => !!val[1])
@@ -194,7 +193,7 @@ async function getTreasuryTips(api: ApiPromise) {
   return Promise.all(
     tips.map(async (tip: any[]) => {
       const detail = tip[1].toJSON();
-      const reason = await api.query.treasury.reasons(detail.reason);
+      const reason = (await (api.query.tips || api.query.treasury).reasons(detail.reason)) as Option<Bytes>;
       const tips = detail.tips.map((e: any) => ({
         address: e[0],
         value: e[1],

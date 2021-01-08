@@ -7,22 +7,15 @@ class ServiceStaking {
 
   final SubstrateService serviceRoot;
 
-  Future<Map> queryOverview() async {
-    List res = await Future.wait([
-      serviceRoot.webView.evalJavascript('api.derive.staking.currentPoints()',
-          allowRepeat: false),
-      serviceRoot.webView.evalJavascript('staking.fetchStakingOverview(api)',
-          allowRepeat: false),
-    ]);
-    if (res[0] == null || res[1] == null) return null;
-    final Map overview = res[1];
-    overview['eraPoints'] = res[0];
-    return overview;
-  }
-
   Future<Map> queryElectedInfo() async {
     Map data = await serviceRoot.webView
-        .evalJavascript('api.derive.staking.electedInfo()', allowRepeat: false);
+        .evalJavascript('staking.querySortedTargets(api)', allowRepeat: false);
+    return data;
+  }
+
+  Future<Map> queryNominations() async {
+    Map data = await serviceRoot.webView
+        .evalJavascript('staking.queryNominations(api)', allowRepeat: false);
     return data;
   }
 

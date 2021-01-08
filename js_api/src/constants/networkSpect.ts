@@ -1,3 +1,6 @@
+import networks from "@polkadot/networks";
+import { assert } from "@polkadot/util";
+
 const colors = {
   background: {
     app: "#151515",
@@ -48,24 +51,16 @@ export const EthereumNetworkKeys = Object.freeze({
 
 // genesisHash is used as Network key for Substrate networks
 export const SubstrateNetworkKeys = Object.freeze({
-  ACALA_TC4:
-    "0x783c78945a4e4a3118190bcf93002bb2d2903192bed10040eb52d54500aade36",
-  CENTRIFUGE:
-    "0x67dddf2673b69e5f875f6f25277495834398eafd67f492e09f3f3345e003d1b5", // https://portal.chain.centrifuge.io/#/explorer/query/0
-  CENTRIFUGE_AMBER:
-    "0x092af6e7d25178ebab1677d15f66e37b30392b44ef442f728a53dd1bf48ec110", // https://portal.chain.centrifuge.io/#/explorer/query/0
-  EDGEWARE:
-    "0x742a2ca70c2fda6cee4f8df98d64c4c670a052d9568058982dad9d5a7a135c5b", // https://polkascan.io/pre/edgeware/block/0
+  ACALA_TC4: "0x783c78945a4e4a3118190bcf93002bb2d2903192bed10040eb52d54500aade36",
+  CENTRIFUGE: "0x67dddf2673b69e5f875f6f25277495834398eafd67f492e09f3f3345e003d1b5", // https://portal.chain.centrifuge.io/#/explorer/query/0
+  CENTRIFUGE_AMBER: "0x092af6e7d25178ebab1677d15f66e37b30392b44ef442f728a53dd1bf48ec110", // https://portal.chain.centrifuge.io/#/explorer/query/0
+  EDGEWARE: "0x742a2ca70c2fda6cee4f8df98d64c4c670a052d9568058982dad9d5a7a135c5b", // https://polkascan.io/pre/edgeware/block/0
   KULUPU: "0xf7a99d3cb92853d00d5275c971c132c074636256583fee53b3bbe60d7b8769ba",
   KUSAMA: "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe", // https://polkascan.io/pre/kusama-cc3/block/0
-  KUSAMA_CC2:
-    "0xe3777fa922cafbff200cadeaea1a76bd7898ad5b89f7848999058b50e715f636",
-  KUSAMA_DEV:
-    "0x5e9679182f658e148f33d3f760f11179977398bb3da8d1f0bf7b267fe6b3ebb0",
-  POLKADOT:
-    "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3",
-  SUBSTRATE_DEV:
-    "0x0d667fd278ec412cd9fccdb066f09ed5b4cfd9c9afa9eb747213acb02b1e70bc", // substrate --dev commit ac6a2a783f0e1f4a814cf2add40275730cd41be1 hosted on wss://dev-node.substrate.dev .
+  KUSAMA_CC2: "0xe3777fa922cafbff200cadeaea1a76bd7898ad5b89f7848999058b50e715f636",
+  KUSAMA_DEV: "0x5e9679182f658e148f33d3f760f11179977398bb3da8d1f0bf7b267fe6b3ebb0",
+  POLKADOT: "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3",
+  SUBSTRATE_DEV: "0x0d667fd278ec412cd9fccdb066f09ed5b4cfd9c9afa9eb747213acb02b1e70bc", // substrate --dev commit ac6a2a783f0e1f4a814cf2add40275730cd41be1 hosted on wss://dev-node.substrate.dev .
   WESTEND: "0xe143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e",
 });
 
@@ -250,29 +245,24 @@ function setDefault(networkBase, defaultProps) {
   }, {});
 }
 
-export const ETHEREUM_NETWORK_LIST = Object.freeze(
-  setDefault(ethereumNetworkBase, ethereumDefaultValues)
-);
-export const SUBSTRATE_NETWORK_LIST = Object.freeze(
-  setDefault(substrateNetworkBase, substrateDefaultValues)
-);
+export const ETHEREUM_NETWORK_LIST = Object.freeze(setDefault(ethereumNetworkBase, ethereumDefaultValues));
+export const SUBSTRATE_NETWORK_LIST = Object.freeze(setDefault(substrateNetworkBase, substrateDefaultValues));
 export const UNKNOWN_NETWORK = Object.freeze(unknownNetworkBase);
 
 const substrateNetworkMetas = Object.values({
   ...SUBSTRATE_NETWORK_LIST,
   ...UNKNOWN_NETWORK,
 });
-export const PATH_IDS_LIST = substrateNetworkMetas.map(
-  (meta: any) => meta.pathId
-);
+export const PATH_IDS_LIST = substrateNetworkMetas.map((meta: any) => meta.pathId);
 
-export const NETWORK_LIST = Object.freeze(
-  Object.assign(
-    {},
-    SUBSTRATE_NETWORK_LIST,
-    ETHEREUM_NETWORK_LIST,
-    UNKNOWN_NETWORK
-  )
-);
+export const NETWORK_LIST = Object.freeze(Object.assign({}, SUBSTRATE_NETWORK_LIST, ETHEREUM_NETWORK_LIST, UNKNOWN_NETWORK));
 
 export const defaultNetworkKey = SubstrateNetworkKeys.KUSAMA;
+
+function getGenesis(name: string): string {
+  const network = networks.find(({ network }) => network === name);
+  assert(network && network.genesisHash[0], `Unable to find genesisHash for ${name}`);
+  return network.genesisHash[0];
+}
+export const KUSAMA_GENESIS = getGenesis("kusama");
+export const POLKADOT_GENESIS = getGenesis("polkadot");

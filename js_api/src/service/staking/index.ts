@@ -1,11 +1,16 @@
 import { ApiPromise } from "@polkadot/api";
 import {
-  DeriveStakingOverview,
   DeriveStakerReward,
+  DeriveStakingElected,
+  DeriveSessionInfo,
+  DeriveStakingWaiting
 } from "@polkadot/api-derive/types";
-import { u8aConcat, u8aToHex, BN_ZERO, BN_ONE, formatBalance, isFunction } from '@polkadot/util';
-import { AccountId } from "@polkadot/types/interfaces";
+import type { Option, StorageKey } from '@polkadot/types';
+import { u8aConcat, u8aToHex, BN_ZERO, BN_ONE, formatBalance, isFunction, arrayFlatten } from '@polkadot/util';
+import { AccountId, Nominations, EraIndex } from "@polkadot/types/interfaces";
 import BN from "bn.js";
+
+import { getInflationParams, Inflation } from './inflation';
 
 const divisor = new BN("1".padEnd(12 + 1, "0"));
 
@@ -294,27 +299,25 @@ async function getAccountRewardsEraOptions(api: ApiPromise): Promise<EraSelectio
   return [{ text: 0, unit: "", value: 0 }];
 }
 
-function _accountsToString(accounts: AccountId[]) {
-  return accounts.map((accountId) => accountId.toString());
-}
-
-function _filterAccounts(accounts = [], without: any[]) {
-  return accounts.filter((accountId) => !without.includes(accountId));
-}
-
-function _getNominators(nominations: any[]) {
-  return nominations.reduce((mapped, [key, optNoms]) => {
-    if (optNoms.isSome) {
+type Result = Record<string, string[]>;
+/**
+ * Query nominations of staking module.
+ */
+async function queryNominations(api: ApiPromise) {
+  const nominators: [StorageKey, Option<Nominations>][] = await api.query.staking.nominators.entries();
+  return nominators.reduce((mapped: Result, [key, optNoms]) => {
+    if (optNoms.isSome && key.args.length) {
       const nominatorId = key.args[0].toString();
+      const { targets } = optNoms.unwrap();
 
-      optNoms.unwrap().targets.forEach((_validatorId: any, index: number) => {
+      targets.forEach((_validatorId, index): void => {
         const validatorId = _validatorId.toString();
-        const info = [nominatorId, index + 1];
+        // const info = { index: index + 1, nominatorId, submittedIn };
 
         if (!mapped[validatorId]) {
-          mapped[validatorId] = [info];
+          mapped[validatorId] = [nominatorId];
         } else {
-          mapped[validatorId].push(info);
+          mapped[validatorId].push(nominatorId);
         }
       });
     }
@@ -323,34 +326,225 @@ function _getNominators(nominations: any[]) {
   }, {});
 }
 
-/**
- * Query overview of staking module.
- */
-async function fetchStakingOverview(api: ApiPromise) {
-  const data = await Promise.all([
-    api.derive.staking.overview(),
-    api.derive.staking.stashes(),
-    api.query.staking.nominators.entries(),
-  ]);
-  const stakingOverview: DeriveStakingOverview = data[0];
-  const allStashes = _accountsToString(data[1]);
-  const next = allStashes.filter(
-    (e) => !stakingOverview.validators.includes(e as any)
-  );
-  const nominators = _getNominators(data[2]);
 
-  const allElected = _accountsToString(stakingOverview.nextElected);
-  const validatorIds = _accountsToString(stakingOverview.validators);
-  const validators = _filterAccounts(validatorIds, []);
-  const elected = _filterAccounts(allElected, validatorIds);
-  const waiting = _filterAccounts(next, allElected);
+function _isWaitingDerive (derive: DeriveStakingElected | DeriveStakingWaiting): derive is DeriveStakingWaiting {
+  return !(derive as DeriveStakingElected).nextElected;
+}
+interface LastEra {
+  activeEra: BN;
+  eraLength: BN;
+  lastEra: BN;
+  sessionLength: BN;
+}
+function _extractSingleTarget (api: ApiPromise, derive: DeriveStakingElected | DeriveStakingWaiting, { activeEra, eraLength, lastEra, sessionLength }: LastEra, historyDepth?: BN): [any[], string[]] {
+  const nominators: Record<string, boolean> = {};
+  const emptyExposure = api.createType('Exposure');
+  const earliestEra = historyDepth && lastEra.sub(historyDepth).addn(1);
+  const list = derive.info.map(({ accountId, exposure = emptyExposure, stakingLedger, validatorPrefs }): any => {
+    // some overrides (e.g. Darwinia Crab) does not have the own/total field in Exposure
+    let [bondOwn, bondTotal] = exposure.total
+      ? [exposure.own.unwrap(), exposure.total.unwrap()]
+      : [BN_ZERO, BN_ZERO];
+    const skipRewards = bondTotal.isZero();
+
+    if (bondTotal.isZero()) {
+      bondTotal = bondOwn = stakingLedger.total.unwrap();
+    }
+
+    const key = accountId.toString();
+    const lastEraPayout = !lastEra.isZero()
+      ? stakingLedger.claimedRewards[stakingLedger.claimedRewards.length - 1]
+      : undefined;
+
+    // only use if it is more recent than historyDepth
+    let lastPayout: BN | undefined = earliestEra && lastEraPayout && lastEraPayout.gt(earliestEra)
+      ? lastEraPayout
+      : undefined;
+
+    if (lastPayout && !sessionLength.eq(BN_ONE)) {
+      lastPayout = lastEra.sub(lastPayout).mul(eraLength);
+    }
+
+    return {
+      accountId,
+      bondOther: bondTotal.sub(bondOwn),
+      bondOwn,
+      bondShare: 0,
+      bondTotal,
+      commissionPer: validatorPrefs.commission.unwrap().toNumber() / 10_000_000,
+      exposure,
+      isActive: !skipRewards,
+      isElected: !_isWaitingDerive(derive) && derive.nextElected.some((e) => e.eq(accountId)),
+      key,
+      knownLength: activeEra.sub(stakingLedger.claimedRewards[0] || activeEra),
+      lastPayout,
+      numNominators: (exposure.others || []).length,
+      numRecentPayouts: earliestEra
+        ? stakingLedger.claimedRewards.filter((era) => era.gte(earliestEra)).length
+        : 0,
+      rankBondOther: 0,
+      rankBondOwn: 0,
+      rankBondTotal: 0,
+      rankNumNominators: 0,
+      rankOverall: 0,
+      rankReward: 0,
+      skipRewards,
+      stakedReturn: 0,
+      stakedReturnCmp: 0,
+      validatorPrefs
+    };
+  });
+
+  return [list, Object.keys(nominators)];
+}
+function _calcInflation (api: ApiPromise, totalStaked: BN, totalIssuance: BN): Inflation {
+  const { falloff, idealStake, maxInflation, minInflation } = getInflationParams(api);
+  const stakedFraction = totalStaked.muln(1_000_000).div(totalIssuance).toNumber() / 1_000_000;
+  const idealInterest = maxInflation / idealStake;
+  const inflation = 100 * (minInflation + (
+    stakedFraction <= idealStake
+      ? (stakedFraction * (idealInterest - (minInflation / idealStake)))
+      : (((idealInterest * idealStake) - minInflation) * Math.pow(2, (idealStake - stakedFraction) / falloff))
+  ));
 
   return {
-    elected,
-    validators,
-    waiting,
-    nominators,
+    inflation,
+    stakedReturn: inflation / stakedFraction
   };
+}
+function mapIndex (mapBy: any): (info: any, index: number) => any {
+  return (info, index): any => {
+    info[mapBy] = index + 1;
+
+    return info;
+  };
+}
+function sortValidators (list: any[]): any[] {
+  const existing: string[] = [];
+
+  return list
+    .filter((a): boolean => {
+      const s = a.accountId.toString();
+
+      if (!existing.includes(s)) {
+        existing.push(s);
+
+        return true;
+      }
+
+      return false;
+    })
+    // .filter((a) => a.bondTotal.gtn(0))
+    // ignored, not used atm
+    // .sort((a, b) => b.commissionPer - a.commissionPer)
+    // .map(mapIndex('rankComm'))
+    // .sort((a, b) => b.bondOther.cmp(a.bondOther))
+    // .map(mapIndex('rankBondOther'))
+    // .sort((a, b) => b.bondOwn.cmp(a.bondOwn))
+    // .map(mapIndex('rankBondOwn'))
+    .sort((a, b) => b.bondTotal.cmp(a.bondTotal))
+    .map(mapIndex('rankBondTotal'))
+    // .sort((a, b) => b.validatorPayment.cmp(a.validatorPayment))
+    // .map(mapIndex('rankPayment'))
+    .sort((a, b) => a.stakedReturnCmp - b.stakedReturnCmp)
+    .map(mapIndex('rankReward'))
+    // ignored, not used atm
+    // .sort((a, b) => b.numNominators - a.numNominators)
+    // .map(mapIndex('rankNumNominators'))
+    .sort((a, b) =>
+      (b.stakedReturnCmp - a.stakedReturnCmp) ||
+      (a.commissionPer - b.commissionPer) ||
+      (b.rankBondTotal - a.rankBondTotal)
+    )
+    .map(mapIndex('rankOverall'))
+    .sort((a, b) =>
+      a.isFavorite === b.isFavorite
+        ? 0
+        : (a.isFavorite ? -1 : 1)
+    );
+}
+interface SortedTargets {
+  avgStaked?: BN;
+  electedIds?: string[];
+  inflation: Inflation;
+  lowStaked?: BN;
+  medianComm: number;
+  nominators?: string[];
+  totalStaked?: BN;
+  totalIssuance?: BN;
+  validators?: any[];
+  validatorIds?: string[];
+  waitingIds?: string[];
+}
+function _extractTargetsInfo(api: ApiPromise, electedDerive: DeriveStakingElected, waitingDerive: DeriveStakingWaiting, totalIssuance: BN, lastEraInfo: LastEra, historyDepth?: BN): Partial<SortedTargets> {
+  const [elected, nominators] = _extractSingleTarget(api, electedDerive, lastEraInfo, historyDepth);
+  const [waiting] = _extractSingleTarget(api, waitingDerive, lastEraInfo);
+  const activeTotals = elected
+    .filter(({ isActive }) => isActive)
+    .map(({ bondTotal }) => bondTotal)
+    .sort((a, b) => a.cmp(b));
+  const totalStaked = activeTotals.reduce((total: BN, value) => total.iadd(value), new BN(0));
+  const avgStaked = totalStaked.divn(activeTotals.length);
+  const inflation = _calcInflation(api, totalStaked, totalIssuance);
+
+  // add the explicit stakedReturn
+  !avgStaked.isZero() && elected.forEach((e): void => {
+    if (!e.skipRewards) {
+      e.stakedReturn = inflation.stakedReturn * avgStaked.muln(1_000_000).div(e.bondTotal).toNumber() / 1_000_000;
+      e.stakedReturnCmp = e.stakedReturn * (100 - e.commissionPer) / 100;
+    }
+  });
+
+  // all validators, calc median commission
+  const validators = sortValidators(arrayFlatten([elected, waiting]));
+  const commValues = validators.map(({ commissionPer }) => commissionPer).sort((a, b) => a - b);
+  const midIndex = Math.floor(commValues.length / 2);
+  const medianComm = commValues.length
+    ? commValues.length % 2
+      ? commValues[midIndex]
+      : (commValues[midIndex - 1] + commValues[midIndex]) / 2
+    : 0;
+
+  // ids
+  const electedIds = elected.map(({ key }) => key);
+  const waitingIds = waiting.map(({ key }) => key);
+  const validatorIds = arrayFlatten([electedIds, waitingIds]);
+
+  return {
+    avgStaked,
+    inflation,
+    lowStaked: activeTotals[0] || BN_ZERO,
+    medianComm,
+    nominators,
+    totalIssuance,
+    totalStaked,
+    validatorIds,
+    validators,
+    waitingIds
+  };
+}
+const _transfromEra = ({ activeEra, eraLength, sessionLength }: DeriveSessionInfo): LastEra => ({
+  activeEra,
+  eraLength,
+  lastEra: activeEra.isZero() ? BN_ZERO : activeEra.subn(1),
+  sessionLength
+});
+/**
+ * Query all validators info.
+ */
+async function querySortedTargets(api: ApiPromise) {
+ const data = await Promise.all([
+  api.query.staking.historyDepth(),
+  api.query.balances.totalIssuance(),
+  api.derive.staking.electedInfo({withExposure: true, withPrefs: true}),
+  api.derive.staking.waitingInfo({withPrefs: true}),
+  api.derive.session.info(),
+ ]);
+ 
+ const partial = data[1] && data[2] && data[3] && data[4]
+ ? _extractTargetsInfo(api, data[2], data[3], data[1], _transfromEra(data[4]), data[0])
+ : {};
+ return { inflation: { inflation: 0, stakedReturn: 0 }, medianComm: 0, ...partial };
 }
 
 async function _getOwnStash(api: ApiPromise, accountId: string): Promise<[string, boolean]> {
@@ -603,7 +797,8 @@ export default {
   loadValidatorRewardsData,
   getAccountRewardsEraOptions,
   loadAccountRewardsData,
-  fetchStakingOverview,
+  querySortedTargets,
+  queryNominations,
   getOwnStashInfo,
   getSlashingSpans,
 };

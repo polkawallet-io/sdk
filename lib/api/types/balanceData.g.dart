@@ -9,7 +9,7 @@ part of 'balanceData.dart';
 BalanceData _$BalanceDataFromJson(Map<String, dynamic> json) {
   return BalanceData()
     ..accountId = json['accountId'] as String
-    ..accountNonce = json['accountNonce'] as int
+    ..accountNonce = json['accountNonce']
     ..availableBalance = json['availableBalance']
     ..freeBalance = json['freeBalance']
     ..frozenFee = json['frozenFee']
