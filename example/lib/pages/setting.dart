@@ -21,7 +21,7 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   bool _submitting = false;
 
-  int _bestNumber;
+  BigInt _bestNumber;
 
   Future<void> _queryNetworkConst() async {
     setState(() {
@@ -57,7 +57,7 @@ class _SettingPageState extends State<SettingPage> {
   Future<void> _subscribeBestNumber() async {
     widget.sdk.api.setting.subscribeBestNumber((res) {
       setState(() {
-        _bestNumber = res;
+        _bestNumber = BigInt.parse(res.toString());
       });
     });
   }

@@ -9,7 +9,7 @@ part of 'treasuryOverviewData.dart';
 TreasuryOverviewData _$TreasuryOverviewDataFromJson(Map<String, dynamic> json) {
   return TreasuryOverviewData()
     ..balance = json['balance'] as String
-    ..proposalCount = json['proposalCount'] as int
+    ..proposalCount = json['proposalCount'] as String
     ..proposals = (json['proposals'] as List)
         ?.map((e) => e == null
             ? null
@@ -33,7 +33,7 @@ Map<String, dynamic> _$TreasuryOverviewDataToJson(
 
 SpendProposalData _$SpendProposalDataFromJson(Map<String, dynamic> json) {
   return SpendProposalData()
-    ..id = json['id'] as int
+    ..id = json['id'] as String
     ..isApproval = json['isApproval'] as bool
     ..council = (json['council'] as List)
         ?.map((e) => e == null
@@ -132,7 +132,7 @@ CouncilProposalVotesData _$CouncilProposalVotesDataFromJson(
     ..threshold = json['threshold'] as int
     ..ayes = (json['ayes'] as List)?.map((e) => e as String)?.toList()
     ..nays = (json['nays'] as List)?.map((e) => e as String)?.toList()
-    ..end = json['end'] as int;
+    ..end = json['end'];
 }
 
 Map<String, dynamic> _$CouncilProposalVotesDataToJson(

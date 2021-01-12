@@ -12,7 +12,7 @@ abstract class _TreasuryTipData {
   String hash;
   String reason;
   String who;
-  int closes;
+  dynamic closes;
   String finder;
   dynamic deposit;
   List<TreasuryTipItemData> tips;

@@ -10,7 +10,7 @@ class TreasuryOverviewData extends _TreasuryOverviewData {
 
 abstract class _TreasuryOverviewData {
   String balance;
-  int proposalCount;
+  String proposalCount;
   List<SpendProposalData> proposals;
   List<SpendProposalData> approvals;
 }
@@ -22,7 +22,7 @@ class SpendProposalData extends _SpendProposalData {
 }
 
 abstract class _SpendProposalData {
-  int id;
+  String id;
   bool isApproval;
   List<CouncilMotionData> council;
   SpendProposalDetailData proposal;
@@ -88,7 +88,7 @@ abstract class _CouncilProposalVotesData {
   int threshold;
   List<String> ayes;
   List<String> nays;
-  int end;
+  dynamic end;
 }
 
 @JsonSerializable()

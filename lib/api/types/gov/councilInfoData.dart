@@ -11,14 +11,14 @@ class CouncilInfoData extends _CouncilInfoData {
 }
 
 abstract class _CouncilInfoData {
-  int desiredSeats;
-  int termDuration;
-  int votingBond;
+  String desiredSeats; // hex string
+  String termDuration; // hex string
+  String votingBond; // hex string
 
   List<List<dynamic>> members;
   List<List<dynamic>> runnersUp;
   List<String> candidates;
 
-  int candidateCount;
-  int candidacyBond;
+  String candidateCount; // hex string
+  String candidacyBond; // hex string
 }

@@ -15,7 +15,7 @@ ProposalInfoData _$ProposalInfoDataFromJson(Map<String, dynamic> json) {
         : ProposalImageData.fromJson(json['image'] as Map<String, dynamic>)
     ..imageHash = json['imageHash'] as String
     ..proposer = json['proposer'] as String
-    ..index = json['index'] as int;
+    ..index = json['index'];
 }
 
 Map<String, dynamic> _$ProposalInfoDataToJson(ProposalInfoData instance) =>
@@ -31,7 +31,7 @@ Map<String, dynamic> _$ProposalInfoDataToJson(ProposalInfoData instance) =>
 ProposalImageData _$ProposalImageDataFromJson(Map<String, dynamic> json) {
   return ProposalImageData()
     ..balance = json['balance']
-    ..at = json['at'] as int
+    ..at = json['at']
     ..proposer = json['proposer'] as String
     ..proposal = json['proposal'] == null
         ? null

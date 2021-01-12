@@ -1,7 +1,7 @@
 class ReferendumInfo extends _ReferendumInfo {
   static ReferendumInfo fromJson(Map<String, dynamic> json) {
     ReferendumInfo info = ReferendumInfo();
-    info.index = json['index'];
+    info.index = BigInt.parse(json['index'].toString());
     info.imageHash = json['imageHash'];
     info.status = json['status'];
     info.image = json['image'];
@@ -22,7 +22,7 @@ class ReferendumInfo extends _ReferendumInfo {
 }
 
 abstract class _ReferendumInfo {
-  int index;
+  BigInt index;
   String imageHash;
 
   bool isPassing;

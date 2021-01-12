@@ -11,7 +11,7 @@ TreasuryTipData _$TreasuryTipDataFromJson(Map<String, dynamic> json) {
     ..hash = json['hash'] as String
     ..reason = json['reason'] as String
     ..who = json['who'] as String
-    ..closes = json['closes'] as int
+    ..closes = json['closes']
     ..finder = json['finder'] as String
     ..deposit = json['deposit']
     ..tips = (json['tips'] as List)

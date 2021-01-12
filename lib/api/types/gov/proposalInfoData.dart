@@ -15,7 +15,7 @@ abstract class _ProposalInfoData {
   ProposalImageData image;
   String imageHash;
   String proposer;
-  int index;
+  dynamic index;
 }
 
 @JsonSerializable()
@@ -26,7 +26,7 @@ class ProposalImageData extends _ProposalImageData {
 
 abstract class _ProposalImageData {
   dynamic balance;
-  int at;
+  dynamic at;
   String proposer;
   CouncilProposalData proposal;
 }

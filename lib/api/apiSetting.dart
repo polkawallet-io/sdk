@@ -27,7 +27,7 @@ class ApiSetting {
 
   /// subscribe best number.
   /// @return [String] msgChannel, call unsubscribeMessage(msgChannel) to unsub.
-  Future<void> subscribeBestNumber(Function(int) callback) async {
+  Future<void> subscribeBestNumber(Function callback) async {
     apiRoot.subscribeMessage(
       'api.derive.chain.bestNumber',
       [],
