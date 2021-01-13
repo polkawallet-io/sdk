@@ -24,9 +24,15 @@ class ServiceKeyring {
     if (keyring.store.list.length > 0) {
       final String pairs = jsonEncode(keyring.store.list);
       final ss58 = keyring.store.ss58List;
-      final res = await serviceRoot.webView
-          .evalJavascript('keyring.initKeys($pairs, ${jsonEncode(ss58)})');
-      keyring.store.updatePubKeyAddressMap(Map<String, Map>.from(res));
+      final res = Map<String, Map>.from(await serviceRoot.webView
+          .evalJavascript('keyring.initKeys($pairs, ${jsonEncode(ss58)})'));
+
+      final contacts = await getPubKeyAddressMap(keyring.store.contacts, ss58);
+      res.forEach((key, value) {
+        res[key].addAll(contacts[key]);
+      });
+
+      keyring.store.updatePubKeyAddressMap(res);
       return res;
     }
     return null;

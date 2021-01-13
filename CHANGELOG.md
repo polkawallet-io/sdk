@@ -22,3 +22,7 @@
 ## [0.0.7] - 20210112
 
 * update gov APIs.
+
+## [0.0.8] - 20210113
+
+* fix observation account addresses.
