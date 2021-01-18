@@ -67,7 +67,7 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
               'walletExtension.onAppResponse("${param.msgType}", null, new Error("Rejected"))');
         }
         return _controller.evaluateJavascript(
-            'walletExtension.onAppResponse("${param.msgType}", ${jsonEncode(ExtensionSignResult.toJson(res))})');
+            'walletExtension.onAppResponse("${param.msgType}", ${jsonEncode(res.toJson())})');
       case 'pub(extrinsic.sign)':
         final SignAsExtensionParam params = SignAsExtensionParam.fromJson(msg);
         final ExtensionSignResult result =
@@ -78,7 +78,7 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
               'walletExtension.onAppResponse("${params.msgType}", null, new Error("Rejected"))');
         }
         return _controller.evaluateJavascript(
-            'walletExtension.onAppResponse("${params.msgType}", ${jsonEncode(ExtensionSignResult.toJson(result))})');
+            'walletExtension.onAppResponse("${params.msgType}", ${jsonEncode(result.toJson())})');
       default:
         print('Unknown message from dapp: ${msg['msgType']}');
     }

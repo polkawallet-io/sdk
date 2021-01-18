@@ -11,7 +11,7 @@ SignAsExtensionParam _$SignAsExtensionParamFromJson(Map<String, dynamic> json) {
     ..id = json['id'] as String
     ..url = json['url'] as String
     ..msgType = json['msgType'] as String
-    ..request = json['request'];
+    ..request = json['request'] as Map<String, dynamic>;
 }
 
 Map<String, dynamic> _$SignAsExtensionParamToJson(

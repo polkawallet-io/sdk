@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:polkawallet_sdk/api/api.dart';
+import 'package:polkawallet_sdk/api/types/verifyResult.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
@@ -226,8 +227,7 @@ class ApiKeyring {
   /// sign extrinsic or msg for the DApp.
   Future<ExtensionSignResult> signAsExtension(
       String password, SignAsExtensionParam param) async {
-    final signature = await service.signAsExtension(
-        password, SignAsExtensionParam.toJson(param));
+    final signature = await service.signAsExtension(password, param.toJson());
     if (signature == null) {
       return null;
     }
@@ -235,5 +235,14 @@ class ApiKeyring {
     res.id = param.id;
     res.signature = signature['signature'];
     return res;
+  }
+
+  Future<VerifyResult> signatureVerify(
+      String message, signature, address) async {
+    final res = await service.signatureVerify(message, signature, address);
+    if (res == null) {
+      return null;
+    }
+    return VerifyResult.fromJson(Map<String, dynamic>.of(res));
   }
 }

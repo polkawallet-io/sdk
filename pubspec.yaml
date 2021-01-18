@@ -1,6 +1,6 @@
 name: polkawallet_sdk
 description: Flutter SDK for building plugin package for polkawallet.
-version: 0.0.8
+version: 0.0.9
 homepage: https://polkawallet.io
 
 environment:

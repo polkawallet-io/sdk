@@ -26,3 +26,7 @@
 ## [0.0.8] - 20210113
 
 * fix observation account addresses.
+
+## [0.0.9] - 20210118
+
+* add keyring.verifySignature().

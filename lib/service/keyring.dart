@@ -119,4 +119,16 @@ class ServiceKeyring {
     );
     return res;
   }
+
+  Future<Map> signatureVerify(String message, signature, address) async {
+    final res = await serviceRoot.webView.evalJavascript(
+      'keyring.verifySignature("$message", "$signature", "$address")',
+      allowRepeat: true,
+    );
+
+    if (res == null) {
+      return null;
+    }
+    return res;
+  }
 }

@@ -2,27 +2,25 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'signExtrinsicParam.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class SignAsExtensionParam extends _SignAsExtensionParam {
   static SignAsExtensionParam fromJson(Map<String, dynamic> json) =>
       _$SignAsExtensionParamFromJson(json);
-  static Map<String, dynamic> toJson(SignAsExtensionParam params) =>
-      _$SignAsExtensionParamToJson(params);
+  Map<String, dynamic> toJson() => _$SignAsExtensionParamToJson(this);
 }
 
 abstract class _SignAsExtensionParam {
   String id;
   String url;
   String msgType;
-  dynamic request;
+  Map request;
 }
 
 @JsonSerializable()
 class SignExtrinsicRequest extends _SignExtrinsicRequest {
   static SignExtrinsicRequest fromJson(Map<String, dynamic> json) =>
       _$SignExtrinsicRequestFromJson(json);
-  static Map<String, dynamic> toJson(SignExtrinsicRequest req) =>
-      _$SignExtrinsicRequestToJson(req);
+  Map<String, dynamic> toJson() => _$SignExtrinsicRequestToJson(this);
 }
 
 abstract class _SignExtrinsicRequest {
@@ -44,8 +42,7 @@ abstract class _SignExtrinsicRequest {
 class SignBytesRequest extends _SignBytesRequest {
   static SignBytesRequest fromJson(Map<String, dynamic> json) =>
       _$SignBytesRequestFromJson(json);
-  static Map<String, dynamic> toJson(SignBytesRequest req) =>
-      _$SignBytesRequestToJson(req);
+  Map<String, dynamic> toJson() => _$SignBytesRequestToJson(this);
 }
 
 abstract class _SignBytesRequest {
@@ -58,8 +55,7 @@ abstract class _SignBytesRequest {
 class ExtensionSignResult extends _ExtensionSignResult {
   static ExtensionSignResult fromJson(Map<String, dynamic> json) =>
       _$ExtensionSignResultFromJson(json);
-  static Map<String, dynamic> toJson(ExtensionSignResult res) =>
-      _$ExtensionSignResultToJson(res);
+  Map<String, dynamic> toJson() => _$ExtensionSignResultToJson(this);
 }
 
 abstract class _ExtensionSignResult {
