@@ -30,3 +30,8 @@
 ## [0.0.9] - 20210118
 
 * add keyring.verifySignature().
+
+## [0.1.0] - 20210125
+
+* update keyring.signBytes().
+* update polkadot-js/api v3.6.3

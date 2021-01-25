@@ -11,7 +11,7 @@ class NetworkStateData extends _NetworkStateData {
 
 abstract class _NetworkStateData {
   int ss58Format = 0;
-  int tokenDecimals = 0;
-  String tokenSymbol = '';
+  dynamic tokenDecimals;
+  dynamic tokenSymbol;
   String name = '';
 }

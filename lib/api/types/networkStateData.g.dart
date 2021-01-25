@@ -9,8 +9,8 @@ part of 'networkStateData.dart';
 NetworkStateData _$NetworkStateDataFromJson(Map<String, dynamic> json) {
   return NetworkStateData()
     ..ss58Format = json['ss58Format'] as int
-    ..tokenDecimals = json['tokenDecimals'] as int
-    ..tokenSymbol = json['tokenSymbol'] as String
+    ..tokenDecimals = json['tokenDecimals']
+    ..tokenSymbol = json['tokenSymbol']
     ..name = json['name'] as String;
 }
 
