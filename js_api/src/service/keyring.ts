@@ -1,5 +1,5 @@
 import { keyExtractSuri, mnemonicGenerate, cryptoWaitReady, signatureVerify } from "@polkadot/util-crypto";
-import { hexToU8a, u8aToHex, isHex, stringToHex } from "@polkadot/util";
+import { hexToU8a, u8aToHex, isHex, stringToU8a } from "@polkadot/util";
 import BN from "bn.js";
 import { parseQrCode, getSigner, makeTx, getSubmittable } from "../utils/QrSigner";
 import gov from "./gov";
@@ -385,7 +385,7 @@ async function signBytesAsExtension(api: ApiPromise, password: string, json: any
       keyPair.decodePkcs8(password);
       const isDataHex = isHex(json["data"]);
       resolve({
-        signature: u8aToHex(keyPair.sign(hexToU8a(isDataHex ? json["data"] : stringToHex(json["data"])))),
+        signature: u8aToHex(keyPair.sign(isDataHex ? hexToU8a(json["data"]) : stringToU8a(json["data"]))),
       });
     } catch (err) {
       resolve({ error: err.message });
