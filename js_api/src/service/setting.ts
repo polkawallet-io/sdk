@@ -9,12 +9,7 @@ import { SubstrateNetworkKeys } from "../constants/networkSpect";
  * @param {String} msgChannel
  * @param {Function} transfrom result data transfrom
  */
-export async function subscribeMessage(
-  method: any,
-  params: any[],
-  msgChannel: string,
-  transfrom: Function
-) {
+export async function subscribeMessage(method: any, params: any[], msgChannel: string, transfrom: Function) {
   return method(...params, (res: any) => {
     const data = transfrom ? transfrom(res) : res;
     (<any>window).send(msgChannel, data);
@@ -40,8 +35,8 @@ export async function getNetworkProperties(api: ApiPromise) {
   return api.genesisHash.toHuman() == SubstrateNetworkKeys.POLKADOT
     ? api.registry.createType("ChainProperties", {
         ...chainProperties,
-        tokenDecimals: 10,
-        tokenSymbol: "DOT",
+        tokenDecimals: [10],
+        tokenSymbol: ["DOT"],
       })
     : chainProperties;
 }
