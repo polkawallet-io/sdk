@@ -4,12 +4,13 @@ import { subscribeMessage, getNetworkConst, getNetworkProperties } from "./servi
 import keyring from "./service/keyring";
 import account from "./service/account";
 import staking from "./service/staking";
+// import wc from "./service/walletconnect";
 import gov from "./service/gov";
 import { genLinks } from "./utils/config/config";
 
 // send message to JSChannel: PolkaWallet
 function send(path: string, data: any) {
-  if (window.location.href === "about:blank") {
+  if (window.location.href.match("https://localhost:8080/")) {
     PolkaWallet.postMessage(JSON.stringify({ path, data }));
   } else {
     console.log(path, data);
@@ -62,5 +63,6 @@ const settings = {
 (<any>window).account = account;
 (<any>window).staking = staking;
 (<any>window).gov = gov;
+// (<any>window).walletConnect = wc;
 
 export default settings;

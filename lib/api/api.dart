@@ -8,6 +8,7 @@ import 'package:polkawallet_sdk/api/apiSetting.dart';
 import 'package:polkawallet_sdk/api/apiStaking.dart';
 import 'package:polkawallet_sdk/api/apiTx.dart';
 import 'package:polkawallet_sdk/api/apiUOS.dart';
+import 'package:polkawallet_sdk/api/apiWalletConnect.dart';
 import 'package:polkawallet_sdk/api/subscan.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/service/index.dart';
@@ -39,6 +40,8 @@ class PolkawalletApi {
   ApiUOS uos;
   ApiRecovery recovery;
 
+  ApiWalletConnect walletConnect;
+
   final SubScanApi subScan = SubScanApi();
 
   void init() {
@@ -51,6 +54,8 @@ class PolkawalletApi {
     gov = ApiGov(this, service.gov);
     uos = ApiUOS(this, service.uos);
     recovery = ApiRecovery(this, service.recovery);
+
+    walletConnect = ApiWalletConnect(this, service.walletConnect);
   }
 
   NetworkParams get connectedNode => _connectedNode;

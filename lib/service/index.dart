@@ -8,6 +8,7 @@ import 'package:polkawallet_sdk/service/setting.dart';
 import 'package:polkawallet_sdk/service/staking.dart';
 import 'package:polkawallet_sdk/service/tx.dart';
 import 'package:polkawallet_sdk/service/uos.dart';
+import 'package:polkawallet_sdk/service/walletConnect.dart';
 import 'package:polkawallet_sdk/service/webViewRunner.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 
@@ -23,6 +24,8 @@ class SubstrateService {
   ServiceGov gov;
   ServiceUOS uos;
   ServiceRecovery recovery;
+
+  ServiceWalletConnect walletConnect;
 
   WebViewRunner _web;
 
@@ -42,6 +45,8 @@ class SubstrateService {
     gov = ServiceGov(this);
     uos = ServiceUOS(this);
     recovery = ServiceRecovery(this);
+
+    walletConnect = ServiceWalletConnect(this);
 
     _web = webViewParam ?? WebViewRunner();
     await _web.launch(keyring, keyringStorage, onInitiated, jsCode: jsCode);

@@ -4,7 +4,9 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:jaguar/jaguar.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
+import 'package:polkawallet_sdk/service/jaguar_flutter_asset.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 
@@ -55,8 +57,10 @@ class WebViewRunner {
       return;
     }
 
+    await _startLocalServer();
+
     _web.launch(
-      'about:blank',
+      'https://localhost:8080/',
       javascriptChannels: [
         JavascriptChannel(
             name: 'PolkaWallet',
@@ -79,10 +83,23 @@ class WebViewRunner {
             }),
       ].toSet(),
       ignoreSSLErrors: true,
-//        withLocalUrl: true,
-//        localUrlScope: 'lib/polkadot_js_service/dist/',
+      // withLocalUrl: true,
       hidden: true,
     );
+  }
+
+  Future<void> _startLocalServer() async {
+    final cert = await rootBundle
+        .load("packages/polkawallet_sdk/lib/ssl/certificate.pem");
+    final keys =
+        await rootBundle.load("packages/polkawallet_sdk/lib/ssl/keys.pem");
+    final security = new SecurityContext()
+      ..useCertificateChainBytes(cert.buffer.asInt8List())
+      ..usePrivateKeyBytes(keys.buffer.asInt8List());
+    // Serves the API at localhost:8080 by default
+    final server = Jaguar(securityContext: security);
+    server.addRoute(serveFlutterAssets());
+    await server.serve(logRequests: false);
   }
 
   Future<void> _startJSCode(
