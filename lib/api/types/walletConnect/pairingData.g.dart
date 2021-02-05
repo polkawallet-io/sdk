@@ -13,9 +13,10 @@ WCPairingData _$WCPairingDataFromJson(Map<String, dynamic> json) {
     ..proposer = json['proposer'] == null
         ? null
         : WCProposerInfo.fromJson(json['proposer'] as Map<String, dynamic>)
-    ..signal = json['signal'] as String
-    ..permissions =
-        (json['permissions'] as List)?.map((e) => e as String)?.toList()
+    ..signal = json['signal'] as Map<String, dynamic>
+    ..permissions = json['permissions'] == null
+        ? null
+        : WCPermissionData.fromJson(json['permissions'] as Map<String, dynamic>)
     ..ttl = json['ttl'] as int;
 }
 
@@ -25,7 +26,7 @@ Map<String, dynamic> _$WCPairingDataToJson(WCPairingData instance) =>
       'relay': instance.relay,
       'proposer': instance.proposer?.toJson(),
       'signal': instance.signal,
-      'permissions': instance.permissions,
+      'permissions': instance.permissions?.toJson(),
       'ttl': instance.ttl,
     };
 
@@ -57,4 +58,18 @@ Map<String, dynamic> _$WCProposerMetaToJson(WCProposerMeta instance) =>
       'description': instance.description,
       'url': instance.url,
       'icons': instance.icons,
+    };
+
+WCPermissionData _$WCPermissionDataFromJson(Map<String, dynamic> json) {
+  return WCPermissionData()
+    ..blockchain = json['blockchain'] as Map<String, dynamic>
+    ..jsonrpc = json['jsonrpc'] as Map<String, dynamic>
+    ..notifications = json['notifications'] as Map<String, dynamic>;
+}
+
+Map<String, dynamic> _$WCPermissionDataToJson(WCPermissionData instance) =>
+    <String, dynamic>{
+      'blockchain': instance.blockchain,
+      'jsonrpc': instance.jsonrpc,
+      'notifications': instance.notifications,
     };

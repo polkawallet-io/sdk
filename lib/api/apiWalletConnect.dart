@@ -8,11 +8,14 @@ class ApiWalletConnect {
   final PolkawalletApi apiRoot;
   final ServiceWalletConnect service;
 
-  Future<WCPairingData> connect(String uri, Function(Map) onPayload) async {
-    final Map res = await service.connect(uri, (Map payload) {
+  Future<Map> connect(String uri, Function(WCPairingData) onPairing,
+      Function(Map) onPayload) async {
+    final Map res = await service.connect(uri, (Map proposal) {
+      onPairing(WCPairingData.fromJson(proposal));
+    }, (Map payload) {
       onPayload(payload);
     });
-    return WCPairingData.fromJson(res);
+    return res;
   }
 
   Future<Map> approvePairing(WCPairingData proposal, String address) async {

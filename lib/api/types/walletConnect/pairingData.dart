@@ -12,8 +12,8 @@ abstract class _WCPairingData {
   String topic;
   Map relay;
   WCProposerInfo proposer;
-  String signal;
-  List<String> permissions;
+  Map signal;
+  WCPermissionData permissions;
   int ttl;
 }
 
@@ -39,4 +39,17 @@ abstract class _WCProposerMeta {
   String description;
   String url;
   List<String> icons;
+}
+
+@JsonSerializable()
+class WCPermissionData extends _WCPermissionData {
+  static WCPermissionData fromJson(Map json) =>
+      _$WCPermissionDataFromJson(json);
+  Map toJson() => _$WCPermissionDataToJson(this);
+}
+
+abstract class _WCPermissionData {
+  Map blockchain;
+  Map jsonrpc;
+  Map notifications;
 }

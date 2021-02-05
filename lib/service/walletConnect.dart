@@ -7,17 +7,20 @@ class ServiceWalletConnect {
 
   final SubstrateService serviceRoot;
 
-  Future<Map> connect(String uri, Function(Map) onPayload) async {
-    final Map res = await serviceRoot.webView
-        .evalJavascript('walletConnect.connect("$uri")');
+  Future<Map> connect(
+      String uri, Function(Map) onPairing, Function(Map) onPayload) async {
     serviceRoot.webView.addMsgHandler("walletConnectPayload", onPayload);
-    return res;
+    serviceRoot.webView.addMsgHandler("walletConnectPairing", onPairing);
+
+    return await serviceRoot.webView
+        .evalJavascript('walletConnect.connect("$uri")');
   }
 
   Future<Map> disconnect(Map params) async {
     final Map res = await serviceRoot.webView
         .evalJavascript('walletConnect.disconnect(${jsonEncode(params)})');
     serviceRoot.webView.removeMsgHandler("walletConnectPayload");
+    serviceRoot.webView.removeMsgHandler("walletConnectPairing");
     return res;
   }
 
