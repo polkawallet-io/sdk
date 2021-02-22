@@ -37,7 +37,8 @@ SignExtrinsicRequest _$SignExtrinsicRequestFromJson(Map<String, dynamic> json) {
     ..specVersion = json['specVersion'] as String
     ..tip = json['tip'] as String
     ..transactionVersion = json['transactionVersion'] as String
-    ..version = json['version'] as int;
+    ..version = json['version'] as int
+    ..payload = json['payload'] as Map<String, dynamic>;
 }
 
 Map<String, dynamic> _$SignExtrinsicRequestToJson(
@@ -55,6 +56,7 @@ Map<String, dynamic> _$SignExtrinsicRequestToJson(
       'tip': instance.tip,
       'transactionVersion': instance.transactionVersion,
       'version': instance.version,
+      'payload': instance.payload,
     };
 
 SignBytesRequest _$SignBytesRequestFromJson(Map<String, dynamic> json) {

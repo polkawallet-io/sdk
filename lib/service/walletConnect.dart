@@ -7,11 +7,15 @@ class ServiceWalletConnect {
 
   final SubstrateService serviceRoot;
 
-  Future<Map> connect(
-      String uri, Function(Map) onPairing, Function(Map) onPayload) async {
+  void initClient(Function(Map) onPairing, Function(Map) onPaired,
+      Function(Map) onPayload) {
     serviceRoot.webView.addMsgHandler("walletConnectPayload", onPayload);
     serviceRoot.webView.addMsgHandler("walletConnectPairing", onPairing);
+    serviceRoot.webView.addMsgHandler("walletConnectCreated", onPaired);
+    serviceRoot.webView.evalJavascript('walletConnect.initClient()');
+  }
 
+  Future<Map> connect(String uri) async {
     return await serviceRoot.webView
         .evalJavascript('walletConnect.connect("$uri")');
   }
@@ -21,6 +25,7 @@ class ServiceWalletConnect {
         .evalJavascript('walletConnect.disconnect(${jsonEncode(params)})');
     serviceRoot.webView.removeMsgHandler("walletConnectPayload");
     serviceRoot.webView.removeMsgHandler("walletConnectPairing");
+    serviceRoot.webView.removeMsgHandler("walletConnectCreated");
     return res;
   }
 
@@ -33,6 +38,12 @@ class ServiceWalletConnect {
   Future<Map> rejectPairing(Map proposal) async {
     final Map res = await serviceRoot.webView.evalJavascript(
         'walletConnect.rejectProposal(${jsonEncode(proposal)})');
+    return res;
+  }
+
+  Future<Map> signPayload(Map payload, String password) async {
+    final Map res = await serviceRoot.webView.evalJavascript(
+        'walletConnect.signPayload(api, ${jsonEncode(payload)}, "$password")');
     return res;
   }
 

@@ -4,7 +4,7 @@ import { subscribeMessage, getNetworkConst, getNetworkProperties } from "./servi
 import keyring from "./service/keyring";
 import account from "./service/account";
 import staking from "./service/staking";
-// import wc from "./service/walletconnect";
+import wc from "./service/walletconnect";
 import gov from "./service/gov";
 import { genLinks } from "./utils/config/config";
 
@@ -63,6 +63,6 @@ const settings = {
 (<any>window).account = account;
 (<any>window).staking = staking;
 (<any>window).gov = gov;
-// (<any>window).walletConnect = wc;
+(<any>window).walletConnect = wc;
 
 export default settings;

@@ -18,6 +18,21 @@ abstract class _WCPairingData {
 }
 
 @JsonSerializable(explicitToJson: true)
+class WCPairedData extends _WCPairedData {
+  static WCPairedData fromJson(Map json) => _$WCPairedDataFromJson(json);
+  Map toJson() => _$WCPairedDataToJson(this);
+}
+
+abstract class _WCPairedData {
+  String topic;
+  Map relay;
+  WCProposerInfo peer;
+  WCPermissionData permissions;
+  Map state;
+  int expiry;
+}
+
+@JsonSerializable(explicitToJson: true)
 class WCProposerInfo extends _WCProposerInfo {
   static WCProposerInfo fromJson(Map json) => _$WCProposerInfoFromJson(json);
   Map toJson() => _$WCProposerInfoToJson(this);

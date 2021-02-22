@@ -36,6 +36,7 @@ abstract class _SignExtrinsicRequest {
   String tip;
   String transactionVersion;
   int version;
+  Map payload;
 }
 
 @JsonSerializable()

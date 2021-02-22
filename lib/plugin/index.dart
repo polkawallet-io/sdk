@@ -28,9 +28,16 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   final recoveryEnabled = false;
 
   /// Plugin should retrieve [networkState] & [networkConst] while start
-  NetworkStateData get networkState =>
-      NetworkStateData.fromJson(Map<String, dynamic>.from(
+  NetworkStateData get networkState {
+    try {
+      return NetworkStateData.fromJson(Map<String, dynamic>.from(
           _cache.read(_getNetworkCacheKey(net_state_cache_key)) ?? {}));
+    } catch (err) {
+      print(err);
+    }
+    return NetworkStateData();
+  }
+
   Map get networkConst =>
       _cache.read(_getNetworkCacheKey(net_const_cache_key)) ?? {};
 

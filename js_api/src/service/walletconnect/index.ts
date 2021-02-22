@@ -1,9 +1,13 @@
+import { ApiPromise } from "@polkadot/api";
 import WalletConnectClient, { CLIENT_EVENTS } from "@walletconnect/client";
 import { SessionTypes, ClientTypes } from "@walletconnect/types";
 
+import { Keyring } from "@polkadot/keyring";
+import { hexToU8a, u8aToHex, isHex, stringToU8a } from "@polkadot/util";
+
 let client: WalletConnectClient;
 
-async function connect(uri: string) {
+async function initClient() {
   if (!client) {
     client = await WalletConnectClient.init({
       relayProvider: "wss://staging.walletconnect.org",
@@ -20,6 +24,7 @@ async function connect(uri: string) {
 
     client.on(CLIENT_EVENTS.session.created, async (session: SessionTypes.Created) => {
       // session created succesfully
+      (<any>window).send("walletConnectCreated", session);
     });
 
     client.on(CLIENT_EVENTS.session.payload, async (payloadEvent: SessionTypes.PayloadEvent) => {
@@ -57,13 +62,14 @@ async function connect(uri: string) {
       //   await client.respond(response);
     });
   }
-
+}
+async function connect(uri: string) {
   client.pair({ uri });
   return {};
 }
-async function disconnect(param: ClientTypes.DisconnectParams) {
+async function disconnect(param: SessionTypes.DeleteParams) {
   if (client) {
-    client.disconnect(param);
+    client.session.delete(param);
   }
   return {};
 }
@@ -98,10 +104,67 @@ async function payloadRespond(response: any) {
   return {};
 }
 
+async function signPayload(api: ApiPromise, { payload }, password: string) {
+  const { method, params } = payload;
+  const address = params[0];
+  const keyPair = ((window as any).keyring as Keyring).getPair(address);
+  try {
+    if (!keyPair.isLocked) {
+      keyPair.lock();
+    }
+    keyPair.decodePkcs8(password);
+
+    if (method == "signExtrinsic") {
+      const txInfo = params[1];
+      const { header, mortalLength, nonce } = (await api.derive.tx.signingInfo(address)) as any;
+      const tx = api.tx[txInfo.module][txInfo.call](...txInfo.params);
+
+      const signerPayload = api.registry.createType("SignerPayload", {
+        address,
+        blockHash: header.hash,
+        blockNumber: header ? header.number : 0,
+        era: api.registry.createType("ExtrinsicEra", {
+          current: header.number,
+          period: mortalLength,
+        }),
+        genesisHash: api.genesisHash,
+        method: tx.method,
+        nonce,
+        signedExtensions: ["CheckNonce"],
+        tip: txInfo.tip,
+        runtimeVersion: {
+          specVersion: api.runtimeVersion.specVersion,
+          transactionVersion: api.runtimeVersion.transactionVersion,
+        },
+        version: api.extrinsicVersion,
+      });
+      const payload = signerPayload.toPayload();
+      const txPayload = api.registry.createType("ExtrinsicPayload", payload, {
+        version: payload.version,
+      });
+      const signed = txPayload.sign(keyPair);
+      return signed;
+    }
+    if (method == "signBytes") {
+      const msg = params[1];
+      const isDataHex = isHex(msg);
+      return {
+        signature: u8aToHex(keyPair.sign(isDataHex ? hexToU8a(msg) : stringToU8a(msg))),
+      };
+    }
+  } catch (err) {
+    (window as any).send({ error: err.message });
+  }
+
+  return {};
+}
+
 export default {
+  initClient,
   connect,
   disconnect,
   approveProposal,
   rejectProposal,
   payloadRespond,
+  signPayload,
 };

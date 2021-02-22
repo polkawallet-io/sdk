@@ -30,6 +30,30 @@ Map<String, dynamic> _$WCPairingDataToJson(WCPairingData instance) =>
       'ttl': instance.ttl,
     };
 
+WCPairedData _$WCPairedDataFromJson(Map<String, dynamic> json) {
+  return WCPairedData()
+    ..topic = json['topic'] as String
+    ..relay = json['relay'] as Map<String, dynamic>
+    ..peer = json['peer'] == null
+        ? null
+        : WCProposerInfo.fromJson(json['peer'] as Map<String, dynamic>)
+    ..permissions = json['permissions'] == null
+        ? null
+        : WCPermissionData.fromJson(json['permissions'] as Map<String, dynamic>)
+    ..state = json['state'] as Map<String, dynamic>
+    ..expiry = json['expiry'] as int;
+}
+
+Map<String, dynamic> _$WCPairedDataToJson(WCPairedData instance) =>
+    <String, dynamic>{
+      'topic': instance.topic,
+      'relay': instance.relay,
+      'peer': instance.peer?.toJson(),
+      'permissions': instance.permissions?.toJson(),
+      'state': instance.state,
+      'expiry': instance.expiry,
+    };
+
 WCProposerInfo _$WCProposerInfoFromJson(Map<String, dynamic> json) {
   return WCProposerInfo()
     ..publicKey = json['publicKey'] as String

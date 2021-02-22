@@ -1,5 +1,6 @@
 import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/pairingData.dart';
+import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 import 'package:polkawallet_sdk/service/walletConnect.dart';
 
 class ApiWalletConnect {
@@ -8,14 +9,27 @@ class ApiWalletConnect {
   final PolkawalletApi apiRoot;
   final ServiceWalletConnect service;
 
-  Future<Map> connect(String uri, Function(WCPairingData) onPairing,
-      Function(Map) onPayload) async {
-    final Map res = await service.connect(uri, (Map proposal) {
+  void initClient(
+    Function(WCPairingData) onPairing,
+    Function(WCPairedData) onPaired,
+    Function(WCPayloadData) onPayload,
+  ) {
+    service.initClient((Map proposal) {
       onPairing(WCPairingData.fromJson(proposal));
+    }, (Map session) {
+      onPaired(WCPairedData.fromJson(session));
     }, (Map payload) {
-      onPayload(payload);
+      onPayload(WCPayloadData.fromJson(payload));
     });
+  }
+
+  Future<Map> connect(String uri) async {
+    final Map res = await service.connect(uri);
     return res;
+  }
+
+  Future<Map> disconnect(Map params) async {
+    return await service.disconnect(params);
   }
 
   Future<Map> approvePairing(WCPairingData proposal, String address) async {
@@ -28,8 +42,21 @@ class ApiWalletConnect {
     return res;
   }
 
-  Future<Map> payloadRespond(Map response) async {
-    final Map res = await service.payloadRespond(response);
+  Future<Map> signPayload(WCPayloadData payload, String password) async {
+    return await service.signPayload(payload.toJson(), password);
+  }
+
+  Future<Map> payloadRespond(WCPayloadData payload,
+      {Map response, Map error}) async {
+    final Map res = await service.payloadRespond({
+      'topic': payload.topic,
+      'response': {
+        'id': payload.payload.id,
+        'jsonrpc': '2.0',
+        'result': response,
+        'error': error,
+      }
+    });
     return res;
   }
 }

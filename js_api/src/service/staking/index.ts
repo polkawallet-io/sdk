@@ -6,8 +6,8 @@ import {
   DeriveStakingWaiting
 } from "@polkadot/api-derive/types";
 import type { Option, StorageKey } from '@polkadot/types';
-import { u8aConcat, u8aToHex, BN_ZERO, BN_ONE, formatBalance, isFunction, arrayFlatten } from '@polkadot/util';
-import { AccountId, Nominations, EraIndex } from "@polkadot/types/interfaces";
+import { u8aConcat, u8aToHex, BN_ZERO, BN_MILLION, BN_ONE, formatBalance, isFunction, arrayFlatten } from '@polkadot/util';
+import {  Nominations } from "@polkadot/types/interfaces";
 import BN from "bn.js";
 
 import { getInflationParams, Inflation } from './inflation';
@@ -339,13 +339,21 @@ interface LastEra {
 function _extractSingleTarget (api: ApiPromise, derive: DeriveStakingElected | DeriveStakingWaiting, { activeEra, eraLength, lastEra, sessionLength }: LastEra, historyDepth?: BN): [any[], string[]] {
   const nominators: Record<string, boolean> = {};
   const emptyExposure = api.createType('Exposure');
-  const earliestEra = historyDepth && lastEra.sub(historyDepth).addn(1);
+  const earliestEra = historyDepth && lastEra.sub(historyDepth).iadd(BN_ONE);
   const list = derive.info.map(({ accountId, exposure = emptyExposure, stakingLedger, validatorPrefs }): any => {
     // some overrides (e.g. Darwinia Crab) does not have the own/total field in Exposure
     let [bondOwn, bondTotal] = exposure.total
       ? [exposure.own.unwrap(), exposure.total.unwrap()]
       : [BN_ZERO, BN_ZERO];
     const skipRewards = bondTotal.isZero();
+    // some overrides (e.g. Darwinia Crab) does not have the value field in IndividualExposure
+    const minNominated = (exposure.others || []).reduce((min: BN, { value = api.createType('Compact<Balance>') }): BN => {
+      const actual = value.unwrap();
+
+      return min.isZero() || actual.lt(min)
+        ? actual
+        : min;
+    }, BN_ZERO);
 
     if (bondTotal.isZero()) {
       bondTotal = bondOwn = stakingLedger.total.unwrap();
@@ -378,6 +386,7 @@ function _extractSingleTarget (api: ApiPromise, derive: DeriveStakingElected | D
       key,
       knownLength: activeEra.sub(stakingLedger.claimedRewards[0] || activeEra),
       lastPayout,
+      minNominated,
       numNominators: (exposure.others || []).length,
       numRecentPayouts: earliestEra
         ? stakingLedger.claimedRewards.filter((era) => era.gte(earliestEra)).length
@@ -469,6 +478,7 @@ interface SortedTargets {
   inflation: Inflation;
   lowStaked?: BN;
   medianComm: number;
+  minNominated: BN;
   nominators?: string[];
   totalStaked?: BN;
   totalIssuance?: BN;
@@ -490,11 +500,16 @@ function _extractTargetsInfo(api: ApiPromise, electedDerive: DeriveStakingElecte
   // add the explicit stakedReturn
   !avgStaked.isZero() && elected.forEach((e): void => {
     if (!e.skipRewards) {
-      e.stakedReturn = inflation.stakedReturn * avgStaked.muln(1_000_000).div(e.bondTotal).toNumber() / 1_000_000;
+      e.stakedReturn = inflation.stakedReturn * avgStaked.mul(BN_MILLION).div(e.bondTotal).toNumber() / BN_MILLION.toNumber();
       e.stakedReturnCmp = e.stakedReturn * (100 - e.commissionPer) / 100;
     }
   });
 
+  const minNominated = elected.reduce((min: BN, { minNominated }) => {
+    return min.isZero() || minNominated.lt(min)
+      ? minNominated
+      : min;
+  }, BN_ZERO);
   // all validators, calc median commission
   const validators = sortValidators(arrayFlatten([elected, waiting]));
   const commValues = validators.map(({ commissionPer }) => commissionPer).sort((a, b) => a - b);
@@ -515,6 +530,7 @@ function _extractTargetsInfo(api: ApiPromise, electedDerive: DeriveStakingElecte
     inflation,
     lowStaked: activeTotals[0] || BN_ZERO,
     medianComm,
+    minNominated,
     nominators,
     totalIssuance,
     totalStaked,

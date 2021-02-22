@@ -61,6 +61,8 @@ class WebViewRunner {
 
     _web.launch(
       'https://localhost:8080/',
+      clearCookies: true,
+      clearCache: true,
       javascriptChannels: [
         JavascriptChannel(
             name: 'PolkaWallet',
