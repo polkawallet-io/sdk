@@ -70,7 +70,7 @@ class Keyring {
 class KeyringPrivateStore {
   final KeyringStorage _storage = KeyringStorage();
   final LocalStorage _storageOld = LocalStorage();
-  final List<int> ss58List = [0, 2, 42];
+  final List<int> ss58List = [0, 2, 7, 42];
 
   Map<String, Map> _pubKeyAddressMap = {};
   Map<String, String> _iconsMap = {};
