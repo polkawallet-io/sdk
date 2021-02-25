@@ -173,6 +173,8 @@ class PluginBasicData {
     this.name,
     this.ss58,
     this.primaryColor,
+    this.gradientColor,
+    this.backgroundImage,
     this.icon,
     this.iconDisabled,
     this.jsCodeVersion,
@@ -181,6 +183,10 @@ class PluginBasicData {
   final String name;
   final int ss58;
   final MaterialColor primaryColor;
+  final Color gradientColor;
+
+  /// The image will be displayed in network-select page
+  final AssetImage backgroundImage;
 
   /// The icons will be displayed in network-select page
   /// in Polkawallet App.
