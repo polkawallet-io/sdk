@@ -62,6 +62,9 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   }
 
   void loadBalances(KeyPairData acc) {
+    // do not load balance data from cache if we have no decimals data.
+    if (networkState.tokenDecimals == null) return;
+
     updateBalances(
       acc,
       BalanceData.fromJson(Map<String, dynamic>.from(

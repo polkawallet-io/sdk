@@ -24,11 +24,11 @@
     "build-dev": "webpack -d --mode development"
   },
   "resolutions": {
-    "@polkadot/api": "^3.7.3"
+    "@polkadot/api": "^3.11.1"
   },
   "dependencies": {
-    "@polkadot/api": "^3.7.3",
-    "@polkadot/ui-shared": "0.68.1",
+    "@polkadot/api": "^3.11.1",
+    "@polkadot/ui-shared": "0.70.1",
     "@walletconnect/client": "2.0.0-alpha.26",
     "bn.js": "^5.1.2",
     "oo7-substrate": "^0.8.0",
