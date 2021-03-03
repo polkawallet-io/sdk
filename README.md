@@ -13,7 +13,7 @@ cd polkwalllet_plugin_acala/
 add dependencies in pubspec.yaml
 ```yaml
 dependencies:
-  polkawallet_sdk: ^0.0.4
+  polkawallet_sdk: ^0.1.1
 ```
 and install the dependencies.
 ```shell
@@ -47,10 +47,13 @@ class PluginAcala extends PolkawalletPlugin {
     name: 'acala',
     ss58: 42,
     primaryColor: Colors.deepPurple,
+    gradientColor: Colors.blue,
+    backgroundImage: AssetImage('packages/polkawallet_plugin_acala/assets/images/bg.png'),
     icon:
         Image.asset('packages/polkawallet_plugin_acala/assets/images/logo.png'),
     iconDisabled: Image.asset(
         'packages/polkawallet_plugin_acala/assets/images/logo_gray.png'),
+    isTestNet: false,
   );
 ```
 
@@ -94,12 +97,12 @@ The `HomeNavItem.content` is the page content widget displayed while your navIte
     return [
       HomeNavItem(
         text: 'Acala',
-        icon: Image(
-            image: AssetImage('assets/images/acala_dark.png',
-                package: 'polkawallet_plugin_acala')),
-        iconActive: Image(
-            image: AssetImage('assets/images/acala_indigo.png',
-                package: 'polkawallet_plugin_acala')),
+        icon: SvgPicture.asset(
+          'packages/polkawallet_plugin_acala/assets/images/logo.svg',
+          color: Theme.of(context).disabledColor,
+        ),
+        iconActive: SvgPicture.asset(
+            'packages/polkawallet_plugin_acala/assets/images/logo.svg'),
         content: AcalaEntry(this, keyring),
       )
     ];
