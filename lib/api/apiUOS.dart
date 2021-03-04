@@ -25,8 +25,8 @@ class ApiUOS {
 
   /// this function must be called after parseQrCode.
   /// @return: signature [String]
-  Future<String> signAsync(String password) async {
-    return service.signAsync(password);
+  Future<String> signAsync(String chain, password) async {
+    return service.signAsync(chain, password);
   }
 
   /// [onStatusChange] is a callback when tx status change.

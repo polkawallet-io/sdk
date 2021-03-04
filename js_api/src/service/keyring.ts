@@ -3,6 +3,9 @@ import { hexToU8a, u8aToHex, isHex, stringToU8a } from "@polkadot/util";
 import BN from "bn.js";
 import { parseQrCode, getSigner, makeTx, getSubmittable } from "../utils/QrSigner";
 import gov from "./gov";
+import metaDataMap from "../constants/networkMetadata";
+import { TypeRegistry } from "@polkadot/types";
+import { Metadata } from "@polkadot/metadata";
 
 import { Keyring } from "@polkadot/keyring";
 import { KeypairType } from "@polkadot/util-crypto/types";
@@ -293,7 +296,7 @@ async function checkDerivePath(seed: string, derivePath: string, pairType: Keypa
 /**
  * sign tx with QR
  */
-async function signAsync(api: ApiPromise, password: string) {
+async function signAsync(chain: string, password: string) {
   return new Promise((resolve) => {
     const { unsignedData } = getSigner();
     const keyPair = keyring.getPair(unsignedData.data.account);
@@ -302,7 +305,20 @@ async function signAsync(api: ApiPromise, password: string) {
         keyPair.lock();
       }
       keyPair.decodePkcs8(password);
-      const payload = api.registry.createType("ExtrinsicPayload", unsignedData.data.data, { version: api.extrinsicVersion });
+
+      let payload: any;
+      if (!(<any>window).api) {
+        const registry = new TypeRegistry();
+        registry.setMetadata(new Metadata(registry, metaDataMap[chain]));
+        payload = registry.createType("ExtrinsicPayload", unsignedData.data.data, {
+          version: 4,
+        });
+      } else {
+        payload = (<any>window).api.registry.createType("ExtrinsicPayload", unsignedData.data.data, {
+          version: (<any>window).api.extrinsicVersion,
+        });
+      }
+
       const signed = payload.sign(keyPair);
       resolve(signed);
     } catch (err) {

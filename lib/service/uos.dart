@@ -34,9 +34,9 @@ class ServiceUOS {
 
   /// this function must be called after parseQrCode.
   /// @return: signature [String]
-  Future<String> signAsync(String password) async {
+  Future<String> signAsync(String chain, password) async {
     final res = await serviceRoot.webView
-        .evalJavascript('keyring.signAsync(api, "$password")');
+        .evalJavascript('keyring.signAsync("$chain", "$password")');
     if (res['error'] != null) {
       throw Exception(res['error']);
     }
