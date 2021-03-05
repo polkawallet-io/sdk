@@ -39,4 +39,4 @@
 ## [0.1.1] - 20210304
 
 * update keyring.signAsync().
-* update polkadot-js/api v3.11.1
+* update polkadot-js/api v4.0.1-7
