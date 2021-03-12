@@ -48,9 +48,12 @@ class PluginAcala extends PolkawalletPlugin {
     ss58: 42,
     primaryColor: Colors.deepPurple,
     gradientColor: Colors.blue,
+    // The `bg.png` will be displayed as texture on a block with theme color,
+    // so it should have a transparent or dark background color.
     backgroundImage: AssetImage('packages/polkawallet_plugin_acala/assets/images/bg.png'),
     icon:
         Image.asset('packages/polkawallet_plugin_acala/assets/images/logo.png'),
+    // The `logo_gray.png` should have a gray color `#9e9e9e`.
     iconDisabled: Image.asset(
         'packages/polkawallet_plugin_acala/assets/images/logo_gray.png'),
     isTestNet: false,
