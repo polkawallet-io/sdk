@@ -382,6 +382,7 @@ function _extractSingleTarget (api: ApiPromise, derive: DeriveStakingElected | D
       commissionPer: validatorPrefs.commission.unwrap().toNumber() / 10_000_000,
       exposure,
       isActive: !skipRewards,
+      isBlocking: !!(validatorPrefs.blocked && validatorPrefs.blocked.isTrue),
       isElected: !_isWaitingDerive(derive) && derive.nextElected.some((e) => e.eq(accountId)),
       key,
       knownLength: activeEra.sub(stakingLedger.claimedRewards[0] || activeEra),
