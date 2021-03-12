@@ -40,3 +40,7 @@
 
 * update keyring.signAsync().
 * update polkadot-js/api v4.0.1-7
+
+## [0.1.2] - 20210312
+
+* add `isBlocking` status of validator.

@@ -13,7 +13,7 @@ cd polkwalllet_plugin_acala/
 add dependencies in pubspec.yaml
 ```yaml
 dependencies:
-  polkawallet_sdk: ^0.1.1
+  polkawallet_sdk: ^0.1.2
 ```
 and install the dependencies.
 ```shell
