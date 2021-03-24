@@ -44,3 +44,8 @@
 ## [0.1.2] - 20210312
 
 * add `isBlocking` status of validator.
+
+## [0.1.3] - 20210312
+
+* add `TokenBalanceData.decimals`.
+* update subscan api domain.

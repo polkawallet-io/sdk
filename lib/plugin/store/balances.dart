@@ -38,10 +38,17 @@ class ExtraTokenData {
 }
 
 class TokenBalanceData {
-  TokenBalanceData({this.name, this.symbol, this.amount, this.detailPageRoute});
+  TokenBalanceData({
+    this.name,
+    this.symbol,
+    this.decimals,
+    this.amount,
+    this.detailPageRoute,
+  });
 
   final String name;
   final String symbol;
+  final int decimals;
   final String amount;
 
   final String detailPageRoute;
