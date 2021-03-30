@@ -114,7 +114,7 @@ class ServiceKeyring {
         ? 'signBytesAsExtension'
         : 'signTxAsExtension';
     final res = await serviceRoot.webView.evalJavascript(
-      'keyring.$call(api, "$password", ${jsonEncode(args['request'])})',
+      'keyring.$call("$password", ${jsonEncode(args['request'])})',
       allowRepeat: true,
     );
     return res;

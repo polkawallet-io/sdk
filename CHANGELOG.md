@@ -49,3 +49,8 @@
 
 * add `TokenBalanceData.decimals`.
 * update subscan api domain.
+
+## [0.1.4] - 20210330
+
+* use polkadot-js/api v4.2.1
+* fix `keyring.signTxAsExtension` & `keyring.signBytesAsExtension`.

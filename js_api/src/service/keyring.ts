@@ -368,7 +368,7 @@ function addSignatureAndSend(api: ApiPromise, address: string, signed: string) {
 /**
  * sign tx from dapp as extension
  */
-async function signTxAsExtension(api: ApiPromise, password: string, json: any) {
+async function signTxAsExtension(password: string, json: any) {
   return new Promise((resolve) => {
     const keyPair = keyring.getPair(json["address"]);
     try {
@@ -376,8 +376,17 @@ async function signTxAsExtension(api: ApiPromise, password: string, json: any) {
         keyPair.lock();
       }
       keyPair.decodePkcs8(password);
-      api.registry.setSignedExtensions(json["signedExtensions"]);
-      const payload = api.registry.createType("ExtrinsicPayload", json, {
+
+      let registry: any;
+      if (!(<any>window).api) {
+        registry = new TypeRegistry();
+        registry.setMetadata(new Metadata(registry, metaDataMap["kusama"]));
+      } else {
+        registry = (<any>window).api.registry;
+      }
+
+      registry.setSignedExtensions(json["signedExtensions"]);
+      const payload = registry.createType("ExtrinsicPayload", json, {
         version: json["version"],
       });
       const signed = payload.sign(keyPair);
@@ -391,7 +400,7 @@ async function signTxAsExtension(api: ApiPromise, password: string, json: any) {
 /**
  * sign bytes from dapp as extension
  */
-async function signBytesAsExtension(api: ApiPromise, password: string, json: any) {
+async function signBytesAsExtension(password: string, json: any) {
   return new Promise((resolve) => {
     const keyPair = keyring.getPair(json["address"]);
     try {

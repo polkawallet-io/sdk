@@ -116,7 +116,7 @@ class ApiKeyring {
   /// This method query account icons and set icons to [Keyring.store]
   /// so we can get icon of an account from [Keyring] instance.
   Future<void> updatePubKeyIconsMap(Keyring keyring, [List pubKeys]) async {
-    final ls = List<String>();
+    final List<String> ls = [];
     if (pubKeys != null) {
       ls.addAll(List<String>.from(pubKeys));
     } else {
@@ -140,7 +140,7 @@ class ApiKeyring {
   /// This method query account indices and set data to [Keyring.store]
   /// so we can get index info of an account from [Keyring] instance.
   Future<void> updateIndicesMap(Keyring keyring, [List addresses]) async {
-    final ls = List<String>();
+    final List<String> ls = [];
     if (addresses != null) {
       ls.addAll(List<String>.from(addresses));
     } else {
