@@ -54,3 +54,7 @@
 
 * use polkadot-js/api v4.2.1
 * fix `keyring.signTxAsExtension` & `keyring.signBytesAsExtension`.
+
+## [0.1.5] - 20210416
+
+* bump polkadot-js/api v4.5.1
