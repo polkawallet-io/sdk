@@ -14,4 +14,5 @@ abstract class _NetworkStateData {
   List<int> tokenDecimals;
   List<String> tokenSymbol;
   String name = '';
+  String genesisHash = '';
 }

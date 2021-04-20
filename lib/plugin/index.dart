@@ -174,6 +174,7 @@ abstract class PolkawalletPluginBase {
 class PluginBasicData {
   PluginBasicData({
     this.name,
+    this.genesisHash,
     this.ss58,
     this.primaryColor,
     this.gradientColor,
@@ -184,6 +185,7 @@ class PluginBasicData {
     this.isTestNet = true,
   });
   final String name;
+  final String genesisHash;
   final int ss58;
   final MaterialColor primaryColor;
   final Color gradientColor;
