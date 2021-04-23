@@ -400,8 +400,7 @@ function _extractSingleTarget (api: ApiPromise, derive: DeriveStakingElected | D
       rankReward: 0,
       skipRewards,
       stakedReturn: 0,
-      stakedReturnCmp: 0,
-      validatorPrefs
+      stakedReturnCmp: 0
     };
   });
 
