@@ -109,7 +109,7 @@ class KeyringPrivateStore {
         e['address'] = _pubKeyAddressMap[networkSS58][e['pubKey']];
       }
       e['icon'] = _iconsMap[e['pubKey']];
-      e['indexInfo'] = _indicesMap[e['pubKey']];
+      e['indexInfo'] = _indicesMap[e['address']];
     });
     return ls;
   }
