@@ -1,6 +1,6 @@
 {
   "name": "@polkawallet/js-api",
-  "version": "0.0.2",
+  "version": "0.1.7",
   "main": "index.js",
   "license": "Apache-2.0",
   "keywords": [
@@ -24,11 +24,11 @@
     "build-dev": "webpack -d --mode development"
   },
   "resolutions": {
-    "@polkadot/api": "^4.6.2"
+    "@polkadot/api": "^4.9.2"
   },
   "dependencies": {
-    "@polkadot/api": "^4.6.2",
-    "@polkadot/ui-shared": "0.74.1",
+    "@polkadot/api": "^4.9.2",
+    "@polkadot/ui-shared": "0.75.1",
     "@walletconnect/client": "2.0.0-alpha.26",
     "bn.js": "^5.1.2",
     "oo7-substrate": "^0.8.0",

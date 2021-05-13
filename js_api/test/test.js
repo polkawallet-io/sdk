@@ -13,10 +13,7 @@ async function runSettingsTest() {
 
   console.log("test get consts");
   const constants = await settings.getNetworkConst(api);
-  expect(
-    constants.babe.epochDuration.toHuman(),
-    api.consts.babe.epochDuration.toHuman()
-  );
+  expect(constants.babe.epochDuration.toHuman(), api.consts.babe.epochDuration.toHuman());
 
   console.log("settings tests passed.");
 }
@@ -28,9 +25,7 @@ async function runKeyringTest() {
   console.log("init keys from json");
   const initialAcc = await keyring.initKeys([JSON.parse(testKeystore)], [0, 2]);
   expect(
-    initialAcc[0][
-      "0xcc597bd2e7eda5094d6aa462523b629a502db6cc71a6ae0e9b158d9e42c6c462"
-    ],
+    initialAcc[0]["0xcc597bd2e7eda5094d6aa462523b629a502db6cc71a6ae0e9b158d9e42c6c462"],
     "15cwMLiH57HvrqBfMYpt5AgGrb5SAUKx7XQUcHnBSs2DAsGt"
   );
 
@@ -41,12 +36,7 @@ async function runKeyringTest() {
   console.log("import account from mnemonic");
   const sr25519 = "sr25519";
   const password = "a111111";
-  const acc = await keyring.recover(
-    "mnemonic",
-    sr25519,
-    mnemonic.mnemonic,
-    password
-  );
+  const acc = await keyring.recover("mnemonic", sr25519, mnemonic.mnemonic, password);
   expect(acc.pubKey.length, 66);
   expect(acc.mnemonic, mnemonic.mnemonic);
   expect(acc.encoding.content[1], sr25519);
@@ -58,12 +48,7 @@ async function runKeyringTest() {
   expect(acc2.encoding.content[1], sr25519);
 
   console.log("import account from json");
-  const acc3 = await keyring.recover(
-    "keystore",
-    sr25519,
-    testKeystore,
-    password
-  );
+  const acc3 = await keyring.recover("keystore", sr25519, testKeystore, password);
   expect(acc3.pubKey.length, 66);
   expect(acc3.address, "15cwMLiH57HvrqBfMYpt5AgGrb5SAUKx7XQUcHnBSs2DAsGt");
   expect(acc3.encoding.content[1], sr25519);
@@ -71,35 +56,15 @@ async function runKeyringTest() {
   console.log("check derive path");
   const deriveError = await keyring.checkDerivePath("Alice", "", sr25519);
   expect(deriveError, null);
-  const deriveError1 = await keyring.checkDerivePath(
-    "Alice",
-    "//test",
-    sr25519
-  );
+  const deriveError1 = await keyring.checkDerivePath("Alice", "//test", sr25519);
   expect(deriveError1, null);
-  const deriveError2 = await keyring.checkDerivePath(
-    "Alice",
-    "//test/wallet",
-    sr25519
-  );
+  const deriveError2 = await keyring.checkDerivePath("Alice", "//test/wallet", sr25519);
   expect(deriveError2, null);
-  const deriveError3 = await keyring.checkDerivePath(
-    "Alice",
-    "test//",
-    sr25519
-  );
+  const deriveError3 = await keyring.checkDerivePath("Alice", "test//", sr25519);
   expect(true, !!deriveError3);
-  const deriveError4 = await keyring.checkDerivePath(
-    "Alice",
-    "//test",
-    "ed25519"
-  );
+  const deriveError4 = await keyring.checkDerivePath("Alice", "//test", "ed25519");
   expect(deriveError4, null);
-  const deriveError5 = await keyring.checkDerivePath(
-    "Alice",
-    "/test",
-    "ed25519"
-  );
+  const deriveError5 = await keyring.checkDerivePath("Alice", "/test", "ed25519");
   expect(true, !!deriveError5);
 
   console.log("generate icons from address");
@@ -127,11 +92,7 @@ async function runKeyringTest() {
 
   console.log("change password");
   const passNew = "c111111";
-  const passChangeRes = await keyring.changePassword(
-    acc.pubKey,
-    password,
-    passNew
-  );
+  const passChangeRes = await keyring.changePassword(acc.pubKey, password, passNew);
   expect(passChangeRes.pubKey, acc.pubKey);
   const passCheck3 = await keyring.checkPassword(acc.pubKey, password);
   expect(passCheck3, null);
@@ -143,8 +104,7 @@ async function runKeyringTest() {
 
 async function runAccountTest() {
   console.log("query account bonded");
-  const testKey =
-    "0xe611c2eced1b561183f88faed0dd7d88d5fafdf16f5840c63ec36d8c31136f61";
+  const testKey = "0xe611c2eced1b561183f88faed0dd7d88d5fafdf16f5840c63ec36d8c31136f61";
   const testAddr = "HmyonjFVFZyg1mRjRvohVGRw9ouFDRoQ5ea9nDfH2Yi44qQ";
   const bonded = await account.queryAccountsBonded(api, [testKey]);
   expect(bonded[0][0], testKey);

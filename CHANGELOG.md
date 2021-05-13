@@ -63,3 +63,7 @@
 
 * bump polkadot-js/api v4.6.2
 * add NetworkStateData.genesisHash & PluginBasicData.genesisHash
+
+## [0.1.7] - 20210513
+
+* bump polkadot-js/api v4.9.2

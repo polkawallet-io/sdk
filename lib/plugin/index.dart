@@ -152,7 +152,7 @@ abstract class PolkawalletPluginBase {
 
   /// Plugin should define a list of node to connect
   /// for users of Polkawallet App.
-  List<NetworkParams> get nodeList => List<NetworkParams>();
+  List<NetworkParams> get nodeList => [];
 
   /// Plugin should provide [tokenIcons]
   /// for display in Assets page of Polkawallet App.
@@ -160,8 +160,7 @@ abstract class PolkawalletPluginBase {
 
   /// The [getNavItems] method returns a list of [HomeNavItem] which defines
   /// the [Widget] to be used in home page of polkawallet App.
-  List<HomeNavItem> getNavItems(BuildContext context, Keyring keyring) =>
-      List<HomeNavItem>();
+  List<HomeNavItem> getNavItems(BuildContext context, Keyring keyring) => [];
 
   /// App will add plugin's pages with custom [routes].
   Map<String, WidgetBuilder> getRoutes(Keyring keyring) =>
