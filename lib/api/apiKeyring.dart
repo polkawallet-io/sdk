@@ -157,6 +157,7 @@ class ApiKeyring {
         data[e['accountId']] = e;
       });
       keyring.store.updateIndicesMap(Map<String, Map>.from(data));
+      keyring.allAccounts;
     }
   }
 
