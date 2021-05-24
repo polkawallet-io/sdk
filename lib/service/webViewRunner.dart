@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:jaguar/jaguar.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/service/jaguar_flutter_asset.dart';
@@ -11,14 +11,13 @@ import 'package:polkawallet_sdk/service/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 
 class WebViewRunner {
-  FlutterWebviewPlugin _web;
+  HeadlessInAppWebView _web;
   Function _onLaunched;
 
+  String _jsCode;
   Map<String, Function> _msgHandlers = {};
   Map<String, Completer> _msgCompleters = {};
   int _evalJavascriptUID = 0;
-
-  StreamSubscription _subscription;
 
   Future<void> launch(
     ServiceKeyring keyring,
@@ -32,62 +31,53 @@ class WebViewRunner {
     _evalJavascriptUID = 0;
     _onLaunched = onLaunched;
 
-    final needLaunch = _web == null;
+    _jsCode = jsCode ??
+        await rootBundle
+            .loadString('packages/polkawallet_sdk/js_api/dist/main.js');
+    print('js file loaded');
 
-    _web = FlutterWebviewPlugin();
+    if (_web == null) {
+      await _startLocalServer();
 
-    /// cancel another plugin's listener before launch
-    if (_subscription != null) {
-      _subscription.cancel();
+      _web = new HeadlessInAppWebView(
+        initialOptions: InAppWebViewGroupOptions(
+          crossPlatform: InAppWebViewOptions(),
+        ),
+        onWebViewCreated: (controller) {
+          print('HeadlessInAppWebView created!');
+        },
+        onConsoleMessage: (controller, message) {
+          print("CONSOLE MESSAGE: " + message.message);
+          if (message.messageLevel != ConsoleMessageLevel.LOG) return;
+
+          compute(jsonDecode, message.message).then((msg) {
+            final String path = msg['path'];
+            if (_msgCompleters[path] != null) {
+              Completer handler = _msgCompleters[path];
+              handler.complete(msg['data']);
+              if (path.contains('uid=')) {
+                _msgCompleters.remove(path);
+              }
+            }
+            if (_msgHandlers[path] != null) {
+              Function handler = _msgHandlers[path];
+              handler(msg['data']);
+            }
+          });
+        },
+        onLoadStop: (controller, url) async {
+          print('webview loaded');
+          await _startJSCode(keyring, keyringStorage);
+        },
+      );
+    } else {
+      await _web.dispose();
     }
-    _subscription = _web.onStateChanged.listen((viewState) async {
-      if (viewState.type == WebViewState.finishLoad) {
-        print('webview loaded');
-        final js = jsCode ??
-            await rootBundle
-                .loadString('packages/polkawallet_sdk/js_api/dist/main.js');
 
-        print('js file loaded');
-        await _startJSCode(js, keyring, keyringStorage);
-      }
-    });
+    await _web.run();
 
-    if (!needLaunch) {
-      _web.reload();
-      return;
-    }
-
-    await _startLocalServer();
-
-    _web.launch(
-      'https://localhost:8080/',
-      clearCookies: true,
-      clearCache: true,
-      javascriptChannels: [
-        JavascriptChannel(
-            name: 'PolkaWallet',
-            onMessageReceived: (JavascriptMessage message) {
-              print('received msg: ${message.message}');
-              compute(jsonDecode, message.message).then((msg) {
-                final String path = msg['path'];
-                if (_msgCompleters[path] != null) {
-                  Completer handler = _msgCompleters[path];
-                  handler.complete(msg['data']);
-                  if (path.contains('uid=')) {
-                    _msgCompleters.remove(path);
-                  }
-                }
-                if (_msgHandlers[path] != null) {
-                  Function handler = _msgHandlers[path];
-                  handler(msg['data']);
-                }
-              });
-            }),
-      ].toSet(),
-      ignoreSSLErrors: true,
-      // withLocalUrl: true,
-      hidden: true,
-    );
+    _web.webViewController.loadUrl(
+        urlRequest: URLRequest(url: Uri.parse("https://localhost:8080/")));
   }
 
   Future<void> _startLocalServer() async {
@@ -105,12 +95,9 @@ class WebViewRunner {
   }
 
   Future<void> _startJSCode(
-    String js,
-    ServiceKeyring keyring,
-    Keyring keyringStorage,
-  ) async {
+      ServiceKeyring keyring, Keyring keyringStorage) async {
     // inject js file to webView
-    await _web.evalJavascript(js);
+    await _web.webViewController.evaluateJavascript(source: _jsCode);
 
     _onLaunched();
   }
@@ -136,21 +123,22 @@ class WebViewRunner {
     }
 
     if (!wrapPromise) {
-      String res = await _web.evalJavascript(code);
+      final res = await _web.webViewController.evaluateJavascript(source: code);
       return res;
     }
 
-    Completer c = new Completer();
+    final c = new Completer();
 
-    String method = 'uid=${getEvalJavascriptUID()};${code.split('(')[0]}';
+    final uid = getEvalJavascriptUID();
+    final method = 'uid=$uid;${code.split('(')[0]}';
     _msgCompleters[method] = c;
 
-    String script = '$code.then(function(res) {'
-        '  PolkaWallet.postMessage(JSON.stringify({ path: "$method", data: res }));'
+    final script = '$code.then(function(res) {'
+        '  console.log(JSON.stringify({ path: "$method", data: res }));'
         '}).catch(function(err) {'
-        '  PolkaWallet.postMessage(JSON.stringify({ path: "log", data: err.message }));'
-        '})';
-    _web.evalJavascript(script);
+        '  console.log(JSON.stringify({ path: "log", data: err.message }));'
+        '});$uid;';
+    _web.webViewController.evaluateJavascript(source: script);
 
     return c.future;
   }
@@ -177,7 +165,8 @@ class WebViewRunner {
   void unsubscribeMessage(String channel) {
     print('unsubscribe $channel');
     final unsubCall = 'unsub$channel';
-    _web.evalJavascript('window.$unsubCall && window.$unsubCall()');
+    _web.webViewController
+        .evaluateJavascript(source: 'window.$unsubCall && window.$unsubCall()');
   }
 
   void addMsgHandler(String channel, Function onMessage) {

@@ -38,10 +38,8 @@ class SubScanRequestParams {
   String module;
   String call;
 }
-const post_headers = {
-"Content-type": "application/json",
-"Accept": "*/*"
-};
+
+const post_headers = {"Content-type": "application/json", "Accept": "*/*"};
 
 /// Querying txs from [subscan.io](https://subscan.io).
 class SubScanApi {
@@ -150,7 +148,8 @@ class SubScanApi {
       "row": params.row,
       "address": params.address,
     });
-    Response res = await post(url, headers: post_headers, body: body);
+    Response res =
+        await post(Uri.parse(url), headers: post_headers, body: body);
     if (res.body != null) {
       final obj = await compute(jsonDecode, res.body);
       if (params.sendPort != null) {
@@ -178,7 +177,8 @@ class SubScanApi {
       params['call'] = para.call;
     }
     String body = jsonEncode(params);
-    Response res = await post(url, headers: post_headers, body: body);
+    Response res =
+        await post(Uri.parse(url), headers: post_headers, body: body);
     if (res.body != null) {
       final obj = await compute(jsonDecode, res.body);
       if (para.sendPort != null) {
@@ -200,7 +200,8 @@ class SubScanApi {
       "row": para.row,
     };
     String body = jsonEncode(params);
-    Response res = await post(url, headers: post_headers, body: body);
+    Response res =
+        await post(Uri.parse(url), headers: post_headers, body: body);
     if (res.body != null) {
       final obj = await compute(jsonDecode, res.body);
       if (para.sendPort != null) {
