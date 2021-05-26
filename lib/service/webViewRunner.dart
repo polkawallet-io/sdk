@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +20,9 @@ class WebViewRunner {
   Map<String, Completer> _msgCompleters = {};
   int _evalJavascriptUID = 0;
 
+  bool _webViewLoaded = false;
+  Timer _webViewReloadTimer;
+
   Future<void> launch(
     ServiceKeyring keyring,
     Keyring keyringStorage,
@@ -30,6 +34,7 @@ class WebViewRunner {
     _msgCompleters = {};
     _evalJavascriptUID = 0;
     _onLaunched = onLaunched;
+    _webViewLoaded = false;
 
     _jsCode = jsCode ??
         await rootBundle
@@ -67,17 +72,30 @@ class WebViewRunner {
         },
         onLoadStop: (controller, url) async {
           print('webview loaded');
+          _handleReloaded();
           await _startJSCode(keyring, keyringStorage);
         },
       );
+
+      await _web.run();
+      _web.webViewController.loadUrl(
+          urlRequest: URLRequest(url: Uri.parse("https://localhost:8080/")));
     } else {
-      await _web.dispose();
+      _tryReload();
     }
+  }
 
-    await _web.run();
+  void _tryReload() {
+    if (!_webViewLoaded) {
+      _web?.webViewController?.reload();
 
-    _web.webViewController.loadUrl(
-        urlRequest: URLRequest(url: Uri.parse("https://localhost:8080/")));
+      _webViewReloadTimer = Timer(Duration(seconds: 3), _tryReload);
+    }
+  }
+
+  void _handleReloaded() {
+    _webViewReloadTimer?.cancel();
+    _webViewLoaded = true;
   }
 
   Future<void> _startLocalServer() async {
