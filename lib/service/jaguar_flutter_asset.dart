@@ -39,7 +39,7 @@ Route serveFlutterAssets(
       mimeType = 'text/html';
     }
 
-    ctx.response = ByteResponse(body, mimeType: mimeType);
+    ctx.response = ByteResponse(body: body, mimeType: mimeType);
   }, pathRegEx: pathRegEx, responseProcessor: responseProcessor);
 
   if (stripPrefix) skipCount = route.pathSegments.length - 1;

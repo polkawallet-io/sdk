@@ -8,13 +8,9 @@ import staking from "./service/staking";
 import gov from "./service/gov";
 import { genLinks } from "./utils/config/config";
 
-// send message to JSChannel: PolkaWallet
+// console.log will send message to MsgChannel to App
 function send(path: string, data: any) {
-  if (window.location.href.match("https://localhost:8080/")) {
-    PolkaWallet.postMessage(JSON.stringify({ path, data }));
-  } else {
-    console.log(path, data);
-  }
+  console.log(JSON.stringify({ path, data }));
 }
 send("log", "main js loaded");
 (<any>window).send = send;
