@@ -72,3 +72,7 @@
 
 * bump polkadot-js/api v4.11.2
 * replace flutter_webview_plugin with flutter_inappwebview
+
+## [0.1.9] - 20210601
+
+* bump polkadot-js/api v4.12.1
