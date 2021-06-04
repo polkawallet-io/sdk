@@ -63,6 +63,7 @@ class SubScanApi {
   Future<Map> fetchTransfersAsync(
     String address,
     int page, {
+    int size = tx_list_page_size,
     String network = 'kusama',
   }) async {
     Completer completer = new Completer<Map>();
@@ -75,7 +76,7 @@ class SubScanApi {
           network: network,
           address: address,
           page: page,
-          row: tx_list_page_size,
+          row: size,
         ));
     receivePort.listen((msg) {
       receivePort.close();
@@ -105,7 +106,7 @@ class SubScanApi {
           call: call,
           address: sender,
           page: page,
-          row: tx_list_page_size,
+          row: size,
         ));
     receivePort.listen((msg) {
       receivePort.close();
@@ -131,7 +132,7 @@ class SubScanApi {
           network: network,
           address: sender,
           page: page,
-          row: tx_list_page_size,
+          row: size,
         ));
     receivePort.listen((msg) {
       receivePort.close();
