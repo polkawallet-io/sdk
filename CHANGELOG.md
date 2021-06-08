@@ -77,3 +77,7 @@
 
 * bump polkadot-js/api v4.12.1
 * fix subscan queries
+
+## [0.1.9] - 20210608
+
+* bump polkadot-js/api v4.13.1
