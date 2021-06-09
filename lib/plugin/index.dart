@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_sdk/api/types/balanceData.dart';
+import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/api/types/networkStateData.dart';
+import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
-import 'package:polkawallet_sdk/api/types/networkParams.dart';
-import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/service/webViewRunner.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
@@ -55,10 +55,17 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
     _cache.write(_getNetworkCacheKey(net_state_cache_key), state[1]);
   }
 
-  void updateBalances(KeyPairData acc, BalanceData data) {
-    balances.setBalance(data);
+  void updateBalances(KeyPairData acc, BalanceData data,
+      {bool isFromCache = false}) {
+    if (acc.address == data.accountId) {
+      data.isFromCache = isFromCache;
 
-    _cache.write(_getBalanceCacheKey(acc.pubKey), data.toJson());
+      balances.setBalance(data);
+
+      if (!isFromCache) {
+        _cache.write(_getBalanceCacheKey(acc.pubKey), data.toJson());
+      }
+    }
   }
 
   void loadBalances(KeyPairData acc) {
@@ -66,10 +73,10 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
     if (networkState.tokenDecimals == null) return;
 
     updateBalances(
-      acc,
-      BalanceData.fromJson(Map<String, dynamic>.from(
-          _cache.read(_getBalanceCacheKey(acc.pubKey)) ?? {})),
-    );
+        acc,
+        BalanceData.fromJson(Map<String, dynamic>.from(
+            _cache.read(_getBalanceCacheKey(acc.pubKey)) ?? {})),
+        isFromCache: true);
   }
 
   /// This method will be called while App switched to a plugin.

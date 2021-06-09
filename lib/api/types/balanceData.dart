@@ -27,6 +27,9 @@ abstract class _BalanceData {
   dynamic vestingPerBlock;
   dynamic vestingTotal;
   dynamic votingBalance;
+
+  // use this to identify cache data
+  bool isFromCache;
 }
 
 @JsonSerializable()

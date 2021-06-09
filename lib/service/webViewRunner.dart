@@ -165,8 +165,8 @@ class WebViewRunner {
     final String res = await evalJavascript(
         'settings.connect(${jsonEncode(nodes.map((e) => e.endpoint).toList())})');
     if (res != null) {
-      final node = nodes.firstWhere((e) => e.endpoint == res);
-      return node;
+      final index = nodes.indexWhere((e) => e.endpoint.trim() == res.trim());
+      return nodes[index > -1 ? index : 0];
     }
     return null;
   }
