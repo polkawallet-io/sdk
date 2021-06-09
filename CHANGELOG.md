@@ -1,3 +1,7 @@
+## [0.2.1] - 20210609
+
+* load balances cache data in onWillStart method
+
 ## [0.2.0] - 20210608
 
 * bump polkadot-js/api v4.13.1

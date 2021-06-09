@@ -109,7 +109,6 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
     await updateNetworkState();
 
     if (keyring.current.address != null) {
-      loadBalances(keyring.current);
       sdk.api.account.subscribeBalance(keyring.current.address,
           (BalanceData data) {
         updateBalances(keyring.current, data);
@@ -133,7 +132,11 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   }
 
   /// This method will be called before plugin start
-  Future<void> onWillStart(Keyring keyring) async => null;
+  Future<void> onWillStart(Keyring keyring) async {
+    if (keyring.current.address != null) {
+      loadBalances(keyring.current);
+    }
+  }
 
   /// This method will be called after plugin started
   Future<void> onStarted(Keyring keyring) async => null;
