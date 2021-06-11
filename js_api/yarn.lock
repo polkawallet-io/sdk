@@ -1167,6 +1167,23 @@
     bn.js "^4.11.9"
     eventemitter3 "^4.0.7"
 
+"@polkadot/extension-dapp@^0.38.4-18":
+  version "0.38.4-19"
+  resolved "https://registry.yarnpkg.com/@polkadot/extension-dapp/-/extension-dapp-0.38.4-19.tgz#7a27f50614ff655eddbfc3bd22454cede750827e"
+  integrity sha512-fmSnYaBadjWNmm/zB9TM11kXFCjFBeZK4jiSHUhJA77eRCTCXl0zUjGkp6HIT1kX2dOCRXWpYxsLhhHyRleALQ==
+  dependencies:
+    "@babel/runtime" "^7.14.0"
+    "@polkadot/extension-inject" "^0.38.4-19"
+    "@polkadot/util" "^6.6.1"
+    "@polkadot/util-crypto" "^6.6.1"
+
+"@polkadot/extension-inject@^0.38.4-19":
+  version "0.38.4-19"
+  resolved "https://registry.yarnpkg.com/@polkadot/extension-inject/-/extension-inject-0.38.4-19.tgz#a5b3e423b4a43ee28715ee6ddaa06ade561d87da"
+  integrity sha512-9wbXAhLbAdLoxEqQ+uR4samQb/Qt3o/cvVDRPXAsW9nRzj/HmlCqNhBwH4waVgrSzEIhN2HyKWMWhUnhBkhOdg==
+  dependencies:
+    "@babel/runtime" "^7.14.0"
+
 "@polkadot/keyring@^6.7.1":
   version "6.7.1"
   resolved "https://registry.yarnpkg.com/@polkadot/keyring/-/keyring-6.7.1.tgz#6827ff42ace7eb2b78b35641cc9595ace69d598a"
@@ -1254,7 +1271,7 @@
     "@babel/runtime" "^7.14.0"
     color "^3.1.3"
 
-"@polkadot/util-crypto@6.7.1", "@polkadot/util-crypto@^6.7.1":
+"@polkadot/util-crypto@6.7.1", "@polkadot/util-crypto@^6.6.1", "@polkadot/util-crypto@^6.7.1":
   version "6.7.1"
   resolved "https://registry.yarnpkg.com/@polkadot/util-crypto/-/util-crypto-6.7.1.tgz#c30744ce809ac87120f417352108750b418be07a"
   integrity sha512-lmZv+aHsC/VM/ixYx4xZtQRFrMX9wbWAXeXG4dBkJMmHAd59ug1PCetRFVHQDwjccu0RPldTZdsdVbreMD0T+g==
@@ -1276,7 +1293,7 @@
     tweetnacl "^1.0.3"
     xxhashjs "^0.2.2"
 
-"@polkadot/util@6.7.1", "@polkadot/util@^6.7.1":
+"@polkadot/util@6.7.1", "@polkadot/util@^6.6.1", "@polkadot/util@^6.7.1":
   version "6.7.1"
   resolved "https://registry.yarnpkg.com/@polkadot/util/-/util-6.7.1.tgz#decedda8326fd9504cd051cae598670f2cb31d31"
   integrity sha512-EH9oQ7s5DFat57GGac3B+sZK3Np+vCwheMX4EbrnjbQEn4DBRFoqndRD2BIrWMzfNL2c5MDjDsSpe+5IFsihDQ==

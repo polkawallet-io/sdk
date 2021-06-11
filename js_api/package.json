@@ -29,6 +29,7 @@
   "dependencies": {
     "@polkadot/api": "^4.13.1",
     "@polkadot/ui-shared": "0.78.1",
+    "@polkadot/extension-dapp": "^0.38.4-18",
     "@walletconnect/client": "2.0.0-alpha.26",
     "bn.js": "^5.1.2",
     "oo7-substrate": "^0.8.0",

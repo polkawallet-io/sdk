@@ -1,11 +1,12 @@
 import { keyExtractSuri, mnemonicGenerate, cryptoWaitReady, signatureVerify } from "@polkadot/util-crypto";
-import { hexToU8a, u8aToHex, isHex, stringToU8a } from "@polkadot/util";
+import { hexToU8a, u8aToHex } from "@polkadot/util";
 import BN from "bn.js";
 import { parseQrCode, getSigner, makeTx, getSubmittable } from "../utils/QrSigner";
 import gov from "./gov";
 import metaDataMap from "../constants/networkMetadata";
 import { TypeRegistry } from "@polkadot/types";
 import { Metadata } from "@polkadot/metadata";
+import { wrapBytes } from "@polkadot/extension-dapp/wrapBytes";
 
 import { Keyring } from "@polkadot/keyring";
 import { KeypairType } from "@polkadot/util-crypto/types";
@@ -408,9 +409,8 @@ async function signBytesAsExtension(password: string, json: any) {
         keyPair.lock();
       }
       keyPair.decodePkcs8(password);
-      const isDataHex = isHex(json["data"]);
       resolve({
-        signature: u8aToHex(keyPair.sign(isDataHex ? hexToU8a(json["data"]) : stringToU8a(json["data"]))),
+        signature: u8aToHex(keyPair.sign(wrapBytes(json["data"]))),
       });
     } catch (err) {
       resolve({ error: err.message });
@@ -419,7 +419,7 @@ async function signBytesAsExtension(password: string, json: any) {
 }
 
 async function verifySignature(message: string, signature: string, address: string) {
-  return signatureVerify(message, signature, address);
+  return signatureVerify(wrapBytes(message), signature, address);
 }
 
 export default {

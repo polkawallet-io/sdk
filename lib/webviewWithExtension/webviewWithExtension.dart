@@ -109,8 +109,6 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
           _controller = webViewController;
         });
       },
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // ignore: prefer_collection_literals
       javascriptChannels: <JavascriptChannel>[
         JavascriptChannel(
           name: 'Extension',
