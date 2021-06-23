@@ -11,7 +11,7 @@ import 'package:polkawallet_sdk/utils/localStorage.dart';
 /// We need to pass the storage instance to [WalletSDK]'s
 /// keyring api for account management.
 class Keyring {
-  final KeyringPrivateStore store = KeyringPrivateStore();
+  KeyringPrivateStore store;
 
   int get ss58 => store.ss58;
   int setSS58(int ss58) {
@@ -62,15 +62,17 @@ class Keyring {
     return res;
   }
 
-  Future<void> init() async {
+  Future<void> init(List<int> ss58List) async {
+    store = KeyringPrivateStore(ss58List);
     await store.init();
   }
 }
 
 class KeyringPrivateStore {
+  KeyringPrivateStore(this.ss58List);
   final KeyringStorage _storage = KeyringStorage();
   final LocalStorage _storageOld = LocalStorage();
-  final List<int> ss58List = [0, 2, 7, 42];
+  final List<int> ss58List;
 
   Map<String, Map> _pubKeyAddressMap = {};
   Map<String, String> _iconsMap = {};
