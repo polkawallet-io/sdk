@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:polkawallet_sdk/api/apiAccount.dart';
 import 'package:polkawallet_sdk/api/apiGov.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
+import 'package:polkawallet_sdk/api/apiParachain.dart';
 import 'package:polkawallet_sdk/api/apiRecovery.dart';
 import 'package:polkawallet_sdk/api/apiSetting.dart';
 import 'package:polkawallet_sdk/api/apiStaking.dart';
@@ -37,6 +38,7 @@ class PolkawalletApi {
 
   ApiStaking staking;
   ApiGov gov;
+  ApiParachain parachain;
   ApiUOS uos;
   ApiRecovery recovery;
 
@@ -52,6 +54,7 @@ class PolkawalletApi {
 
     staking = ApiStaking(this, service.staking);
     gov = ApiGov(this, service.gov);
+    parachain = ApiParachain(this, service.parachain);
     uos = ApiUOS(this, service.uos);
     recovery = ApiRecovery(this, service.recovery);
 
