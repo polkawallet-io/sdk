@@ -11,7 +11,6 @@ class AuctionData extends _AuctionData {
 }
 
 abstract class _AuctionData {
-  String bestNumber;
   AuctionOverview auction;
   List<FundData> funds;
   List<BidData> winners;
@@ -24,6 +23,7 @@ class AuctionOverview extends _AuctionOverview {
 }
 
 abstract class _AuctionOverview {
+  String bestNumber;
   String endBlock;
   int numAuctions;
   int leasePeriod;
