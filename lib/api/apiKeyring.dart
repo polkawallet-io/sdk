@@ -96,7 +96,7 @@ class ApiKeyring {
     await updatePubKeyIconsMap(keyring, [acc['pubKey']]);
     updateIndicesMap(keyring, [acc['address']]);
 
-    return KeyPairData.fromJson(Map<String, dynamic>.from(acc));
+    return keyring.contacts.firstWhere((e) => e.pubKey == acc['pubKey']);
   }
 
   /// Every time we change the keyPairs, we need to update the

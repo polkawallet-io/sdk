@@ -1,6 +1,8 @@
-## [0.2.3] - 20210621
+## [0.2.3] - 20210628
 
 * add crowdLoan api
+* fix balance update delay while change to new account
+* bump polkadot-js/api v4.16.2
 
 ## [0.2.2] - 20210621
 

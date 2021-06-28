@@ -57,7 +57,7 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
 
   void updateBalances(KeyPairData acc, BalanceData data,
       {bool isFromCache = false}) {
-    if (acc.address == data.accountId) {
+    if (acc.address == data.accountId || isFromCache) {
       data.isFromCache = isFromCache;
 
       balances.setBalance(data);
@@ -75,7 +75,8 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
     updateBalances(
         acc,
         BalanceData.fromJson(Map<String, dynamic>.from(
-            _cache.read(_getBalanceCacheKey(acc.pubKey)) ?? {})),
+            _cache.read(_getBalanceCacheKey(acc.pubKey)) ??
+                {'accountId': acc.address})),
         isFromCache: true);
   }
 
