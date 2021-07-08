@@ -643,7 +643,7 @@ packages:
       name: webview_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.7"
+    version: "2.0.9"
   win32:
     dependency: transitive
     description:
@@ -667,4 +667,4 @@ packages:
     version: "3.1.0"
 sdks:
   dart: ">=2.13.0 <3.0.0"
-  flutter: ">=1.22.2"
+  flutter: ">=2.0.0"

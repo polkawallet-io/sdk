@@ -555,12 +555,13 @@ async function querySortedTargets(api: ApiPromise) {
   api.derive.staking.electedInfo({withExposure: true, withPrefs: true}),
   api.derive.staking.waitingInfo({withPrefs: true}),
   api.derive.session.info(),
+  api.query.staking.minNominatorBond(),
  ]);
  
  const partial = data[1] && data[2] && data[3] && data[4]
  ? _extractTargetsInfo(api, data[2], data[3], data[1], _transfromEra(data[4]), data[0])
  : {};
- return { inflation: { inflation: 0, stakedReturn: 0 }, medianComm: 0, ...partial };
+ return { inflation: { inflation: 0, stakedReturn: 0 }, medianComm: 0, ...partial, minNominatorBond: data[5] };
 }
 
 async function _getOwnStash(api: ApiPromise, accountId: string): Promise<[string, boolean]> {

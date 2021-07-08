@@ -183,7 +183,7 @@ async function _queryAuctionInfo(api: ApiPromise) {
       leaseEnd: auctionInfo.leasePeriod.add(api.consts.auctions.leasePeriodsPerSlot as u32).isub(BN_ONE).toNumber()
     },
     funds,
-    winners: _mergeCrowdLoanBids(winningData[0].winners, loans),
+    winners: _mergeCrowdLoanBids(winningData[0]?.winners || [], loans),
   };
 }
 

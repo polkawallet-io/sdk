@@ -38,8 +38,7 @@ class WebViewWithExtension extends StatefulWidget {
 
 class _WebViewWithExtensionState extends State<WebViewWithExtension> {
   WebViewController _controller;
-  String _jsCode;
-  bool _jsInjected = false;
+  bool _loadingFinished = false;
 
   Future<void> _msgHandler(Map msg) async {
     switch (msg['msgType']) {
@@ -85,21 +84,6 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
   }
 
   @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      rootBundle
-          .loadString('packages/polkawallet_sdk/js_as_extension/dist/main.js')
-          .then((String js) {
-        setState(() {
-          _jsCode = js;
-        });
-      });
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return WebView(
       initialUrl: widget.initialUrl,
@@ -121,19 +105,21 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
           },
         ),
       ].toSet(),
-      onPageFinished: (String url) {
+      onPageFinished: (String url) async {
+        if (_loadingFinished) return;
+        setState(() {
+          _loadingFinished = true;
+        });
+
         if (widget.onPageFinished != null) {
           widget.onPageFinished(url);
         }
         print('Page finished loading: $url');
 
-        if (_jsInjected) return;
-        setState(() {
-          _jsInjected = true;
-        });
-
         print('Inject extension js code...');
-        _controller.evaluateJavascript(_jsCode);
+        final jsCode = await rootBundle.loadString(
+            'packages/polkawallet_sdk/js_as_extension/dist/main.js');
+        _controller.evaluateJavascript(jsCode);
         print('js code injected');
         if (widget.onExtensionReady != null) {
           widget.onExtensionReady();

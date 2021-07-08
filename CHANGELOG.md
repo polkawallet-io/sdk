@@ -1,3 +1,10 @@
+## [0.2.4] - 20210706
+
+* fix DApp webView double-callback bug
+* add isXCMSupport flag
+* add DOT/KSM staking minNominatorBond
+* bump polkadot-js/api v4.17.1
+
 ## [0.2.3] - 20210628
 
 * add crowdLoan api

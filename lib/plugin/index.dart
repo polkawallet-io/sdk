@@ -193,6 +193,8 @@ class PluginBasicData {
     this.iconDisabled,
     this.jsCodeVersion,
     this.isTestNet = true,
+    this.isXCMSupport = false,
+    this.parachainId,
   });
   final String name;
   final String genesisHash;
@@ -216,4 +218,9 @@ class PluginBasicData {
 
   /// Your plugin is connected to a para-chain testNet by default.
   final bool isTestNet;
+
+  /// Whether this para-chain receives assets from relay-chain.
+  /// should set [parachainId] if [isXCMSupport] enabled.
+  final bool isXCMSupport;
+  final String parachainId;
 }
