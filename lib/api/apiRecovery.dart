@@ -17,10 +17,11 @@ class ApiRecovery {
     return null;
   }
 
-  Future<List> queryRecoverableList(List<String> addresses) async {
+  Future<List<RecoveryInfo>> queryRecoverableList(
+      List<String> addresses) async {
     final List res = await service.queryRecoverableList(addresses);
     return res
-        .map((e) => RecoveryInfo.fromJson(Map<String, dynamic>.of(e)))
+        .map((e) => RecoveryInfo.fromJson(Map<String, dynamic>.of(e ?? {})))
         .toList();
   }
 

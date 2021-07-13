@@ -43,6 +43,8 @@ class TokenBalanceData {
     this.symbol,
     this.decimals,
     this.amount,
+    this.locked,
+    this.reserved,
     this.detailPageRoute,
   });
 
@@ -50,6 +52,8 @@ class TokenBalanceData {
   final String symbol;
   final int decimals;
   final String amount;
+  final String locked;
+  final String reserved;
 
   final String detailPageRoute;
 }
