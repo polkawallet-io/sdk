@@ -1,4 +1,4 @@
-import networks from "@polkadot/networks";
+import { allNetworks } from "@polkadot/networks";
 import { assert } from "@polkadot/util";
 
 const colors = {
@@ -111,7 +111,7 @@ export const NETWORK_LIST = Object.freeze(Object.assign({}, SUBSTRATE_NETWORK_LI
 export const defaultNetworkKey = SubstrateNetworkKeys.KUSAMA;
 
 function getGenesis(name: string): string {
-  const network = networks.find(({ network }) => network === name);
+  const network = allNetworks.find(({ network }) => network === name);
   assert(network && network.genesisHash[0], `Unable to find genesisHash for ${name}`);
   return network.genesisHash[0];
 }

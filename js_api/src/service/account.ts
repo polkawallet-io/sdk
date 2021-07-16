@@ -16,15 +16,9 @@ let keyring = new Keyring({ ss58Format: 0, type: "sr25519" });
 async function genIcons(addresses: string[]) {
   return addresses.map((i) => {
     const circles = polkadotIcon(i, { isAlternative: false })
-      .map(
-        ({ cx, cy, fill, r }) =>
-          `<circle cx='${cx}' cy='${cy}' fill='${fill}' r='${r}' />`
-      )
+      .map(({ cx, cy, fill, r }) => `<circle cx='${cx}' cy='${cy}' fill='${fill}' r='${r}' />`)
       .join("");
-    return [
-      i,
-      `<svg viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'>${circles}</svg>`,
-    ];
+    return [i, `<svg viewBox='0 0 64 64' xmlns='http://www.w3.org/2000/svg'>${circles}</svg>`];
   });
 }
 
@@ -32,9 +26,7 @@ async function genIcons(addresses: string[]) {
  * Get svg icons of pubKeys.
  */
 async function genPubKeyIcons(pubKeys: string[]) {
-  const icons = await genIcons(
-    pubKeys.map((key) => keyring.encodeAddress(hexToU8a(key), 2))
-  );
+  const icons = await genIcons(pubKeys.map((key) => keyring.encodeAddress(hexToU8a(key), 2)));
   return icons.map((i, index) => {
     i[0] = pubKeys[index];
     return i;
@@ -77,11 +69,7 @@ async function encodeAddress(pubKeys: string[], ss58Formats: number[]) {
 /**
  * query account address with account index
  */
-async function queryAddressWithAccountIndex(
-  api: ApiPromise,
-  accIndex: string,
-  ss58: number
-) {
+async function queryAddressWithAccountIndex(api: ApiPromise, accIndex: string, ss58: number) {
   const num = ss58Decode(accIndex, ss58).toJSON();
   const res = await api.query.indices.accounts(num.data);
   return res;
@@ -94,26 +82,14 @@ async function queryAccountsBonded(api: ApiPromise, pubKeys: string[]) {
   return Promise.all(
     pubKeys
       .map((key) => keyring.encodeAddress(hexToU8a(key), 2))
-      .map((i) =>
-        Promise.all([api.query.staking.bonded(i), api.query.staking.ledger(i)])
-      )
-  ).then((ls) =>
-    ls.map((i, index) => [
-      pubKeys[index],
-      i[0],
-      i[1].toHuman() ? i[1].toHuman()["stash"] : null,
-    ])
-  );
+      .map((i) => Promise.all([api.query.staking.bonded(i), api.query.staking.ledger(i)]))
+  ).then((ls) => ls.map((i, index) => [pubKeys[index], i[0], i[1].toHuman() ? i[1].toHuman()["stash"] : null]));
 }
 
 /**
  * get network native token balance of an address
  */
-async function getBalance(
-  api: ApiPromise,
-  address: string,
-  msgChannel: string
-) {
+async function getBalance(api: ApiPromise, address: string, msgChannel: string) {
   const transfrom = (res: any) => {
     const lockedBreakdown = res.lockedBreakdown.map((i: any) => {
       return {

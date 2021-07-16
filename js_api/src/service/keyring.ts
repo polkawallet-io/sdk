@@ -4,8 +4,7 @@ import BN from "bn.js";
 import { parseQrCode, getSigner, makeTx, getSubmittable } from "../utils/QrSigner";
 import gov from "./gov";
 import metaDataMap from "../constants/networkMetadata";
-import { TypeRegistry } from "@polkadot/types";
-import { Metadata } from "@polkadot/metadata";
+import { Metadata, TypeRegistry } from "@polkadot/types";
 import { wrapBytes } from "@polkadot/extension-dapp/wrapBytes";
 
 import { Keyring } from "@polkadot/keyring";

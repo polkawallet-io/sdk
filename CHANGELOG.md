@@ -1,3 +1,8 @@
+## [0.2.5] - 20210716
+
+* bump polkadot-js/api v5.0.1
+* add TokenBalanceData.locked & TokenBalanceData.reserved
+
 ## [0.2.4] - 20210706
 
 * fix DApp webView double-callback bug
