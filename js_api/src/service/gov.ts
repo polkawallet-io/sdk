@@ -23,10 +23,11 @@ function _extractMetaData(value: FunctionMetadataLatest) {
 
 function _transfromProposalMeta(proposal: any): {} {
   const { meta } = proposal.registry.findMetaCall(proposal.callIndex);
+  const docs = meta.documentation || meta.docs;
   let doc = "";
-  for (let i = 0; i < meta.documentation.length; i++) {
-    if (meta.documentation[i].length) {
-      doc += meta.documentation[i];
+  for (let i = 0; i < docs.length; i++) {
+    if (docs[i].length) {
+      doc += docs[i];
     } else {
       break;
     }

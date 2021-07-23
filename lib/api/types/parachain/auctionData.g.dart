@@ -19,9 +19,9 @@ AuctionData _$AuctionDataFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$AuctionDataToJson(AuctionData instance) =>
     <String, dynamic>{
-      'auction': AuctionOverview.toJson(instance.auction),
-      'funds': instance.funds.map((e) => FundData.toJson(e)).toList(),
-      'winners': instance.winners.map((e) => BidData.toJson(e)).toList(),
+      'auction': instance.toJson(),
+      'funds': instance.funds.map((e) => e.toJson()).toList(),
+      'winners': instance.winners.map((e) => e.toJson()).toList(),
     };
 
 AuctionOverview _$AuctionOverviewFromJson(Map<String, dynamic> json) {
