@@ -1,3 +1,8 @@
+## [0.2.6] - 20210722
+
+* bump polkadot-js/api v5.1.1
+* add BalancesStore.isTokensFromCache
+
 ## [0.2.5] - 20210716
 
 * bump polkadot-js/api v5.0.1

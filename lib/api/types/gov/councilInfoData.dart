@@ -6,8 +6,7 @@ part 'councilInfoData.g.dart';
 class CouncilInfoData extends _CouncilInfoData {
   static CouncilInfoData fromJson(Map<String, dynamic> json) =>
       _$CouncilInfoDataFromJson(json);
-  static Map<String, dynamic> toJson(CouncilInfoData info) =>
-      _$CouncilInfoDataToJson(info);
+  Map<String, dynamic> toJson() => _$CouncilInfoDataToJson(this);
 }
 
 abstract class _CouncilInfoData {

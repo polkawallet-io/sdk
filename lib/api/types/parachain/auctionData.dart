@@ -4,10 +4,10 @@ import 'package:polkawallet_sdk/api/types/parachain/fundData.dart';
 
 part 'auctionData.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class AuctionData extends _AuctionData {
   static AuctionData fromJson(Map json) => _$AuctionDataFromJson(json);
-  static Map toJson(AuctionData data) => _$AuctionDataToJson(data);
+  Map toJson() => _$AuctionDataToJson(this);
 }
 
 abstract class _AuctionData {
@@ -19,7 +19,7 @@ abstract class _AuctionData {
 @JsonSerializable()
 class AuctionOverview extends _AuctionOverview {
   static AuctionOverview fromJson(Map json) => _$AuctionOverviewFromJson(json);
-  static Map toJson(AuctionOverview data) => _$AuctionOverviewToJson(data);
+  Map toJson() => _$AuctionOverviewToJson(this);
 }
 
 abstract class _AuctionOverview {

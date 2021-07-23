@@ -5,7 +5,7 @@ part 'bidData.g.dart';
 @JsonSerializable()
 class BidData extends _BidData {
   static BidData fromJson(Map json) => _$BidDataFromJson(json);
-  static Map toJson(BidData data) => _$BidDataToJson(data);
+  Map toJson() => _$BidDataToJson(this);
 }
 
 abstract class _BidData {

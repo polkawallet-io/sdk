@@ -5,7 +5,7 @@ part 'fundData.g.dart';
 @JsonSerializable()
 class FundData extends _FundData {
   static FundData fromJson(Map json) => _$FundDataFromJson(json);
-  static Map toJson(FundData data) => _$FundDataToJson(data);
+  Map toJson() => _$FundDataToJson(this);
 }
 
 abstract class _FundData {

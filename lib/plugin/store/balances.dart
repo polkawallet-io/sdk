@@ -10,7 +10,10 @@ abstract class BalancesStoreBase with Store {
   BalanceData native;
 
   @observable
-  List<TokenBalanceData> tokens;
+  List<TokenBalanceData> tokens = [];
+
+  @observable
+  bool isTokensFromCache = false;
 
   @observable
   List<ExtraTokenData> extraTokens;
@@ -21,8 +24,18 @@ abstract class BalancesStoreBase with Store {
   }
 
   @action
-  void setTokens(List<TokenBalanceData> ls) {
-    tokens = ls;
+  void setTokens(List<TokenBalanceData> ls, {bool isFromCache = false}) {
+    final data = ls ?? [];
+    if (!isFromCache) {
+      tokens.toList().forEach((old) {
+        final newDataIndex = ls.indexWhere((token) => token.symbol == old.symbol);
+        if (newDataIndex < 0) {
+          data.add(old);
+        }
+      });
+    }
+    tokens = data;
+    isTokensFromCache = isFromCache;
   }
 
   @action

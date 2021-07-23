@@ -28,7 +28,8 @@ BalanceData _$BalanceDataFromJson(Map<String, dynamic> json) {
     ..vestingLocked = json['vestingLocked']
     ..vestingPerBlock = json['vestingPerBlock']
     ..vestingTotal = json['vestingTotal']
-    ..votingBalance = json['votingBalance'];
+    ..votingBalance = json['votingBalance']
+    ..isFromCache = json['isFromCache'] as bool;
 }
 
 Map<String, dynamic> _$BalanceDataToJson(BalanceData instance) =>
@@ -51,6 +52,7 @@ Map<String, dynamic> _$BalanceDataToJson(BalanceData instance) =>
       'vestingPerBlock': instance.vestingPerBlock,
       'vestingTotal': instance.vestingTotal,
       'votingBalance': instance.votingBalance,
+      'isFromCache': instance.isFromCache,
     };
 
 BalanceBreakdownData _$BalanceBreakdownDataFromJson(Map<String, dynamic> json) {

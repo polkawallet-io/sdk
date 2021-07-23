@@ -39,6 +39,22 @@ mixin _$BalancesStore on BalancesStoreBase, Store {
     });
   }
 
+  final _$isTokensFromCacheAtom =
+      Atom(name: 'BalancesStoreBase.isTokensFromCache');
+
+  @override
+  bool get isTokensFromCache {
+    _$isTokensFromCacheAtom.reportRead();
+    return super.isTokensFromCache;
+  }
+
+  @override
+  set isTokensFromCache(bool value) {
+    _$isTokensFromCacheAtom.reportWrite(value, super.isTokensFromCache, () {
+      super.isTokensFromCache = value;
+    });
+  }
+
   final _$extraTokensAtom = Atom(name: 'BalancesStoreBase.extraTokens');
 
   @override
@@ -69,11 +85,11 @@ mixin _$BalancesStore on BalancesStoreBase, Store {
   }
 
   @override
-  void setTokens(List<TokenBalanceData> ls) {
+  void setTokens(List<TokenBalanceData> ls, {bool isFromCache = false}) {
     final _$actionInfo = _$BalancesStoreBaseActionController.startAction(
         name: 'BalancesStoreBase.setTokens');
     try {
-      return super.setTokens(ls);
+      return super.setTokens(ls, isFromCache: isFromCache);
     } finally {
       _$BalancesStoreBaseActionController.endAction(_$actionInfo);
     }
@@ -95,6 +111,7 @@ mixin _$BalancesStore on BalancesStoreBase, Store {
     return '''
 native: ${native},
 tokens: ${tokens},
+isTokensFromCache: ${isTokensFromCache},
 extraTokens: ${extraTokens}
     ''';
   }
