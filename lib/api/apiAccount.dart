@@ -20,8 +20,12 @@ class ApiAccount {
 
   /// decode addresses to publicKeys
   Future<Map> decodeAddress(List<String> addresses) async {
-    final Map res = await service.decodeAddress(addresses);
-    return res;
+    return service.decodeAddress(addresses);
+  }
+
+  /// check address matches ss58Format
+  Future<bool> checkAddressFormat(String address, int ss58) async {
+    return service.checkAddressFormat(address, ss58);
   }
 
   /// query balance
@@ -55,8 +59,7 @@ class ApiAccount {
       return [];
     }
 
-    var res = await service.queryIndexInfo(addresses);
-    return res;
+    return service.queryIndexInfo(addresses);
   }
 
   /// query address with account index
@@ -75,8 +78,7 @@ class ApiAccount {
     if (keys == null || keys.length == 0) {
       return [];
     }
-    List res = await service.getPubKeyIcons(keys);
-    return res;
+    return service.getPubKeyIcons(keys);
   }
 
   /// Get icons of addresses
@@ -85,7 +87,6 @@ class ApiAccount {
     if (addresses == null || addresses.length == 0) {
       return [];
     }
-    List res = await service.getAddressIcons(addresses);
-    return res;
+    return service.getAddressIcons(addresses);
   }
 }

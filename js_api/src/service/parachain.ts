@@ -176,14 +176,14 @@ async function _queryAuctionInfo(api: ApiPromise) {
 
   const winningData = _extractData(ranges, auctionInfo, initialEntries);
   return {
-    auction: {
+    auction: !!auctionInfo.leasePeriod ? {
       ...auctionInfo,
       bestNumber: bestNumber.toString(),
       leasePeriod: auctionInfo.leasePeriod.toNumber(),
       leaseEnd: auctionInfo.leasePeriod.add(api.consts.auctions.leasePeriodsPerSlot as u32).isub(BN_ONE).toNumber()
-    },
+    } : {},
     funds,
-    winners: _mergeCrowdLoanBids(winningData[0]?.winners || [], loans),
+    winners: _mergeCrowdLoanBids(winningData[0]?.winners || [], loans || []),
   };
 }
 

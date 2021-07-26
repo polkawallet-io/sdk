@@ -34,6 +34,12 @@ abstract class BalancesStoreBase with Store {
         }
       });
     }
+
+    data.removeWhere((e) => e.symbol.contains('-') && e.amount == '0');
+    data.sort((a, b) => (!a.name.contains('-') && b.name.contains('-'))
+        ? -1
+        : a.name.compareTo(b.name));
+
     tokens = data;
     isTokensFromCache = isFromCache;
   }

@@ -52,6 +52,20 @@ async function decodeAddress(addresses: string[]) {
 }
 
 /**
+ * decode address and check it's ss58Format
+ */
+async function checkAddressFormat(address: string, ss58: number) {
+  await cryptoWaitReady();
+  try {
+    const formated = keyring.encodeAddress(keyring.decodeAddress(address), ss58);
+    return formated.toUpperCase() == address.toUpperCase();
+  } catch (err) {
+    (<any>window).send("log", { error: err.message });
+    return false;
+  }
+}
+
+/**
  * encode pubKey to addresses with different prefixes
  */
 async function encodeAddress(pubKeys: string[], ss58Formats: number[]) {
@@ -123,6 +137,7 @@ async function getAccountIndex(api: ApiPromise, addresses: string[]) {
 export default {
   encodeAddress,
   decodeAddress,
+  checkAddressFormat,
   queryAddressWithAccountIndex,
   genIcons,
   genPubKeyIcons,

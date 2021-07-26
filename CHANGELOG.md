@@ -1,3 +1,9 @@
+## [0.2.7] - 20210726
+
+* fix parachain.queryAuctionWithWinners
+* add account.checkAddressFormat
+* update gov.makeTreasuryProposalSubmission for multi-runtime support
+
 ## [0.2.6] - 20210723
 
 * bump polkadot-js/api v5.1.1
