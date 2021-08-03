@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require("webpack");
 
 const config = {
   entry: "./src/index.ts",
@@ -8,7 +9,13 @@ const config = {
   },
   resolve: {
     extensions: [".ts", ".js", ".mjs", ".json"],
+    fallback: { crypto: require.resolve("crypto-browserify"), stream: require.resolve("stream-browserify") },
   },
+  plugins: [
+    new webpack.ProvidePlugin({
+      process: "process/browser.js",
+    }),
+  ],
   module: {
     rules: [
       {

@@ -1,3 +1,8 @@
+## [0.2.8] - 20210803
+
+* bump polkadot-js/api v5.3.1
+* update webpack 4.x -> 5.x
+
 ## [0.2.7] - 20210726
 
 * fix parachain.queryAuctionWithWinners

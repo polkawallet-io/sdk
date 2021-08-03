@@ -65,6 +65,7 @@ class TokenBalanceData {
     this.locked,
     this.reserved,
     this.detailPageRoute,
+    this.price,
   });
 
   final String name;
@@ -75,4 +76,5 @@ class TokenBalanceData {
   final String reserved;
 
   final String detailPageRoute;
+  final double price;
 }
