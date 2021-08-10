@@ -72,6 +72,8 @@ class WebViewRunner {
         },
         onLoadStop: (controller, url) async {
           print('webview loaded');
+          if (_webViewLoaded) return;
+
           _handleReloaded();
           await _startJSCode(keyring, keyringStorage);
         },
