@@ -25,6 +25,10 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   /// for display in Assets page of Polkawallet App.
   final balances = BalancesStore();
 
+  /// Plugin should provide a list of noneNativeToken
+  /// for users of Polkawallet App.
+  List<TokenBalanceData> get noneNativeTokensAll => [];
+
   final recoveryEnabled = false;
 
   /// Plugin should retrieve [networkState] & [networkConst] while start

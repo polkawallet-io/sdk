@@ -28,7 +28,8 @@ abstract class BalancesStoreBase with Store {
     final data = ls ?? [];
     if (!isFromCache) {
       tokens.toList().forEach((old) {
-        final newDataIndex = ls.indexWhere((token) => token.symbol == old.symbol);
+        final newDataIndex =
+            ls.indexWhere((token) => token.symbol == old.symbol);
         if (newDataIndex < 0) {
           data.add(old);
         }
@@ -36,9 +37,11 @@ abstract class BalancesStoreBase with Store {
     }
 
     data.removeWhere((e) => e.symbol.contains('-') && e.amount == '0');
-    data.sort((a, b) => (!a.name.contains('-') && b.name.contains('-'))
-        ? -1
-        : a.name.compareTo(b.name));
+    data.sort((a, b) => a.symbol.contains('-')
+        ? 1
+        : b.symbol.contains('-')
+            ? -1
+            : a.symbol.compareTo(b.symbol));
 
     tokens = data;
     isTokensFromCache = isFromCache;
@@ -58,6 +61,7 @@ class ExtraTokenData {
 
 class TokenBalanceData {
   TokenBalanceData({
+    this.id,
     this.name,
     this.symbol,
     this.decimals,
@@ -68,6 +72,7 @@ class TokenBalanceData {
     this.price,
   });
 
+  final String id;
   final String name;
   final String symbol;
   final int decimals;
