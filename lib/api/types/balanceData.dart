@@ -45,3 +45,21 @@ abstract class _BalanceBreakdownData {
   String reasons;
   String use;
 }
+
+class AssetsBalanceData extends _AssetsBalanceData {
+  static AssetsBalanceData fromJson(Map json) {
+    final data = AssetsBalanceData();
+    data.id = json['id'];
+    data.balance = json['balance'].toString();
+    data.isFrozen = json['isFrozen'];
+    data.isSufficient = json['isSufficient'];
+    return data;
+  }
+}
+
+abstract class _AssetsBalanceData {
+  String id;
+  String balance;
+  bool isFrozen;
+  bool isSufficient;
+}

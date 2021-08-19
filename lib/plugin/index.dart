@@ -59,7 +59,7 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
     _cache.write(_getNetworkCacheKey(net_state_cache_key), state[1]);
   }
 
-  void updateBalances(KeyPairData acc, BalanceData data,
+  void _updateBalances(KeyPairData acc, BalanceData data,
       {bool isFromCache = false}) {
     if (acc.address == data.accountId || isFromCache) {
       data.isFromCache = isFromCache;
@@ -72,11 +72,17 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
     }
   }
 
+  /// This method will be called while user request to query balance.
+  Future<void> updateBalances(KeyPairData acc) async {
+    final data = await sdk.api.account.queryBalance(acc.address);
+    _updateBalances(acc, data);
+  }
+
   void loadBalances(KeyPairData acc) {
     // do not load balance data from cache if we have no decimals data.
     if (networkState.tokenDecimals == null) return;
 
-    updateBalances(
+    _updateBalances(
         acc,
         BalanceData.fromJson(Map<String, dynamic>.from(
             _cache.read(_getBalanceCacheKey(acc.pubKey)) ??
@@ -116,7 +122,7 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
     if (keyring.current.address != null) {
       sdk.api.account.subscribeBalance(keyring.current.address,
           (BalanceData data) {
-        updateBalances(keyring.current, data);
+        _updateBalances(keyring.current, data);
       });
     }
 
@@ -130,7 +136,7 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
     sdk.api.account.unsubscribeBalance();
     loadBalances(account);
     sdk.api.account.subscribeBalance(account.address, (BalanceData data) {
-      updateBalances(account, data);
+      _updateBalances(account, data);
     });
 
     onAccountChanged(account);

@@ -76,10 +76,10 @@ class TokenBalanceData {
   final String name;
   final String symbol;
   final int decimals;
-  final String amount;
+  String amount;
   final String locked;
   final String reserved;
 
-  final String detailPageRoute;
+  String detailPageRoute;
   final double price;
 }

@@ -1,3 +1,10 @@
+## [0.2.9] - 20210803
+
+* bump polkadot-js/api v5.5.1
+* add api.assets for statemine/statemint
+* add TokenBalanceData.id
+* add plugin.noneNativeTokensAll
+
 ## [0.2.8] - 20210803
 
 * bump polkadot-js/api v5.3.1
