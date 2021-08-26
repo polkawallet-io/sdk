@@ -13,7 +13,8 @@ class ApiParachain {
     return AuctionData.fromJson(res);
   }
 
-  Future<String> queryUserContributions(String paraId, String pubKey) async {
-    return service.queryUserContributions(paraId, pubKey);
+  Future<List<String>> queryUserContributions(
+      List<String> paraIds, String pubKey) async {
+    return service.queryUserContributions(paraIds, pubKey);
   }
 }

@@ -1,3 +1,8 @@
+## [0.3.0] - 20210826
+
+* bump polkadot-js/api v5.6.1
+* update crowdloan user's contributions query api
+
 ## [0.2.9] - 20210803
 
 * bump polkadot-js/api v5.5.1

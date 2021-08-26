@@ -11,9 +11,10 @@ class ServiceParachain {
     return res;
   }
 
-  Future<String> queryUserContributions(String paraId, String pubKey) async {
-    final String res = await serviceRoot.webView.evalJavascript(
-        'parachain.queryUserContributions(api, "$paraId", "$pubKey")');
-    return res;
+  Future<List<String>> queryUserContributions(
+      List<String> paraIds, String pubKey) async {
+    final res = await serviceRoot.webView.evalJavascript('Promise.all(['
+        '${paraIds.map((e) => 'parachain.queryUserContributions(api, "$e", "$pubKey")').join(',')}])');
+    return List<String>.from(res);
   }
 }
