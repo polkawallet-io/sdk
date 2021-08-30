@@ -1,3 +1,7 @@
+## [0.3.1] - 20210830
+
+* bump polkadot-js/api v5.7.1
+
 ## [0.3.0] - 20210826
 
 * bump polkadot-js/api v5.6.1
