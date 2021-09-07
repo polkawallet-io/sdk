@@ -39,7 +39,7 @@ class ApiUOS {
     final res = service!.addSignatureAndSend(
       address,
       signed,
-      onStatusChange ?? (status) => print(status),
+      onStatusChange,
     );
     return res;
   }
