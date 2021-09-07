@@ -6,32 +6,31 @@ part of 'auctionData.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-AuctionData _$AuctionDataFromJson(Map<String, dynamic> json) {
-  return AuctionData()
-    ..auction = json['auction'] == null
-        ? null
-        : AuctionOverview.fromJson(json['auction'] as Map<String, dynamic>)
-    ..funds =
-        (json['funds'] as List)?.map((e) => FundData.fromJson(e))?.toList()
-    ..winners =
-        (json['winners'] as List)?.map((e) => BidData.fromJson(e))?.toList();
-}
+AuctionData _$AuctionDataFromJson(Map<String, dynamic> json) => AuctionData()
+  ..auction = json['auction'] == null
+      ? null
+      : AuctionOverview.fromJson(json['auction'] as Map<String, dynamic>)
+  ..funds = (json['funds'] as List<dynamic>?)
+      ?.map((e) => FundData.fromJson(e as Map<String, dynamic>))
+      .toList()
+  ..winners = (json['winners'] as List<dynamic>?)
+      ?.map((e) => BidData.fromJson(e as Map<String, dynamic>))
+      .toList();
 
 Map<String, dynamic> _$AuctionDataToJson(AuctionData instance) =>
     <String, dynamic>{
-      'auction': instance.toJson(),
-      'funds': instance.funds.map((e) => e.toJson()).toList(),
-      'winners': instance.winners.map((e) => e.toJson()).toList(),
+      'auction': instance.auction?.toJson(),
+      'funds': instance.funds?.map((e) => e.toJson()).toList(),
+      'winners': instance.winners?.map((e) => e.toJson()).toList(),
     };
 
-AuctionOverview _$AuctionOverviewFromJson(Map<String, dynamic> json) {
-  return AuctionOverview()
-    ..bestNumber = json['bestNumber'] as String
-    ..endBlock = json['endBlock'] as String
-    ..numAuctions = json['numAuctions'] as int
-    ..leasePeriod = json['leasePeriod'] as int
-    ..leaseEnd = json['leaseEnd'] as int;
-}
+AuctionOverview _$AuctionOverviewFromJson(Map<String, dynamic> json) =>
+    AuctionOverview()
+      ..bestNumber = json['bestNumber'] as String?
+      ..endBlock = json['endBlock'] as String?
+      ..numAuctions = json['numAuctions'] as int?
+      ..leasePeriod = json['leasePeriod'] as int?
+      ..leaseEnd = json['leaseEnd'] as int?;
 
 Map<String, dynamic> _$AuctionOverviewToJson(AuctionOverview instance) =>
     <String, dynamic>{

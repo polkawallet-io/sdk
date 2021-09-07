@@ -6,13 +6,13 @@ class I18n {
 
   final Locale locale;
 
-  static I18n of(BuildContext context) {
+  static I18n? of(BuildContext context) {
     return Localizations.of<I18n>(context, I18n);
   }
 
-  Map<String, String> getDic(
+  Map<String, String>? getDic(
       Map<String, Map<String, Map<String, String>>> fullDic, String module) {
-    return fullDic[locale.languageCode][module];
+    return fullDic[locale.languageCode]![module];
   }
 }
 

@@ -17,18 +17,18 @@ class TxInfoData {
     this.txName,
   });
 
-  String module;
-  String call;
-  TxSenderData sender;
-  String tip;
+  String? module;
+  String? call;
+  TxSenderData? sender;
+  String? tip;
 
-  bool isUnsigned;
+  bool? isUnsigned;
 
   /// proxy for calling recovery.asRecovered
-  TxSenderData proxy;
+  TxSenderData? proxy;
 
   /// txName for calling treasury.approveProposal & treasury.rejectProposal
-  String txName;
+  String? txName;
 
   Map<String, dynamic> toJson() => _$TxInfoDataToJson(this);
 }
@@ -37,8 +37,8 @@ class TxInfoData {
 class TxSenderData {
   TxSenderData(this.address, this.pubKey);
 
-  final String address;
-  final String pubKey;
+  final String? address;
+  final String? pubKey;
 
   static TxSenderData fromJson(Map<String, dynamic> json) =>
       _$TxSenderDataFromJson(json);

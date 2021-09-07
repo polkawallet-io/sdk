@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -10,26 +11,27 @@ class ServiceKeyring {
 
   final SubstrateService serviceRoot;
 
-  Future<Map> getPubKeyAddressMap(List keyPairs, List<int> ss58) async {
+  Future<Map?> getPubKeyAddressMap(List keyPairs, List<int> ss58) async {
     final List<String> pubKeys =
         keyPairs.map((e) => e['pubKey'].toString()).toList();
-    return await serviceRoot.account.encodeAddress(pubKeys, ss58);
+    return await serviceRoot.account!.encodeAddress(pubKeys, ss58);
   }
 
-  Future<List> getPubKeyIconsMap(List<String> pubKeys) async {
-    return await serviceRoot.account.getPubKeyIcons(pubKeys);
+  Future<List?> getPubKeyIconsMap(List<String?> pubKeys) async {
+    return await serviceRoot.account!.getPubKeyIcons(pubKeys);
   }
 
-  Future<Map> injectKeyPairsToWebView(Keyring keyring) async {
+  Future<Map?> injectKeyPairsToWebView(Keyring keyring) async {
     if (keyring.store.list.length > 0) {
       final String pairs = jsonEncode(keyring.store.list);
       final ss58 = keyring.store.ss58List;
-      final res = Map<String, Map>.from(await serviceRoot.webView
-          .evalJavascript('keyring.initKeys($pairs, ${jsonEncode(ss58)})'));
+      final res = Map<String, Map>.from(await (serviceRoot.webView!
+              .evalJavascript('keyring.initKeys($pairs, ${jsonEncode(ss58)})')
+          as FutureOr<Map<dynamic, dynamic>>));
 
       final contacts = await getPubKeyAddressMap(keyring.store.contacts, ss58);
       res.forEach((key, value) {
-        res[key].addAll(contacts[key]);
+        res[key]!.addAll(contacts![key]);
       });
 
       keyring.store.updatePubKeyAddressMap(res);
@@ -38,7 +40,7 @@ class ServiceKeyring {
     return null;
   }
 
-  Map updateKeyPairMetaData(Map acc, String name) {
+  Map updateKeyPairMetaData(Map acc, String? name) {
     acc['name'] = name;
     acc['meta']['name'] = name;
     if (acc['meta']['whenCreated'] == null) {
@@ -49,20 +51,20 @@ class ServiceKeyring {
   }
 
   /// Generate a set of new mnemonic.
-  Future<String> generateMnemonic() async {
-    final Map<String, dynamic> acc =
-        await serviceRoot.webView.evalJavascript('keyring.gen()');
+  Future<String?> generateMnemonic() async {
+    final Map<String, dynamic> acc = await (serviceRoot.webView!
+        .evalJavascript('keyring.gen()') as FutureOr<Map<String, dynamic>>);
     return acc['mnemonic'];
   }
 
   /// Import account from mnemonic/rawSeed/keystore.
   /// param [cryptoType] can be `sr25519`(default) or `ed25519`.
   /// return [null] if import failed.
-  Future<Map> importAccount({
-    @required KeyType keyType,
-    @required String key,
-    @required name,
-    @required password,
+  Future<Map?> importAccount({
+    required KeyType keyType,
+    required String key,
+    required name,
+    required password,
     CryptoType cryptoType = CryptoType.sr25519,
     String derivePath = '',
   }) async {
@@ -72,8 +74,8 @@ class ServiceKeyring {
     String code =
         'keyring.recover("$type", "$crypto", \'$key$derivePath\', "$password")';
     code = code.replaceAll(RegExp(r'\t|\n|\r'), '');
-    final Map<String, dynamic> acc =
-        await serviceRoot.webView.evalJavascript(code);
+    final Map<String, dynamic>? acc = await (serviceRoot.webView!
+        .evalJavascript(code) as FutureOr<Map<String, dynamic>?>);
     if (acc == null || acc['error'] != null) {
       return acc;
     }
@@ -85,8 +87,8 @@ class ServiceKeyring {
   }
 
   /// check password of account
-  Future<bool> checkPassword(String pubKey, pass) async {
-    final res = await serviceRoot.webView
+  Future<bool> checkPassword(String? pubKey, pass) async {
+    final res = await serviceRoot.webView!
         .evalJavascript('keyring.checkPassword("$pubKey", "$pass")');
     if (res == null) {
       return false;
@@ -95,33 +97,34 @@ class ServiceKeyring {
   }
 
   /// change password of account
-  Future<Map> changePassword(String pubKey, passOld, passNew) async {
-    final res = await serviceRoot.webView.evalJavascript(
+  Future<Map?> changePassword(String? pubKey, passOld, passNew) async {
+    final res = await serviceRoot.webView!.evalJavascript(
         'keyring.changePassword("$pubKey", "$passOld", "$passNew")');
     return res;
   }
 
-  Future<String> checkDerivePath(
+  Future<String?> checkDerivePath(
       String seed, path, CryptoType cryptoType) async {
     final String crypto = cryptoType.toString().split('.')[1];
-    String res = await serviceRoot.webView
-        .evalJavascript('keyring.checkDerivePath("$seed", "$path", "$crypto")');
+    String? res = await (serviceRoot.webView!.evalJavascript(
+            'keyring.checkDerivePath("$seed", "$path", "$crypto")')
+        as FutureOr<String?>);
     return res;
   }
 
-  Future<Map> signAsExtension(String password, Map args) async {
+  Future<Map?> signAsExtension(String password, Map args) async {
     final String call = args['msgType'] == 'pub(bytes.sign)'
         ? 'signBytesAsExtension'
         : 'signTxAsExtension';
-    final res = await serviceRoot.webView.evalJavascript(
+    final res = await serviceRoot.webView!.evalJavascript(
       'keyring.$call("$password", ${jsonEncode(args['request'])})',
       allowRepeat: true,
     );
     return res;
   }
 
-  Future<Map> signatureVerify(String message, signature, address) async {
-    final res = await serviceRoot.webView.evalJavascript(
+  Future<Map?> signatureVerify(String message, signature, address) async {
+    final res = await serviceRoot.webView!.evalJavascript(
       'keyring.verifySignature("$message", "$signature", "$address")',
       allowRepeat: true,
     );

@@ -13,30 +13,30 @@ class ReferendumInfo extends _ReferendumInfo {
     info.votedAye = json['votedAye'].toString();
     info.votedNay = json['votedNay'].toString();
     info.votedTotal = json['votedTotal'].toString();
-    info.changeAye = info.detail['changes']['changeAye'].toString();
-    info.changeNay = info.detail['changes']['changeNay'].toString();
+    info.changeAye = info.detail!['changes']['changeAye'].toString();
+    info.changeNay = info.detail!['changes']['changeNay'].toString();
 
-    info.userVoted = info.detail['userVoted'];
+    info.userVoted = info.detail!['userVoted'];
     return info;
   }
 }
 
 abstract class _ReferendumInfo {
-  BigInt index;
-  String imageHash;
+  BigInt? index;
+  String? imageHash;
 
-  bool isPassing;
-  int voteCountAye;
-  int voteCountNay;
-  String votedAye;
-  String votedNay;
-  String votedTotal;
-  String changeAye;
-  String changeNay;
+  bool? isPassing;
+  int? voteCountAye;
+  int? voteCountNay;
+  String? votedAye;
+  String? votedNay;
+  String? votedTotal;
+  String? changeAye;
+  String? changeNay;
 
-  Map<String, dynamic> status;
-  Map<String, dynamic> image;
-  Map<String, dynamic> detail;
+  Map<String, dynamic>? status;
+  Map<String, dynamic>? image;
+  Map<String, dynamic>? detail;
 
-  Map<String, dynamic> userVoted;
+  Map<String, dynamic>? userVoted;
 }

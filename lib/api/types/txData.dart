@@ -9,30 +9,30 @@ class TxData extends _TxData {
 
 abstract class _TxData {
   @JsonKey(name: 'block_num')
-  int blockNum = 0;
+  int? blockNum = 0;
 
   @JsonKey(name: 'block_timestamp')
-  int blockTimestamp = 0;
+  int? blockTimestamp = 0;
 
   @JsonKey(name: 'account_id')
-  String accountId = "";
+  String? accountId = "";
 
   @JsonKey(name: 'call_module')
-  String module = "";
+  String? module = "";
 
   @JsonKey(name: 'call_module_function')
-  String call = "";
+  String? call = "";
 
   @JsonKey(name: 'extrinsic_hash')
-  String hash = "";
+  String? hash = "";
 
   @JsonKey(name: 'extrinsic_index')
-  String txNumber = "";
+  String? txNumber = "";
 
-  String fee = "";
+  String? fee = "";
 
-  String params = "";
+  String? params = "";
 
-  int nonce;
-  bool success = true;
+  int? nonce;
+  bool? success = true;
 }

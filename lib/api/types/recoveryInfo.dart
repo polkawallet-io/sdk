@@ -14,9 +14,9 @@ class RecoveryInfo extends _RecoveryInfo {
 }
 
 abstract class _RecoveryInfo {
-  String address;
-  int delayPeriod;
-  int threshold;
-  List<String> friends;
-  BigInt deposit;
+  String? address;
+  int? delayPeriod;
+  int? threshold;
+  List<String>? friends;
+  BigInt? deposit;
 }

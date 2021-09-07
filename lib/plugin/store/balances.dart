@@ -7,7 +7,7 @@ class BalancesStore = BalancesStoreBase with _$BalancesStore;
 
 abstract class BalancesStoreBase with Store {
   @observable
-  BalanceData native;
+  BalanceData? native;
 
   @observable
   List<TokenBalanceData> tokens = [];
@@ -16,7 +16,7 @@ abstract class BalancesStoreBase with Store {
   bool isTokensFromCache = false;
 
   @observable
-  List<ExtraTokenData> extraTokens;
+  List<ExtraTokenData>? extraTokens;
 
   @action
   void setBalance(BalanceData data) {
@@ -36,12 +36,12 @@ abstract class BalancesStoreBase with Store {
       });
     }
 
-    data.removeWhere((e) => e.symbol.contains('-') && e.amount == '0');
-    data.sort((a, b) => a.symbol.contains('-')
+    data.removeWhere((e) => e.symbol!.contains('-') && e.amount == '0');
+    data.sort((a, b) => a.symbol!.contains('-')
         ? 1
-        : b.symbol.contains('-')
+        : b.symbol!.contains('-')
             ? -1
-            : a.symbol.compareTo(b.symbol));
+            : a.symbol!.compareTo(b.symbol!));
 
     tokens = data;
     isTokensFromCache = isFromCache;
@@ -55,8 +55,8 @@ abstract class BalancesStoreBase with Store {
 
 class ExtraTokenData {
   ExtraTokenData({this.title, this.tokens});
-  final String title;
-  final List<TokenBalanceData> tokens;
+  final String? title;
+  final List<TokenBalanceData>? tokens;
 }
 
 class TokenBalanceData {
@@ -72,14 +72,14 @@ class TokenBalanceData {
     this.price,
   });
 
-  final String id;
-  final String name;
-  final String symbol;
-  final int decimals;
-  String amount;
-  final String locked;
-  final String reserved;
+  final String? id;
+  final String? name;
+  final String? symbol;
+  final int? decimals;
+  String? amount;
+  final String? locked;
+  final String? reserved;
 
-  String detailPageRoute;
-  final double price;
+  String? detailPageRoute;
+  final double? price;
 }

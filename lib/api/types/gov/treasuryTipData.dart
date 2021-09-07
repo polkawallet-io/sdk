@@ -9,13 +9,13 @@ class TreasuryTipData extends _TreasuryTipData {
 }
 
 abstract class _TreasuryTipData {
-  String hash;
-  String reason;
-  String who;
+  String? hash;
+  String? reason;
+  String? who;
   dynamic closes;
-  String finder;
+  String? finder;
   dynamic deposit;
-  List<TreasuryTipItemData> tips;
+  List<TreasuryTipItemData>? tips;
 }
 
 @JsonSerializable()
@@ -25,6 +25,6 @@ class TreasuryTipItemData extends _TreasuryTipItemData {
 }
 
 abstract class _TreasuryTipItemData {
-  String address;
+  String? address;
   dynamic value;
 }

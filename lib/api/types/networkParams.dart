@@ -10,7 +10,7 @@ class NetworkParams extends _NetworkParams {
 }
 
 abstract class _NetworkParams {
-  String name = '';
-  String endpoint = '';
-  int ss58 = 0;
+  String? name = '';
+  String? endpoint = '';
+  int? ss58 = 0;
 }

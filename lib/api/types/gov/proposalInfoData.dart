@@ -11,10 +11,10 @@ class ProposalInfoData extends _ProposalInfoData {
 
 abstract class _ProposalInfoData {
   dynamic balance;
-  List<String> seconds;
-  ProposalImageData image;
-  String imageHash;
-  String proposer;
+  List<String>? seconds;
+  ProposalImageData? image;
+  String? imageHash;
+  String? proposer;
   dynamic index;
 }
 
@@ -27,6 +27,6 @@ class ProposalImageData extends _ProposalImageData {
 abstract class _ProposalImageData {
   dynamic balance;
   dynamic at;
-  String proposer;
-  CouncilProposalData proposal;
+  String? proposer;
+  CouncilProposalData? proposal;
 }

@@ -10,15 +10,15 @@ class BalanceData extends _BalanceData {
 }
 
 abstract class _BalanceData {
-  String accountId;
+  String? accountId;
   dynamic accountNonce;
   dynamic availableBalance;
   dynamic freeBalance;
   dynamic frozenFee;
   dynamic frozenMisc;
-  bool isVesting;
+  bool? isVesting;
   dynamic lockedBalance;
-  List<BalanceBreakdownData> lockedBreakdown;
+  List<BalanceBreakdownData>? lockedBreakdown;
   dynamic reservedBalance;
   dynamic vestedBalance;
   dynamic vestedClaimable;
@@ -29,7 +29,7 @@ abstract class _BalanceData {
   dynamic votingBalance;
 
   // use this to identify cache data
-  bool isFromCache;
+  bool? isFromCache;
 }
 
 @JsonSerializable()
@@ -40,10 +40,10 @@ class BalanceBreakdownData extends _BalanceBreakdownData {
 }
 
 abstract class _BalanceBreakdownData {
-  String id;
+  String? id;
   dynamic amount;
-  String reasons;
-  String use;
+  String? reasons;
+  String? use;
 }
 
 class AssetsBalanceData extends _AssetsBalanceData {
@@ -58,8 +58,8 @@ class AssetsBalanceData extends _AssetsBalanceData {
 }
 
 abstract class _AssetsBalanceData {
-  String id;
-  String balance;
-  bool isFrozen;
-  bool isSufficient;
+  String? id;
+  String? balance;
+  bool? isFrozen;
+  bool? isSufficient;
 }

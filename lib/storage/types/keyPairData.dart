@@ -10,22 +10,22 @@ class KeyPairData extends _KeyPairData {
 }
 
 abstract class _KeyPairData {
-  String name;
-  String address;
-  String encoded;
-  String pubKey;
+  String? name;
+  String? address;
+  String? encoded;
+  String? pubKey;
 
-  Map<String, dynamic> encoding = Map<String, dynamic>();
-  Map<String, dynamic> meta = Map<String, dynamic>();
+  Map<String, dynamic>? encoding = Map<String, dynamic>();
+  Map<String, dynamic>? meta = Map<String, dynamic>();
 
-  String memo;
-  bool observation = false;
+  String? memo;
+  bool? observation = false;
 
   /// address avatar in svg format
-  String icon;
+  String? icon;
 
   /// indexInfo
-  Map indexInfo;
+  Map? indexInfo;
 }
 
 @JsonSerializable()
@@ -36,7 +36,7 @@ class SeedBackupData extends _SeedBackupData {
 }
 
 abstract class _SeedBackupData {
-  String type;
-  String seed;
-  String error;
+  String? type;
+  String? seed;
+  String? error;
 }

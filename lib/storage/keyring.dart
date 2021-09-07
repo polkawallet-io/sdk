@@ -1,4 +1,6 @@
-import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
+import 'dart:async';
+
+import 'package:flutter_aes_ecb_pkcs5_fork/flutter_aes_ecb_pkcs5_fork.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/storage/localStorage.dart';
@@ -11,10 +13,10 @@ import 'package:polkawallet_sdk/utils/localStorage.dart';
 /// We need to pass the storage instance to [WalletSDK]'s
 /// keyring api for account management.
 class Keyring {
-  KeyringPrivateStore store;
+  late KeyringPrivateStore store;
 
-  int get ss58 => store.ss58;
-  int setSS58(int ss58) {
+  int? get ss58 => store.ss58;
+  int? setSS58(int? ss58) {
     store.ss58 = ss58;
     return ss58;
   }
@@ -78,10 +80,10 @@ class KeyringPrivateStore {
   Map<String, String> _iconsMap = {};
   Map<String, Map> _indicesMap = {};
 
-  int ss58 = 0;
+  int? ss58 = 0;
 
-  String get currentPubKey => _storage.currentPubKey.val;
-  void setCurrentPubKey(String pubKey) {
+  String? get currentPubKey => _storage.currentPubKey.val;
+  void setCurrentPubKey(String? pubKey) {
     _storage.currentPubKey.val = pubKey;
   }
 
@@ -107,8 +109,8 @@ class KeyringPrivateStore {
     ls.forEach((e) {
       final networkSS58 = ss58.toString();
       if (_pubKeyAddressMap[networkSS58] != null &&
-          _pubKeyAddressMap[networkSS58][e['pubKey']] != null) {
-        e['address'] = _pubKeyAddressMap[networkSS58][e['pubKey']];
+          _pubKeyAddressMap[networkSS58]![e['pubKey']] != null) {
+        e['address'] = _pubKeyAddressMap[networkSS58]![e['pubKey']];
       }
       e['icon'] = _iconsMap[e['pubKey']];
       e['indexInfo'] = _indicesMap[e['address']];
@@ -210,7 +212,7 @@ class KeyringPrivateStore {
     _storage.contacts.val = ls;
   }
 
-  Future<void> deleteAccount(String pubKey) async {
+  Future<void> deleteAccount(String? pubKey) async {
     _deleteKeyPair(pubKey);
 
     final mnemonics = Map.of(_storage.encryptedMnemonics.val);
@@ -221,7 +223,7 @@ class KeyringPrivateStore {
     _storage.encryptedRawSeeds.val = seeds;
   }
 
-  Future<void> _deleteKeyPair(String pubKey) async {
+  Future<void> _deleteKeyPair(String? pubKey) async {
     final List pairs = _storage.keyPairs.val.toList();
     pairs.removeWhere((e) => e['pubKey'] == pubKey);
     _storage.keyPairs.val = pairs;
@@ -242,12 +244,13 @@ class KeyringPrivateStore {
   }
 
   Future<void> encryptSeedAndSave(
-      String pubKey, seed, seedType, password) async {
+      String? pubKey, seed, seedType, password) async {
     final String key = Encrypt.passwordToEncryptKey(password);
     final String encrypted = await FlutterAesEcbPkcs5.encryptString(seed, key);
 
     // read old data from storage-old
-    final Map stored = await _storageOld.getSeeds(seedType);
+    final Map stored = await (_storageOld.getSeeds(seedType)
+        as FutureOr<Map<dynamic, dynamic>>);
     stored[pubKey] = encrypted;
     // and save to new storage
     if (seedType == KeyType.mnemonic.toString().split('.')[1]) {
@@ -263,12 +266,14 @@ class KeyringPrivateStore {
     }
   }
 
-  Future<void> updateEncryptedSeed(String pubKey, passOld, passNew) async {
-    final seed = await getDecryptedSeed(pubKey, passOld);
+  Future<void> updateEncryptedSeed(String? pubKey, passOld, passNew) async {
+    final seed = await (getDecryptedSeed(pubKey, passOld)
+        as FutureOr<Map<String, dynamic>>);
     encryptSeedAndSave(pubKey, seed['seed'], seed['type'], passNew);
   }
 
-  Future<Map<String, dynamic>> getDecryptedSeed(String pubKey, password) async {
+  Future<Map<String, dynamic>?> getDecryptedSeed(
+      String? pubKey, password) async {
     final key = Encrypt.passwordToEncryptKey(password);
     final mnemonic = _storage.encryptedMnemonics.val[pubKey];
     if (mnemonic != null) {
@@ -309,15 +314,15 @@ class KeyringPrivateStore {
       _storageOld.getSeeds('mnemonic'),
       _storageOld.getSeeds('rawSeed'),
     ]);
-    if (res[0].keys.length > 0) {
+    if (res[0]!.keys.length > 0) {
       final mnemonics = Map.of(_storage.encryptedMnemonics.val);
-      mnemonics.addAll(res[0]);
+      mnemonics.addAll(res[0]!);
       _storage.encryptedMnemonics.val = mnemonics;
       _storageOld.setSeeds('mnemonic', {});
     }
-    if (res[1].keys.length > 0) {
+    if (res[1]!.keys.length > 0) {
       final seeds = Map.of(_storage.encryptedRawSeeds.val);
-      seeds.addAll(res[1]);
+      seeds.addAll(res[1]!);
       _storage.encryptedRawSeeds.val = seeds;
       _storageOld.setSeeds('rawSeed', {});
     }

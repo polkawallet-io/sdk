@@ -4,18 +4,18 @@ part 'fundData.g.dart';
 
 @JsonSerializable()
 class FundData extends _FundData {
-  static FundData fromJson(Map json) => _$FundDataFromJson(json);
+  static FundData fromJson(Map json) => _$FundDataFromJson(json as Map<String, dynamic>);
   Map toJson() => _$FundDataToJson(this);
 }
 
 abstract class _FundData {
-  String paraId;
+  String? paraId;
   dynamic cap;
   dynamic value;
   dynamic end;
-  int firstSlot;
-  int lastSlot;
-  bool isWinner;
-  bool isCapped;
-  bool isEnded;
+  int? firstSlot;
+  int? lastSlot;
+  bool? isWinner;
+  bool? isCapped;
+  bool? isEnded;
 }

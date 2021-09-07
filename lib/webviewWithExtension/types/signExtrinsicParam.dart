@@ -10,10 +10,10 @@ class SignAsExtensionParam extends _SignAsExtensionParam {
 }
 
 abstract class _SignAsExtensionParam {
-  String id;
-  String url;
-  String msgType;
-  Map request;
+  String? id;
+  String? url;
+  String? msgType;
+  Map? request;
 }
 
 @JsonSerializable()
@@ -24,19 +24,19 @@ class SignExtrinsicRequest extends _SignExtrinsicRequest {
 }
 
 abstract class _SignExtrinsicRequest {
-  String address;
-  String blockHash;
-  String blockNumber;
-  String era;
-  String genesisHash;
-  String method;
-  String nonce;
-  List<String> signedExtensions;
-  String specVersion;
-  String tip;
-  String transactionVersion;
-  int version;
-  Map payload;
+  String? address;
+  String? blockHash;
+  String? blockNumber;
+  String? era;
+  String? genesisHash;
+  String? method;
+  String? nonce;
+  List<String>? signedExtensions;
+  String? specVersion;
+  String? tip;
+  String? transactionVersion;
+  int? version;
+  Map? payload;
 }
 
 @JsonSerializable()
@@ -47,9 +47,9 @@ class SignBytesRequest extends _SignBytesRequest {
 }
 
 abstract class _SignBytesRequest {
-  String address;
-  String data;
-  String type;
+  String? address;
+  String? data;
+  String? type;
 }
 
 @JsonSerializable()
@@ -60,6 +60,6 @@ class ExtensionSignResult extends _ExtensionSignResult {
 }
 
 abstract class _ExtensionSignResult {
-  String id;
-  String signature;
+  String? id;
+  String? signature;
 }
