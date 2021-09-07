@@ -89,7 +89,7 @@ class WebViewRunner {
 
   void _tryReload() {
     if (!_webViewLoaded) {
-      _web?.webViewController?.reload();
+      _web?.webViewController.reload();
 
       _webViewReloadTimer = Timer(Duration(seconds: 3), _tryReload);
     }
@@ -143,7 +143,8 @@ class WebViewRunner {
     }
 
     if (!wrapPromise) {
-      final res = await _web!.webViewController.evaluateJavascript(source: code);
+      final res =
+          await _web!.webViewController.evaluateJavascript(source: code);
       return res;
     }
 
@@ -165,7 +166,8 @@ class WebViewRunner {
 
   Future<NetworkParams?> connectNode(List<NetworkParams> nodes) async {
     final String? res = await (evalJavascript(
-        'settings.connect(${jsonEncode(nodes.map((e) => e.endpoint).toList())})') as FutureOr<String?>);
+            'settings.connect(${jsonEncode(nodes.map((e) => e.endpoint).toList())})')
+        as FutureOr<String?>);
     if (res != null) {
       final index = nodes.indexWhere((e) => e.endpoint!.trim() == res.trim());
       return nodes[index > -1 ? index : 0];

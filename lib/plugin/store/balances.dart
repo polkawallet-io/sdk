@@ -25,7 +25,7 @@ abstract class BalancesStoreBase with Store {
 
   @action
   void setTokens(List<TokenBalanceData> ls, {bool isFromCache = false}) {
-    final data = ls ?? [];
+    final data = ls;
     if (!isFromCache) {
       tokens.toList().forEach((old) {
         final newDataIndex =
