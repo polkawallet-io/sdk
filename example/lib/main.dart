@@ -9,6 +9,8 @@ import 'package:polkawallet_sdk_example/pages/keyring.dart';
 import 'package:polkawallet_sdk_example/pages/setting.dart';
 import 'package:polkawallet_sdk_example/pages/tx.dart';
 
+import 'pages/staking.dart';
+
 void main() {
   runApp(MyApp());
 }
@@ -74,6 +76,7 @@ class _MyAppState extends State<MyApp> {
         SettingPage.route: (_) => SettingPage(sdk, _showResult),
         AccountPage.route: (_) => AccountPage(sdk, _showResult),
         TxPage.route: (_) => TxPage(sdk, keyring, _showResult),
+        StakingPage.route: (_) => StakingPage(sdk, keyring, _showResult),
       },
     );
   }
@@ -203,7 +206,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 if (!widget.sdkReady) return;
                 Navigator.of(context).pushNamed(TxPage.route);
               },
-            )
+            ),
+            Divider(),
+            ListTile(
+              title: Text('sdk.staking'),
+              subtitle: Text('staking management'),
+              trailing: trailing,
+              onTap: () {
+                if (!widget.sdkReady) return;
+                Navigator.of(context).pushNamed(StakingPage.route);
+              },
+            ),
           ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.

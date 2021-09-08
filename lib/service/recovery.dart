@@ -9,9 +9,8 @@ class ServiceRecovery {
 
   Future<Map?> queryRecoverable(String address) async {
 //    address = "J4sW13h2HNerfxTzPGpLT66B3HVvuU32S6upxwSeFJQnAzg";
-    Map? res = await (serviceRoot.webView!
-            .evalJavascript('api.query.recovery.recoverable("$address")')
-        as FutureOr<Map<dynamic, dynamic>?>);
+    dynamic res = await serviceRoot.webView!
+        .evalJavascript('api.query.recovery.recoverable("$address")');
     if (res != null) {
       res['address'] = address;
     }
@@ -21,9 +20,8 @@ class ServiceRecovery {
   Future<List> queryRecoverableList(List<String> addresses) async {
     final queries =
         addresses.map((e) => 'api.query.recovery.recoverable("$e")').toList();
-    final List ls = await (serviceRoot.webView!
-            .evalJavascript('Promise.all([${queries.join(',')}])')
-        as FutureOr<List<dynamic>>);
+    final dynamic ls = await serviceRoot.webView!
+        .evalJavascript('Promise.all([${queries.join(',')}])');
 
     final res = [];
     ls.asMap().forEach((k, v) {

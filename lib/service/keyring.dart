@@ -25,9 +25,8 @@ class ServiceKeyring {
     if (keyring.store.list.length > 0) {
       final String pairs = jsonEncode(keyring.store.list);
       final ss58 = keyring.store.ss58List;
-      final res = Map<String, Map>.from(await (serviceRoot.webView!
-              .evalJavascript('keyring.initKeys($pairs, ${jsonEncode(ss58)})')
-          as FutureOr<dynamic>));
+      final res = Map<String, Map>.from(await serviceRoot.webView!
+          .evalJavascript('keyring.initKeys($pairs, ${jsonEncode(ss58)})'));
 
       final contacts = await getPubKeyAddressMap(keyring.store.contacts, ss58);
       res.forEach((key, value) {
@@ -52,8 +51,8 @@ class ServiceKeyring {
 
   /// Generate a set of new mnemonic.
   Future<String?> generateMnemonic() async {
-    final dynamic acc = await (serviceRoot.webView!
-        .evalJavascript('keyring.gen()') as FutureOr<dynamic>);
+    final dynamic acc =
+        await serviceRoot.webView!.evalJavascript('keyring.gen()');
     return acc['mnemonic'];
   }
 
@@ -74,8 +73,7 @@ class ServiceKeyring {
     String code =
         'keyring.recover("$type", "$crypto", \'$key$derivePath\', "$password")';
     code = code.replaceAll(RegExp(r'\t|\n|\r'), '');
-    final dynamic acc =
-        await (serviceRoot.webView!.evalJavascript(code) as FutureOr<dynamic>);
+    final dynamic acc = await serviceRoot.webView!.evalJavascript(code);
     if (acc == null || acc['error'] != null) {
       return acc;
     }
@@ -106,9 +104,8 @@ class ServiceKeyring {
   Future<String?> checkDerivePath(
       String seed, path, CryptoType cryptoType) async {
     final String crypto = cryptoType.toString().split('.')[1];
-    dynamic res = await (serviceRoot.webView!.evalJavascript(
-            'keyring.checkDerivePath("$seed", "$path", "$crypto")')
-        as FutureOr<dynamic>);
+    dynamic res = await serviceRoot.webView!
+        .evalJavascript('keyring.checkDerivePath("$seed", "$path", "$crypto")');
     return res;
   }
 

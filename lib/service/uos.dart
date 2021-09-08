@@ -54,9 +54,8 @@ class ServiceUOS {
         "onStatusChange${serviceRoot.webView!.getEvalJavascriptUID()}";
     serviceRoot.webView!.addMsgHandler(msgId, onStatusChange);
 
-    final Map? res = await (serviceRoot.webView!.evalJavascript(
-            'keyring.addSignatureAndSend(api, "$address", "$signed")')
-        as FutureOr<Map<dynamic, dynamic>?>);
+    final dynamic res = await serviceRoot.webView!.evalJavascript(
+        'keyring.addSignatureAndSend(api, "$address", "$signed")');
     serviceRoot.webView!.removeMsgHandler(msgId);
 
     return res;
@@ -65,9 +64,9 @@ class ServiceUOS {
   Future<Map?> makeQrCode(Map txInfo, List params,
       {String? rawParam, int? ss58}) async {
     String param = rawParam != null ? rawParam : jsonEncode(params);
-    final Map? res = await (serviceRoot.webView!.evalJavascript(
+    final dynamic res = await serviceRoot.webView!.evalJavascript(
       'keyring.makeTx(api, ${jsonEncode(txInfo)}, $param, $ss58)',
-    ) as FutureOr<Map<dynamic, dynamic>?>);
+    );
     return res;
   }
 }

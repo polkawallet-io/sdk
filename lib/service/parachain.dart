@@ -8,9 +8,8 @@ class ServiceParachain {
   final SubstrateService serviceRoot;
 
   Future<Map?> queryAuctionWithWinners() async {
-    final Map? res = await (serviceRoot.webView!
-            .evalJavascript('parachain.queryAuctionWithWinners(api)')
-        as FutureOr<Map<dynamic, dynamic>?>);
+    final dynamic res = await serviceRoot.webView!
+        .evalJavascript('parachain.queryAuctionWithWinners(api)');
     return res;
   }
 

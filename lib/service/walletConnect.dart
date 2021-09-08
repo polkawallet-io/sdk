@@ -17,15 +17,13 @@ class ServiceWalletConnect {
   }
 
   Future<Map?> connect(String uri) async {
-    return await (serviceRoot.webView!
-            .evalJavascript('walletConnect.connect("$uri")')
-        as FutureOr<Map<dynamic, dynamic>?>);
+    return await serviceRoot.webView!
+        .evalJavascript('walletConnect.connect("$uri")');
   }
 
   Future<Map?> disconnect(Map params) async {
-    final Map? res = await (serviceRoot.webView!
-            .evalJavascript('walletConnect.disconnect(${jsonEncode(params)})')
-        as FutureOr<Map<dynamic, dynamic>?>);
+    final dynamic res = await serviceRoot.webView!
+        .evalJavascript('walletConnect.disconnect(${jsonEncode(params)})');
     serviceRoot.webView!.removeMsgHandler("walletConnectPayload");
     serviceRoot.webView!.removeMsgHandler("walletConnectPairing");
     serviceRoot.webView!.removeMsgHandler("walletConnectCreated");
@@ -33,30 +31,26 @@ class ServiceWalletConnect {
   }
 
   Future<Map?> approvePairing(Map proposal, String address) async {
-    final Map? res = await (serviceRoot.webView!.evalJavascript(
-            'walletConnect.approveProposal(${jsonEncode(proposal)}, "$address")')
-        as FutureOr<Map<dynamic, dynamic>?>);
+    final dynamic res = await serviceRoot.webView!.evalJavascript(
+        'walletConnect.approveProposal(${jsonEncode(proposal)}, "$address")');
     return res;
   }
 
   Future<Map?> rejectPairing(Map proposal) async {
-    final Map? res = await (serviceRoot.webView!.evalJavascript(
-            'walletConnect.rejectProposal(${jsonEncode(proposal)})')
-        as FutureOr<Map<dynamic, dynamic>?>);
+    final dynamic res = await serviceRoot.webView!.evalJavascript(
+        'walletConnect.rejectProposal(${jsonEncode(proposal)})');
     return res;
   }
 
   Future<Map?> signPayload(Map payload, String password) async {
-    final Map? res = await (serviceRoot.webView!.evalJavascript(
-            'walletConnect.signPayload(api, ${jsonEncode(payload)}, "$password")')
-        as FutureOr<Map<dynamic, dynamic>?>);
+    final dynamic res = await serviceRoot.webView!.evalJavascript(
+        'walletConnect.signPayload(api, ${jsonEncode(payload)}, "$password")');
     return res;
   }
 
   Future<Map?> payloadRespond(Map response) async {
-    final Map? res = await (serviceRoot.webView!.evalJavascript(
-            'walletConnect.payloadRespond(${jsonEncode(response)})')
-        as FutureOr<Map<dynamic, dynamic>?>);
+    final dynamic res = await serviceRoot.webView!.evalJavascript(
+        'walletConnect.payloadRespond(${jsonEncode(response)})');
     return res;
   }
 }

@@ -8,16 +8,16 @@ class ServiceAssets {
   final SubstrateService serviceRoot;
 
   Future<List?> getAssetsAll() async {
-    final List? res =
-        await (serviceRoot.webView!.evalJavascript('assets.getAssetsAll(api)')
-            as FutureOr<List<dynamic>?>);
+    final dynamic res =
+        await serviceRoot.webView!.evalJavascript('assets.getAssetsAll(api)');
     return res;
   }
 
   Future<List?> queryAssetsBalances(List<String> ids, String address) async {
-    final List? res = await (serviceRoot.webView!.evalJavascript('Promise.all(['
+    final dynamic res = await serviceRoot.webView!.evalJavascript(
+        'Promise.all(['
         '${ids.map((e) => 'api.query.assets.account($e, "$address")').join(',')}'
-        '])') as FutureOr<List<dynamic>?>);
+        '])');
     return res;
   }
 }
