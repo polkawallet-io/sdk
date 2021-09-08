@@ -9,9 +9,9 @@ class ServiceTx {
   final SubstrateService serviceRoot;
 
   Future<Map?> estimateFees(Map txInfo, String params) async {
-    Map? res = await (serviceRoot.webView!.evalJavascript(
+    dynamic res = await (serviceRoot.webView!.evalJavascript(
       'keyring.txFeeEstimate(api, ${jsonEncode(txInfo)}, $params)',
-    ) as FutureOr<Map<dynamic, dynamic>?>);
+    ) as FutureOr<dynamic>);
     return res;
   }
 
@@ -33,8 +33,8 @@ class ServiceTx {
     final code =
         'keyring.sendTx(api, ${jsonEncode(txInfo)}, $params, "$password", "$msgId")';
     // print(code);
-    final Map? res = await (serviceRoot.webView!.evalJavascript(code)
-        as FutureOr<Map<dynamic, dynamic>?>);
+    final Map? res =
+        await (serviceRoot.webView!.evalJavascript(code) as FutureOr<dynamic>);
     serviceRoot.webView!.removeMsgHandler(msgId);
 
     return res;

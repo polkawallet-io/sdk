@@ -100,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     final node = NetworkParams();
     node.name = 'Kusama';
-    node.endpoint = 'wss://kusama-1.polkawallet.io:9944/';
+    node.endpoint = 'wss://kusama.api.onfinality.io/public-ws/';
     node.ss58 = 2;
     final res = await widget.sdk.api.connectNode(widget.keyring, [node]);
     if (res != null) {
@@ -118,6 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final Widget trailing = widget.sdkReady
         ? IconButton(
             icon: Icon(Icons.arrow_forward_ios, size: 18),
+            onPressed: null,
           )
         : CupertinoActivityIndicator();
     return Scaffold(
@@ -137,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text('js-api connected: $_apiConnected'),
-                      OutlineButton(
+                      OutlinedButton(
                         child: _connecting
                             ? CupertinoActivityIndicator()
                             : Text(_apiConnected

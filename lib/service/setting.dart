@@ -8,9 +8,8 @@ class ServiceSetting {
   final SubstrateService serviceRoot;
 
   Future<Map?> queryNetworkConst() async {
-    final Map? res = await (serviceRoot.webView!
-            .evalJavascript('settings.getNetworkConst(api)')
-        as FutureOr<Map<dynamic, dynamic>?>);
+    final dynamic res = await (serviceRoot.webView!
+        .evalJavascript('settings.getNetworkConst(api)') as FutureOr<dynamic>);
     return res;
   }
 

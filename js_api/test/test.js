@@ -6,7 +6,7 @@ function expect(actual, matcher) {
 
 async function runSettingsTest() {
   console.log("test connect");
-  const endpoint = "wss://kusama-1.polkawallet.io:9944";
+  const endpoint = "wss://kusama.api.onfinality.io/public-ws";
   const connected = await settings.connect([endpoint]);
   expect(connected, endpoint);
   expect(!!api, true);
@@ -105,7 +105,7 @@ async function runKeyringTest() {
 async function runAccountTest() {
   console.log("query account bonded");
   const testKey = "0xe611c2eced1b561183f88faed0dd7d88d5fafdf16f5840c63ec36d8c31136f61";
-  const testAddr = "HmyonjFVFZyg1mRjRvohVGRw9ouFDRoQ5ea9nDfH2Yi44qQ";
+  const testAddr = "FfBhEQgE9785gKaCtt9P2Nbpwrb3VFryKDrRM1QhYZkVYNS";
   const bonded = await account.queryAccountsBonded(api, [testKey]);
   expect(bonded[0][0], testKey);
   expect(bonded[0].length, 3);

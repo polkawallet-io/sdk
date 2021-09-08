@@ -27,7 +27,7 @@ class ServiceKeyring {
       final ss58 = keyring.store.ss58List;
       final res = Map<String, Map>.from(await (serviceRoot.webView!
               .evalJavascript('keyring.initKeys($pairs, ${jsonEncode(ss58)})')
-          as FutureOr<Map<dynamic, dynamic>>));
+          as FutureOr<dynamic>));
 
       final contacts = await getPubKeyAddressMap(keyring.store.contacts, ss58);
       res.forEach((key, value) {
@@ -52,15 +52,15 @@ class ServiceKeyring {
 
   /// Generate a set of new mnemonic.
   Future<String?> generateMnemonic() async {
-    final Map<String, dynamic> acc = await (serviceRoot.webView!
-        .evalJavascript('keyring.gen()') as FutureOr<Map<String, dynamic>>);
+    final dynamic acc = await (serviceRoot.webView!
+        .evalJavascript('keyring.gen()') as FutureOr<dynamic>);
     return acc['mnemonic'];
   }
 
   /// Import account from mnemonic/rawSeed/keystore.
   /// param [cryptoType] can be `sr25519`(default) or `ed25519`.
   /// return [null] if import failed.
-  Future<Map?> importAccount({
+  Future<dynamic> importAccount({
     required KeyType keyType,
     required String key,
     required name,
@@ -74,8 +74,8 @@ class ServiceKeyring {
     String code =
         'keyring.recover("$type", "$crypto", \'$key$derivePath\', "$password")';
     code = code.replaceAll(RegExp(r'\t|\n|\r'), '');
-    final Map<String, dynamic>? acc = await (serviceRoot.webView!
-        .evalJavascript(code) as FutureOr<Map<String, dynamic>?>);
+    final dynamic acc =
+        await (serviceRoot.webView!.evalJavascript(code) as FutureOr<dynamic>);
     if (acc == null || acc['error'] != null) {
       return acc;
     }
@@ -106,9 +106,9 @@ class ServiceKeyring {
   Future<String?> checkDerivePath(
       String seed, path, CryptoType cryptoType) async {
     final String crypto = cryptoType.toString().split('.')[1];
-    String? res = await (serviceRoot.webView!.evalJavascript(
+    dynamic res = await (serviceRoot.webView!.evalJavascript(
             'keyring.checkDerivePath("$seed", "$path", "$crypto")')
-        as FutureOr<String?>);
+        as FutureOr<dynamic>);
     return res;
   }
 

@@ -37,7 +37,7 @@ class ApiKeyring {
     CryptoType cryptoType = CryptoType.sr25519,
     String derivePath = '',
   }) async {
-    final Map? acc = await service!.importAccount(
+    final dynamic? acc = await service!.importAccount(
       keyType: keyType,
       key: key,
       name: name,
@@ -85,8 +85,8 @@ class ApiKeyring {
 
   /// Add a contact.
   Future<KeyPairData> addContact(Keyring keyring, Map acc) async {
-    final pubKey =
-        await (service!.serviceRoot.account!.decodeAddress([acc['address']]) as FutureOr<Map<dynamic, dynamic>>);
+    final pubKey = await (service!.serviceRoot.account!
+        .decodeAddress([acc['address']]) as FutureOr<Map<dynamic, dynamic>>);
     acc['pubKey'] = pubKey.keys.toList()[0];
 
     // save keystore to storage
@@ -244,6 +244,7 @@ class ApiKeyring {
     if (res == null) {
       return null;
     }
-    return VerifyResult.fromJson(Map<String, dynamic>.of(res as Map<String, dynamic>));
+    return VerifyResult.fromJson(
+        Map<String, dynamic>.of(res as Map<String, dynamic>));
   }
 }
