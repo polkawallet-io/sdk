@@ -10,6 +10,6 @@ class VerifyResult extends _VerifyResult {
 }
 
 abstract class _VerifyResult {
-  String crypto;
-  bool isValid;
+  String? crypto;
+  bool? isValid;
 }

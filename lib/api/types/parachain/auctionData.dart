@@ -6,26 +6,26 @@ part 'auctionData.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class AuctionData extends _AuctionData {
-  static AuctionData fromJson(Map json) => _$AuctionDataFromJson(json);
+  static AuctionData fromJson(Map json) => _$AuctionDataFromJson(json as Map<String, dynamic>);
   Map toJson() => _$AuctionDataToJson(this);
 }
 
 abstract class _AuctionData {
-  AuctionOverview auction;
-  List<FundData> funds;
-  List<BidData> winners;
+  AuctionOverview? auction;
+  List<FundData>? funds;
+  List<BidData>? winners;
 }
 
 @JsonSerializable()
 class AuctionOverview extends _AuctionOverview {
-  static AuctionOverview fromJson(Map json) => _$AuctionOverviewFromJson(json);
+  static AuctionOverview fromJson(Map json) => _$AuctionOverviewFromJson(json as Map<String, dynamic>);
   Map toJson() => _$AuctionOverviewToJson(this);
 }
 
 abstract class _AuctionOverview {
-  String bestNumber;
-  String endBlock;
-  int numAuctions;
-  int leasePeriod;
-  int leaseEnd;
+  String? bestNumber;
+  String? endBlock;
+  int? numAuctions;
+  int? leasePeriod;
+  int? leaseEnd;
 }

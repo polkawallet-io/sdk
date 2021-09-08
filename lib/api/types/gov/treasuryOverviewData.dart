@@ -9,10 +9,10 @@ class TreasuryOverviewData extends _TreasuryOverviewData {
 }
 
 abstract class _TreasuryOverviewData {
-  String balance;
-  String proposalCount;
-  List<SpendProposalData> proposals;
-  List<SpendProposalData> approvals;
+  String? balance;
+  String? proposalCount;
+  List<SpendProposalData>? proposals;
+  List<SpendProposalData>? approvals;
 }
 
 @JsonSerializable()
@@ -22,10 +22,10 @@ class SpendProposalData extends _SpendProposalData {
 }
 
 abstract class _SpendProposalData {
-  String id;
-  bool isApproval;
-  List<CouncilMotionData> council;
-  SpendProposalDetailData proposal;
+  String? id;
+  bool? isApproval;
+  List<CouncilMotionData>? council;
+  SpendProposalDetailData? proposal;
 }
 
 @JsonSerializable()
@@ -35,9 +35,9 @@ class CouncilMotionData extends _CouncilMotionData {
 }
 
 abstract class _CouncilMotionData {
-  String hash;
-  CouncilProposalData proposal;
-  CouncilProposalVotesData votes;
+  String? hash;
+  CouncilProposalData? proposal;
+  CouncilProposalVotesData? votes;
 }
 
 @JsonSerializable()
@@ -47,11 +47,11 @@ class CouncilProposalData extends _CouncilProposalData {
 }
 
 abstract class _CouncilProposalData {
-  String callIndex;
-  String method;
-  String section;
-  List args;
-  ProposalMetaData meta;
+  String? callIndex;
+  String? method;
+  String? section;
+  List? args;
+  ProposalMetaData? meta;
 }
 
 @JsonSerializable()
@@ -61,9 +61,9 @@ class ProposalMetaData extends _ProposalMetaData {
 }
 
 abstract class _ProposalMetaData {
-  String name;
-  String documentation;
-  List<ProposalArgsItemData> args;
+  String? name;
+  String? documentation;
+  List<ProposalArgsItemData>? args;
 }
 
 @JsonSerializable()
@@ -73,8 +73,8 @@ class ProposalArgsItemData extends _ProposalArgsItemData {
 }
 
 abstract class _ProposalArgsItemData {
-  String name;
-  String type;
+  String? name;
+  String? type;
 }
 
 @JsonSerializable()
@@ -84,10 +84,10 @@ class CouncilProposalVotesData extends _CouncilProposalVotesData {
 }
 
 abstract class _CouncilProposalVotesData {
-  int index;
-  int threshold;
-  List<String> ayes;
-  List<String> nays;
+  int? index;
+  int? threshold;
+  List<String>? ayes;
+  List<String>? nays;
   dynamic end;
 }
 
@@ -98,8 +98,8 @@ class SpendProposalDetailData extends _SpendProposalDetailData {
 }
 
 abstract class _SpendProposalDetailData {
-  String proposer;
-  String beneficiary;
+  String? proposer;
+  String? beneficiary;
   dynamic value;
   dynamic bond;
 }

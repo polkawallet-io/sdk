@@ -6,23 +6,23 @@ class ApiSetting {
   ApiSetting(this.apiRoot, this.service);
 
   final PolkawalletApi apiRoot;
-  final ServiceSetting service;
+  final ServiceSetting? service;
 
   final _msgChannel = "BestNumber";
 
   /// query network const.
-  Future<Map> queryNetworkConst() async {
-    final Map res = await service.queryNetworkConst();
+  Future<Map?> queryNetworkConst() async {
+    final Map? res = await service!.queryNetworkConst();
     return res;
   }
 
   /// query network properties.
-  Future<NetworkStateData> queryNetworkProps() async {
-    final Map res = await service.queryNetworkProps();
+  Future<NetworkStateData?> queryNetworkProps() async {
+    final Map? res = await service!.queryNetworkProps();
     if (res == null) {
       return null;
     }
-    return NetworkStateData.fromJson(res);
+    return NetworkStateData.fromJson(res as Map<String, dynamic>);
   }
 
   /// subscribe best number.
@@ -37,6 +37,6 @@ class ApiSetting {
   }
 
   Future<void> unsubscribeBestNumber() async {
-    apiRoot.service.webView.unsubscribeMessage(_msgChannel);
+    apiRoot.service!.webView!.unsubscribeMessage(_msgChannel);
   }
 }

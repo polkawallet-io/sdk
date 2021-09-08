@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:polkawallet_sdk/service/index.dart';
@@ -7,8 +8,8 @@ class ServiceTx {
 
   final SubstrateService serviceRoot;
 
-  Future<Map> estimateFees(Map txInfo, String params) async {
-    Map res = await serviceRoot.webView.evalJavascript(
+  Future<Map?> estimateFees(Map txInfo, String params) async {
+    dynamic res = await serviceRoot.webView!.evalJavascript(
       'keyring.txFeeEstimate(api, ${jsonEncode(txInfo)}, $params)',
     );
     return res;
@@ -24,15 +25,16 @@ class ServiceTx {
 //    return c.future;
 //  }
 
-  Future<Map> signAndSend(Map txInfo, String params, password,
+  Future<Map?> signAndSend(Map txInfo, String params, password,
       Function(String) onStatusChange) async {
-    final msgId = "onStatusChange${serviceRoot.webView.getEvalJavascriptUID()}";
-    serviceRoot.webView.addMsgHandler(msgId, onStatusChange);
+    final msgId =
+        "onStatusChange${serviceRoot.webView!.getEvalJavascriptUID()}";
+    serviceRoot.webView!.addMsgHandler(msgId, onStatusChange);
     final code =
         'keyring.sendTx(api, ${jsonEncode(txInfo)}, $params, "$password", "$msgId")';
     // print(code);
-    final Map res = await serviceRoot.webView.evalJavascript(code);
-    serviceRoot.webView.removeMsgHandler(msgId);
+    final dynamic res = await serviceRoot.webView!.evalJavascript(code);
+    serviceRoot.webView!.removeMsgHandler(msgId);
 
     return res;
   }

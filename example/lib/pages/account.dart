@@ -123,17 +123,18 @@ class _AccountPageState extends State<AccountPage> {
     });
   }
 
-  // Future<void> _queryBonded() async {
-  //   setState(() {
-  //     _submitting = true;
-  //   });
-  //   final List res = await widget.sdk.api.account.queryBonded([_testPubKey]);
-  //   widget.showResult(
-  //       context, 'queryBonded', JsonEncoder.withIndent('  ').convert(res));
-  //   setState(() {
-  //     _submitting = false;
-  //   });
-  // }
+  Future<void> _checkAddressFormat() async {
+    setState(() {
+      _submitting = true;
+    });
+    final res =
+        await widget.sdk.api.account.checkAddressFormat(_testAddress, 2);
+    widget.showResult(context, 'checkAddressFormat',
+        JsonEncoder.withIndent('  ').convert(res));
+    setState(() {
+      _submitting = false;
+    });
+  }
 
   @override
   void dispose() {
@@ -220,7 +221,7 @@ class _AccountPageState extends State<AccountPage> {
             ListTile(
               title: Text('subscribeBalance'),
               subtitle: Text(
-                  'sdk.api.account.queryBalance("$_testAddress", onUpdate: (res) => {})'),
+                  'sdk.api.account.subscribeBalance("$_testAddress", onUpdate: (res) => {})'),
               trailing: SubmitButton(
                 needConnect: widget.sdk.api.connectedNode == null,
                 submitting: _submitting,
@@ -228,16 +229,17 @@ class _AccountPageState extends State<AccountPage> {
               ),
             ),
             Divider(),
-            // ListTile(
-            //   title: Text('queryBonded'),
-            //   subtitle: Text('sdk.api.account.queryBonded(["$_testPubKey"])'),
-            //   trailing: SubmitButton(
-            //     needConnect: !widget.sdk.api.isConnected,
-            //     submitting: _submitting,
-            //     call: _queryBonded,
-            //   ),
-            // ),
-            // Divider(),
+            ListTile(
+              title: Text('checkAddressFormat'),
+              subtitle: Text(
+                  'sdk.api.account.checkAddressFormat(["$_testPubKey"],2)'),
+              trailing: SubmitButton(
+                // needConnect: !widget.sdk.api.isConnected,
+                submitting: _submitting,
+                call: _checkAddressFormat,
+              ),
+            ),
+            Divider(),
           ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.

@@ -12,22 +12,22 @@ import 'package:polkawallet_sdk/service/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 
 class WebViewRunner {
-  HeadlessInAppWebView _web;
-  Function _onLaunched;
+  HeadlessInAppWebView? _web;
+  Function? _onLaunched;
 
-  String _jsCode;
+  late String _jsCode;
   Map<String, Function> _msgHandlers = {};
   Map<String, Completer> _msgCompleters = {};
   int _evalJavascriptUID = 0;
 
   bool _webViewLoaded = false;
-  Timer _webViewReloadTimer;
+  Timer? _webViewReloadTimer;
 
   Future<void> launch(
-    ServiceKeyring keyring,
+    ServiceKeyring? keyring,
     Keyring keyringStorage,
-    Function onLaunched, {
-    String jsCode,
+    Function? onLaunched, {
+    String? jsCode,
   }) async {
     /// reset state before webView launch or reload
     _msgHandlers = {};
@@ -56,16 +56,16 @@ class WebViewRunner {
           if (message.messageLevel != ConsoleMessageLevel.LOG) return;
 
           compute(jsonDecode, message.message).then((msg) {
-            final String path = msg['path'];
-            if (_msgCompleters[path] != null) {
-              Completer handler = _msgCompleters[path];
+            final String? path = msg['path'];
+            if (_msgCompleters[path!] != null) {
+              Completer handler = _msgCompleters[path]!;
               handler.complete(msg['data']);
               if (path.contains('uid=')) {
                 _msgCompleters.remove(path);
               }
             }
             if (_msgHandlers[path] != null) {
-              Function handler = _msgHandlers[path];
+              Function handler = _msgHandlers[path]!;
               handler(msg['data']);
             }
           });
@@ -79,8 +79,8 @@ class WebViewRunner {
         },
       );
 
-      await _web.run();
-      _web.webViewController.loadUrl(
+      await _web!.run();
+      _web!.webViewController.loadUrl(
           urlRequest: URLRequest(url: Uri.parse("https://localhost:8080/")));
     } else {
       _tryReload();
@@ -89,7 +89,7 @@ class WebViewRunner {
 
   void _tryReload() {
     if (!_webViewLoaded) {
-      _web?.webViewController?.reload();
+      _web?.webViewController.reload();
 
       _webViewReloadTimer = Timer(Duration(seconds: 3), _tryReload);
     }
@@ -115,11 +115,11 @@ class WebViewRunner {
   }
 
   Future<void> _startJSCode(
-      ServiceKeyring keyring, Keyring keyringStorage) async {
+      ServiceKeyring? keyring, Keyring keyringStorage) async {
     // inject js file to webView
-    await _web.webViewController.evaluateJavascript(source: _jsCode);
+    await _web!.webViewController.evaluateJavascript(source: _jsCode);
 
-    _onLaunched();
+    _onLaunched!();
   }
 
   int getEvalJavascriptUID() {
@@ -137,13 +137,14 @@ class WebViewRunner {
         String call = code.split('(')[0];
         if (i.contains(call)) {
           print('request $call loading');
-          return _msgCompleters[i].future;
+          return _msgCompleters[i]!.future;
         }
       }
     }
 
     if (!wrapPromise) {
-      final res = await _web.webViewController.evaluateJavascript(source: code);
+      final res =
+          await _web!.webViewController.evaluateJavascript(source: code);
       return res;
     }
 
@@ -158,16 +159,16 @@ class WebViewRunner {
         '}).catch(function(err) {'
         '  console.log(JSON.stringify({ path: "log", data: err.message }));'
         '});$uid;';
-    _web.webViewController.evaluateJavascript(source: script);
+    _web!.webViewController.evaluateJavascript(source: script);
 
     return c.future;
   }
 
-  Future<NetworkParams> connectNode(List<NetworkParams> nodes) async {
-    final String res = await evalJavascript(
+  Future<NetworkParams?> connectNode(List<NetworkParams> nodes) async {
+    final dynamic res = await evalJavascript(
         'settings.connect(${jsonEncode(nodes.map((e) => e.endpoint).toList())})');
     if (res != null) {
-      final index = nodes.indexWhere((e) => e.endpoint.trim() == res.trim());
+      final index = nodes.indexWhere((e) => e.endpoint!.trim() == res.trim());
       return nodes[index > -1 ? index : 0];
     }
     return null;
@@ -185,7 +186,7 @@ class WebViewRunner {
   void unsubscribeMessage(String channel) {
     print('unsubscribe $channel');
     final unsubCall = 'unsub$channel';
-    _web.webViewController
+    _web!.webViewController
         .evaluateJavascript(source: 'window.$unsubCall && window.$unsubCall()');
   }
 

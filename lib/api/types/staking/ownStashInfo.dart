@@ -9,24 +9,24 @@ class OwnStashInfoData extends _OwnStashInfoData {
 }
 
 abstract class _OwnStashInfoData {
-  LedgerInfoData account;
-  String controllerId;
-  String destination;
-  int destinationId;
-  Map<String, dynamic> exposure;
-  String hexSessionIdNext;
-  String hexSessionIdQueue;
-  bool isOwnController;
-  bool isOwnStash;
-  bool isStashNominating;
-  bool isStashValidating;
-  List<String> nominating;
-  List<String> sessionIds;
-  Map<String, dynamic> stakingLedger;
-  String stashId;
-  Map<String, dynamic> validatorPrefs;
-  NomineesInfoData inactives;
-  Map<String, dynamic> unbondings;
+  LedgerInfoData? account;
+  String? controllerId;
+  String? destination;
+  int? destinationId;
+  Map<String, dynamic>? exposure;
+  String? hexSessionIdNext;
+  String? hexSessionIdQueue;
+  bool? isOwnController;
+  bool? isOwnStash;
+  bool? isStashNominating;
+  bool? isStashValidating;
+  List<String>? nominating;
+  List<String>? sessionIds;
+  Map<String, dynamic>? stakingLedger;
+  String? stashId;
+  Map<String, dynamic>? validatorPrefs;
+  NomineesInfoData? inactives;
+  Map<String, dynamic>? unbondings;
 }
 
 @JsonSerializable()
@@ -36,11 +36,11 @@ class NomineesInfoData extends _NomineesInfoData {
 }
 
 abstract class _NomineesInfoData {
-  List<String> nomsActive;
-  List<String> nomsChilled;
-  List<String> nomsInactive;
-  List<String> nomsOver;
-  List<String> nomsWaiting;
+  List<String>? nomsActive;
+  List<String>? nomsChilled;
+  List<String>? nomsInactive;
+  List<String>? nomsOver;
+  List<String>? nomsWaiting;
 }
 
 @JsonSerializable()
@@ -50,12 +50,12 @@ class LedgerInfoData extends _LedgerInfoData {
 }
 
 abstract class _LedgerInfoData {
-  String accountId;
-  String controllerId;
-  String stashId;
-  Map<String, dynamic> exposure;
-  Map<String, dynamic> stakingLedger;
-  Map<String, dynamic> validatorPrefs;
+  String? accountId;
+  String? controllerId;
+  String? stashId;
+  Map<String, dynamic>? exposure;
+  Map<String, dynamic>? stakingLedger;
+  Map<String, dynamic>? validatorPrefs;
   dynamic redeemable;
 }
 
@@ -66,6 +66,6 @@ class UnbondingInfoData extends _UnbondingInfoData {
 }
 
 abstract class _UnbondingInfoData {
-  List mapped;
+  List? mapped;
   dynamic total;
 }

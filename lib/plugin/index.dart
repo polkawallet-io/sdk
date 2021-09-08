@@ -47,13 +47,13 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
 
   GetStorage get _cache => GetStorage(sdk_cache_key);
   String _getNetworkCacheKey(String key) => '${key}_${basic.name}';
-  String _getBalanceCacheKey(String pubKey) =>
+  String _getBalanceCacheKey(String? pubKey) =>
       '${balance_cache_key}_${basic.name}_$pubKey';
 
   Future<void> updateNetworkState() async {
     final state = await Future.wait([
-      sdk.api.service.setting.queryNetworkConst(),
-      sdk.api.service.setting.queryNetworkProps(),
+      sdk.api!.service!.setting!.queryNetworkConst(),
+      sdk.api!.service!.setting!.queryNetworkProps(),
     ]);
     _cache.write(_getNetworkCacheKey(net_const_cache_key), state[0]);
     _cache.write(_getNetworkCacheKey(net_state_cache_key), state[1]);
@@ -74,7 +74,7 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
 
   /// This method will be called while user request to query balance.
   Future<void> updateBalances(KeyPairData acc) async {
-    final data = await sdk.api.account.queryBalance(acc.address);
+    final data = await (sdk.api!.account.queryBalance(acc.address) as FutureOr<BalanceData>);
     _updateBalances(acc, data);
   }
 
@@ -95,8 +95,8 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   /// a webView for running `polkadot-js/api`.
   Future<void> beforeStart(
     Keyring keyring, {
-    WebViewRunner webView,
-    String jsCode,
+    WebViewRunner? webView,
+    String? jsCode,
   }) async {
     await sdk.init(
       keyring,
@@ -111,16 +111,16 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   /// 1. connect to nodes.
   /// 2. retrieve network const & state.
   /// 3. subscribe balances & set balancesStore.
-  Future<NetworkParams> start(Keyring keyring,
-      {List<NetworkParams> nodes}) async {
-    final res = await sdk.api.connectNode(keyring, nodes ?? nodeList);
+  Future<NetworkParams?> start(Keyring keyring,
+      {List<NetworkParams>? nodes}) async {
+    final res = await sdk.api!.connectNode(keyring, nodes ?? nodeList);
     if (res == null) return null;
 
     keyring.setSS58(res.ss58);
     await updateNetworkState();
 
     if (keyring.current.address != null) {
-      sdk.api.account.subscribeBalance(keyring.current.address,
+      sdk.api!.account.subscribeBalance(keyring.current.address,
           (BalanceData data) {
         _updateBalances(keyring.current, data);
       });
@@ -133,9 +133,9 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
 
   /// This method will be called while App user changes account.
   void changeAccount(KeyPairData account) {
-    sdk.api.account.unsubscribeBalance();
+    sdk.api!.account.unsubscribeBalance();
     loadBalances(account);
-    sdk.api.account.subscribeBalance(account.address, (BalanceData data) {
+    sdk.api!.account.subscribeBalance(account.address, (BalanceData data) {
       _updateBalances(account, data);
     });
 
@@ -169,7 +169,7 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
 
 abstract class PolkawalletPluginBase {
   /// A plugin's basic info, including: name, primaryColor and icons.
-  final basic = PluginBasicData(name: 'kusama', primaryColor: Colors.black);
+  final basic = PluginBasicData(name: 'kusama', primaryColor: Colors.black as MaterialColor?);
 
   /// Plugin should define a list of node to connect
   /// for users of Polkawallet App.
@@ -188,7 +188,7 @@ abstract class PolkawalletPluginBase {
       Map<String, WidgetBuilder>();
 
   /// App will inject plugin's [jsCode] into webview to connect.
-  Future<String> loadJSCode() => null;
+  Future<String>? loadJSCode() => null;
 }
 
 class PluginBasicData {
@@ -206,25 +206,25 @@ class PluginBasicData {
     this.isXCMSupport = false,
     this.parachainId,
   });
-  final String name;
-  final String genesisHash;
-  final int ss58;
-  final MaterialColor primaryColor;
-  final Color gradientColor;
+  final String? name;
+  final String? genesisHash;
+  final int? ss58;
+  final MaterialColor? primaryColor;
+  final Color? gradientColor;
 
   /// The image will be displayed in network-select page
-  final AssetImage backgroundImage;
+  final AssetImage? backgroundImage;
 
   /// The icons will be displayed in network-select page
   /// in Polkawallet App.
-  final Widget icon;
-  final Widget iconDisabled;
+  final Widget? icon;
+  final Widget? iconDisabled;
 
   /// JavaScript code version of your plugin.
   ///
   /// Polkawallet App will perform hot-update for the js code
   /// of your plugin with it.
-  final int jsCodeVersion;
+  final int? jsCodeVersion;
 
   /// Your plugin is connected to a para-chain testNet by default.
   final bool isTestNet;
@@ -232,5 +232,5 @@ class PluginBasicData {
   /// Whether this para-chain receives assets from relay-chain.
   /// should set [parachainId] if [isXCMSupport] enabled.
   final bool isXCMSupport;
-  final String parachainId;
+  final String? parachainId;
 }

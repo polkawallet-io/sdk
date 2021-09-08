@@ -65,8 +65,8 @@ class _TxPageState extends State<TxPage> {
       _submitting = true;
     });
     final sender = TxSenderData(
-      widget.keyring.keyPairs[1].address,
-      widget.keyring.keyPairs[1].pubKey,
+      widget.keyring.keyPairs[0].address,
+      widget.keyring.keyPairs[0].pubKey,
     );
     final txInfo = TxInfoData('balances', 'transfer', sender);
     try {

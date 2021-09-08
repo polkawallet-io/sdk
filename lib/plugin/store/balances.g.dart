@@ -12,13 +12,13 @@ mixin _$BalancesStore on BalancesStoreBase, Store {
   final _$nativeAtom = Atom(name: 'BalancesStoreBase.native');
 
   @override
-  BalanceData get native {
+  BalanceData? get native {
     _$nativeAtom.reportRead();
     return super.native;
   }
 
   @override
-  set native(BalanceData value) {
+  set native(BalanceData? value) {
     _$nativeAtom.reportWrite(value, super.native, () {
       super.native = value;
     });
@@ -58,13 +58,13 @@ mixin _$BalancesStore on BalancesStoreBase, Store {
   final _$extraTokensAtom = Atom(name: 'BalancesStoreBase.extraTokens');
 
   @override
-  List<ExtraTokenData> get extraTokens {
+  List<ExtraTokenData>? get extraTokens {
     _$extraTokensAtom.reportRead();
     return super.extraTokens;
   }
 
   @override
-  set extraTokens(List<ExtraTokenData> value) {
+  set extraTokens(List<ExtraTokenData>? value) {
     _$extraTokensAtom.reportWrite(value, super.extraTokens, () {
       super.extraTokens = value;
     });

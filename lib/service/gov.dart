@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:polkawallet_sdk/service/index.dart';
@@ -7,26 +8,26 @@ class ServiceGov {
 
   final SubstrateService serviceRoot;
 
-  Future<List> getDemocracyUnlocks(String address) async {
-    final List res = await serviceRoot.webView
+  Future<List?> getDemocracyUnlocks(String address) async {
+    final dynamic res = await serviceRoot.webView!
         .evalJavascript('gov.getDemocracyUnlocks(api, "$address")');
     return res;
   }
 
-  Future<List> getExternalLinks(Map params) async {
-    final List res = await serviceRoot.webView
+  Future<List?> getExternalLinks(Map params) async {
+    final dynamic res = await serviceRoot.webView!
         .evalJavascript('settings.genLinks(api, ${jsonEncode(params)})');
     return res;
   }
 
-  Future<List> getReferendumVoteConvictions() async {
-    final List res = await serviceRoot.webView
+  Future<List?> getReferendumVoteConvictions() async {
+    final dynamic res = await serviceRoot.webView!
         .evalJavascript('gov.getReferendumVoteConvictions(api)');
     return res;
   }
 
   Future<List> queryReferendums(String address) async {
-    final Map data = await serviceRoot.webView
+    final dynamic data = await serviceRoot.webView!
         .evalJavascript('gov.fetchReferendums(api, "$address")');
     if (data != null) {
       final List list = data['referendums'];
@@ -38,51 +39,51 @@ class ServiceGov {
     return [];
   }
 
-  Future<List> queryProposals() async {
-    final List data =
-        await serviceRoot.webView.evalJavascript('gov.fetchProposals(api)');
+  Future<List?> queryProposals() async {
+    final dynamic data =
+        await serviceRoot.webView!.evalJavascript('gov.fetchProposals(api)');
     return data;
   }
 
-  Future<Map> queryTreasuryProposal(String id) async {
-    final Map data = await serviceRoot.webView
+  Future<Map?> queryTreasuryProposal(String id) async {
+    final dynamic data = await serviceRoot.webView!
         .evalJavascript('api.query.treasury.proposals($id)');
     return data;
   }
 
-  Future<Map> queryCouncilVotes() async {
-    final Map votes =
-        await serviceRoot.webView.evalJavascript('gov.fetchCouncilVotes(api)');
+  Future<Map?> queryCouncilVotes() async {
+    final dynamic votes =
+        await serviceRoot.webView!.evalJavascript('gov.fetchCouncilVotes(api)');
     return votes;
   }
 
-  Future<Map> queryUserCouncilVote(String address) async {
-    final Map votes = await serviceRoot.webView
+  Future<Map?> queryUserCouncilVote(String address) async {
+    final dynamic votes = await serviceRoot.webView!
         .evalJavascript('api.derive.council.votesOf("$address")');
     return votes;
   }
 
-  Future<Map> queryCouncilInfo() async {
-    final Map info =
-        await serviceRoot.webView.evalJavascript('api.derive.elections.info()');
+  Future<Map?> queryCouncilInfo() async {
+    final dynamic info = await serviceRoot.webView!
+        .evalJavascript('api.derive.elections.info()');
     return info;
   }
 
-  Future<List> queryCouncilMotions() async {
-    final List data =
-        await serviceRoot.webView.evalJavascript('gov.getCouncilMotions(api)');
+  Future<List?> queryCouncilMotions() async {
+    final dynamic data =
+        await serviceRoot.webView!.evalJavascript('gov.getCouncilMotions(api)');
     return data;
   }
 
-  Future<Map> queryTreasuryOverview() async {
-    final Map data = await serviceRoot.webView
+  Future<Map?> queryTreasuryOverview() async {
+    final dynamic data = await serviceRoot.webView!
         .evalJavascript('gov.getTreasuryOverview(api)');
     return data;
   }
 
-  Future<List> queryTreasuryTips() async {
-    final List data =
-        await serviceRoot.webView.evalJavascript('gov.getTreasuryTips(api)');
+  Future<List?> queryTreasuryTips() async {
+    final dynamic data =
+        await serviceRoot.webView!.evalJavascript('gov.getTreasuryTips(api)');
     return data;
   }
 }

@@ -10,7 +10,7 @@ const int tx_list_page_size = 10;
 
 class MyHttpOverrides extends HttpOverrides {
   @override
-  HttpClient createHttpClient(SecurityContext context) {
+  HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
       ..badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
@@ -29,14 +29,14 @@ class SubScanRequestParams {
   });
 
   /// exec in isolate with a message send port
-  SendPort sendPort;
+  SendPort? sendPort;
 
-  String network;
-  String address;
-  int page;
-  int row;
-  String module;
-  String call;
+  String? network;
+  String? address;
+  int? page;
+  int? row;
+  String? module;
+  String? call;
 }
 
 const post_headers = {"Content-type": "application/json", "Accept": "*/*"};
@@ -83,15 +83,15 @@ class SubScanApi {
       isolateIns.kill(priority: Isolate.immediate);
       completer.complete(msg);
     });
-    return completer.future;
+    return completer.future as FutureOr<Map<dynamic, dynamic>>;
   }
 
   Future<Map> fetchTxsAsync(
     String module, {
-    String call,
+    String? call,
     int page = 0,
     int size = tx_list_page_size,
-    String sender,
+    String? sender,
     String network = 'kusama',
   }) async {
     Completer completer = new Completer<Map>();
@@ -113,13 +113,13 @@ class SubScanApi {
       isolateIns.kill(priority: Isolate.immediate);
       completer.complete(msg);
     });
-    return completer.future;
+    return completer.future as FutureOr<Map<dynamic, dynamic>>;
   }
 
   Future<Map> fetchRewardTxsAsync({
     int page = 0,
     int size = tx_list_page_size,
-    String sender,
+    String? sender,
     String network = 'kusama',
   }) async {
     Completer completer = new Completer<Map>();
@@ -139,11 +139,11 @@ class SubScanApi {
       isolateIns.kill(priority: Isolate.immediate);
       completer.complete(msg);
     });
-    return completer.future;
+    return completer.future as FutureOr<Map<dynamic, dynamic>>;
   }
 
-  static Future<Map> fetchTransfers(SubScanRequestParams params) async {
-    String url = '${getSnEndpoint(params.network)}/transfers';
+  static Future<Map?> fetchTransfers(SubScanRequestParams params) async {
+    String url = '${getSnEndpoint(params.network!)}/transfers';
     String body = jsonEncode({
       "page": params.page,
       "row": params.row,
@@ -154,18 +154,18 @@ class SubScanApi {
     if (res.body != null) {
       final obj = await compute(jsonDecode, res.body);
       if (params.sendPort != null) {
-        params.sendPort.send(obj['data']);
+        params.sendPort!.send(obj['data']);
       }
       return obj['data'];
     }
     if (params.sendPort != null) {
-      params.sendPort.send({});
+      params.sendPort!.send({});
     }
     return {};
   }
 
-  static Future<Map> fetchTxs(SubScanRequestParams para) async {
-    String url = '${getSnEndpoint(para.network)}/extrinsics';
+  static Future<Map?> fetchTxs(SubScanRequestParams para) async {
+    String url = '${getSnEndpoint(para.network!)}/extrinsics';
     Map params = {
       "page": para.page,
       "row": para.row,
@@ -183,18 +183,18 @@ class SubScanApi {
     if (res.body != null) {
       final obj = await compute(jsonDecode, res.body);
       if (para.sendPort != null) {
-        para.sendPort.send(obj['data']);
+        para.sendPort!.send(obj['data']);
       }
       return obj['data'];
     }
     if (para.sendPort != null) {
-      para.sendPort.send({});
+      para.sendPort!.send({});
     }
     return {};
   }
 
-  static Future<Map> fetchRewardTxs(SubScanRequestParams para) async {
-    String url = '${getSnEndpoint(para.network)}/account/reward_slash';
+  static Future<Map?> fetchRewardTxs(SubScanRequestParams para) async {
+    String url = '${getSnEndpoint(para.network!)}/account/reward_slash';
     Map params = {
       "address": para.address,
       "page": para.page,
@@ -206,12 +206,12 @@ class SubScanApi {
     if (res.body != null) {
       final obj = await compute(jsonDecode, res.body);
       if (para.sendPort != null) {
-        para.sendPort.send(obj['data']);
+        para.sendPort!.send(obj['data']);
       }
       return obj['data'];
     }
     if (para.sendPort != null) {
-      para.sendPort.send({});
+      para.sendPort!.send({});
     }
     return {};
   }

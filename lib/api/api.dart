@@ -28,49 +28,49 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 class PolkawalletApi {
   PolkawalletApi(this.service);
 
-  final SubstrateService service;
+  final SubstrateService? service;
 
-  NetworkParams _connectedNode;
+  NetworkParams? _connectedNode;
 
-  ApiKeyring keyring;
-  ApiSetting setting;
-  ApiAccount account;
-  ApiTx tx;
+  late ApiKeyring keyring;
+  ApiSetting? setting;
+  late ApiAccount account;
+  ApiTx? tx;
 
-  ApiStaking staking;
-  ApiGov gov;
-  ApiParachain parachain;
-  ApiAssets assets;
-  ApiUOS uos;
-  ApiRecovery recovery;
+  ApiStaking? staking;
+  ApiGov? gov;
+  ApiParachain? parachain;
+  ApiAssets? assets;
+  ApiUOS? uos;
+  ApiRecovery? recovery;
 
-  ApiWalletConnect walletConnect;
+  ApiWalletConnect? walletConnect;
 
   final SubScanApi subScan = SubScanApi();
 
   void init() {
-    keyring = ApiKeyring(this, service.keyring);
-    setting = ApiSetting(this, service.setting);
-    account = ApiAccount(this, service.account);
-    tx = ApiTx(this, service.tx);
+    keyring = ApiKeyring(this, service!.keyring);
+    setting = ApiSetting(this, service!.setting);
+    account = ApiAccount(this, service!.account);
+    tx = ApiTx(this, service!.tx);
 
-    staking = ApiStaking(this, service.staking);
-    gov = ApiGov(this, service.gov);
-    parachain = ApiParachain(this, service.parachain);
-    assets = ApiAssets(this, service.assets);
-    uos = ApiUOS(this, service.uos);
-    recovery = ApiRecovery(this, service.recovery);
+    staking = ApiStaking(this, service!.staking);
+    gov = ApiGov(this, service!.gov);
+    parachain = ApiParachain(this, service!.parachain);
+    assets = ApiAssets(this, service!.assets);
+    uos = ApiUOS(this, service!.uos);
+    recovery = ApiRecovery(this, service!.recovery);
 
-    walletConnect = ApiWalletConnect(this, service.walletConnect);
+    walletConnect = ApiWalletConnect(this, service!.walletConnect);
   }
 
-  NetworkParams get connectedNode => _connectedNode;
+  NetworkParams? get connectedNode => _connectedNode;
 
   /// connect to a list of nodes, return null if connect failed.
-  Future<NetworkParams> connectNode(
+  Future<NetworkParams?> connectNode(
       Keyring keyringStorage, List<NetworkParams> nodes) async {
     _connectedNode = null;
-    final NetworkParams res = await service.webView.connectNode(nodes);
+    final NetworkParams? res = await service!.webView!.connectNode(nodes);
     if (res != null) {
       _connectedNode = res;
 
@@ -87,7 +87,7 @@ class PolkawalletApi {
     String channel,
     Function callback,
   ) async {
-    service.webView.subscribeMessage(
+    service!.webView!.subscribeMessage(
       'settings.subscribeMessage($JSCall, ${jsonEncode(params)}, "$channel")',
       channel,
       callback,
@@ -96,6 +96,6 @@ class PolkawalletApi {
 
   /// unsubscribe message.
   void unsubscribeMessage(String channel) {
-    service.webView.unsubscribeMessage(channel);
+    service!.webView!.unsubscribeMessage(channel);
   }
 }

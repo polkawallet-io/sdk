@@ -10,9 +10,9 @@ class NetworkStateData extends _NetworkStateData {
 }
 
 abstract class _NetworkStateData {
-  int ss58Format = 0;
-  List<int> tokenDecimals;
-  List<String> tokenSymbol;
-  String name = '';
-  String genesisHash = '';
+  int? ss58Format = 0;
+  List<int>? tokenDecimals;
+  List<String>? tokenSymbol;
+  String? name = '';
+  String? genesisHash = '';
 }
