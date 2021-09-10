@@ -52,9 +52,8 @@ class ServiceStaking {
   }
 
   Future<int?> getSlashingSpans(String stashId) async {
-    final int? spans = await (serviceRoot.webView!
-            .evalJavascript('staking.getSlashingSpans(api, "$stashId")')
-        as FutureOr<int?>);
+    final dynamic spans = await serviceRoot.webView!
+        .evalJavascript('staking.getSlashingSpans(api, "$stashId")');
     return spans;
   }
 }
