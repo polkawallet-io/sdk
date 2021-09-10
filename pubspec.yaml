@@ -15,19 +15,23 @@ dependencies:
   flutter_inappwebview: ^5.3.2
   shared_preferences: ^2.0.7
   get_storage: ^2.0.3
-  json_annotation: ^4.1.0
-  flutter_aes_ecb_pkcs5_fork: ^0.1.1
+  json_annotation: ^4.0.1
+  flutter_aes_ecb_pkcs5: 
+    git:
+      url: https://github.com/polkawallet-io/flutter_aes_ecb_pkcs5.git
+      ref: master
+
   convert: ^3.0.1
   mobx: ^2.0.4
   jaguar: ^3.0.12
   jaguar_flutter_asset: ^3.0.0
 
 dev_dependencies:
-  mobx_codegen: ^2.0.3
+  mobx_codegen: ^2.0.2
   flutter_test:
     sdk: flutter
   build_runner: ^2.1.2
-  json_serializable: ^5.0.0
+  json_serializable: ^4.1.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
