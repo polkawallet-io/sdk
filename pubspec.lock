@@ -205,11 +205,9 @@ packages:
   flutter_aes_ecb_pkcs5:
     dependency: "direct main"
     description:
-      path: "."
-      ref: master
-      resolved-ref: "5af982b8bc604258462efc808f9ac3d3ecfc7062"
-      url: "git@github.com:polkawallet-io/flutter_aes_ecb_pkcs5.git"
-    source: git
+      path: "../flutter_aes_ecb_pkcs5"
+      relative: true
+    source: path
     version: "0.1.1"
   flutter_inappwebview:
     dependency: "direct main"

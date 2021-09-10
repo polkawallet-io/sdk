@@ -17,9 +17,10 @@ dependencies:
   get_storage: ^2.0.3
   json_annotation: ^4.0.1
   flutter_aes_ecb_pkcs5: 
-    git:
-      url: https://github.com/polkawallet-io/flutter_aes_ecb_pkcs5.git
-      ref: master
+    path: ../flutter_aes_ecb_pkcs5
+    # git:
+    #   url: https://github.com/polkawallet-io/flutter_aes_ecb_pkcs5.git
+    #   ref: master
 
   convert: ^3.0.1
   mobx: ^2.0.4
