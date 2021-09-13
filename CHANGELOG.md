@@ -1,3 +1,8 @@
+## [0.3.2] - 20210913
+
+* bump polkadot-js/api v5.8.3
+* null-safety support
+
 ## [0.3.1] - 20210830
 
 * bump polkadot-js/api v5.7.1
