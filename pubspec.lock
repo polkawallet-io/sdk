@@ -8,6 +8,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "22.0.0"
+  aes_ecb_pkcs5_flutter:
+    dependency: "direct main"
+    description:
+      path: "../aes_ecb_pkcs5_flutter"
+      relative: true
+    source: path
+    version: "0.1.1"
   analyzer:
     dependency: transitive
     description:
@@ -202,13 +209,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_aes_ecb_pkcs5:
-    dependency: "direct main"
-    description:
-      path: "../flutter_aes_ecb_pkcs5"
-      relative: true
-    source: path
-    version: "0.1.1"
   flutter_inappwebview:
     dependency: "direct main"
     description:
