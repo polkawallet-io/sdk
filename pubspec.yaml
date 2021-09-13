@@ -1,6 +1,6 @@
 name: polkawallet_sdk
 description: Flutter SDK for building plugin package for polkawallet.
-version: 0.3.1
+version: 0.3.2
 homepage: https://polkawallet.io
 
 environment:
@@ -17,7 +17,6 @@ dependencies:
   get_storage: ^2.0.3
   json_annotation: ^4.0.1
   aes_ecb_pkcs5_flutter: ^0.1.1
-    # path: ../aes_ecb_pkcs5_flutter
 
   convert: ^3.0.1
   mobx: ^2.0.4
