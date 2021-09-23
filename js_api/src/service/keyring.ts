@@ -20,9 +20,9 @@ let keyring = new Keyring({ ss58Format: 0, type: "sr25519" });
 /**
  * Generate a set of new mnemonic.
  */
-async function gen(ss58Format: number) {
+async function gen(ss58Format: number, cryptoType: KeypairType, derivePath: string) {
   const mnemonic = mnemonicGenerate();
-  const keyPair = keyring.addFromMnemonic(mnemonic, {}, "sr25519");
+  const keyPair = keyring.addFromMnemonic(mnemonic + (derivePath || ""), {}, cryptoType);
   const address = encodeAddress(keyPair.publicKey, ss58Format);
   const icons = await account.genIcons([address]);
   return {
