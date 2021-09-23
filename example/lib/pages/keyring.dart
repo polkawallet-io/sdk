@@ -49,7 +49,7 @@ class _KeyringPageState extends State<KeyringPage> {
     setState(() {
       _submitting = true;
     });
-    final String seed = await widget.sdk.api.keyring.generateMnemonic();
+    final String seed = await widget.sdk.api.keyring.generateMnemonic(_ss58);
     widget.showResult(context, 'generateMnemonic', seed);
     setState(() {
       _submitting = false;

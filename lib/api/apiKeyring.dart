@@ -5,6 +5,7 @@ import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/api/types/verifyResult.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_sdk/storage/types/GenerateMnemonicData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
 
@@ -19,8 +20,12 @@ class ApiKeyring {
   final ServiceKeyring? service;
 
   /// Generate a set of new mnemonic.
-  Future<String?> generateMnemonic() async {
-    final mnemonic = await service!.generateMnemonic();
+  Future<GenerateMnemonicData> generateMnemonic(int ss58,
+      {CryptoType cryptoType = CryptoType.sr25519,
+      String derivePath = '',
+      String? key}) async {
+    final mnemonic = await service!.generateMnemonic(ss58,
+        cryptoType: cryptoType, derivePath: derivePath, key: key);
     return mnemonic;
   }
 

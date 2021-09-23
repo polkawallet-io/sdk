@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_sdk/storage/types/GenerateMnemonicData.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 class ServiceKeyring {
   ServiceKeyring(this.serviceRoot);
@@ -50,10 +52,14 @@ class ServiceKeyring {
   }
 
   /// Generate a set of new mnemonic.
-  Future<String?> generateMnemonic() async {
-    final dynamic acc =
-        await serviceRoot.webView!.evalJavascript('keyring.gen()');
-    return acc['mnemonic'];
+  Future<GenerateMnemonicData> generateMnemonic(int ss58,
+      {CryptoType cryptoType = CryptoType.sr25519,
+      String derivePath = '',
+      String? key}) async {
+    final String crypto = cryptoType.toString().split('.')[1];
+    final dynamic acc = await serviceRoot.webView!
+        .evalJavascript('keyring.gen("$key",$ss58,"$crypto","$derivePath")');
+    return GenerateMnemonicData.fromJson(acc);
   }
 
   /// Import account from mnemonic/rawSeed/keystore.
