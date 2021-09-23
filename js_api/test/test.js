@@ -30,8 +30,9 @@ async function runKeyringTest() {
   );
 
   console.log("generate mnemonic");
-  const mnemonic = await keyring.gen();
+  const mnemonic = await keyring.gen(0);
   expect(mnemonic.mnemonic.split(" ").length, 12);
+  expect(!!mnemonic.svg.match("<svg"), true);
 
   console.log("import account from mnemonic");
   const sr25519 = "sr25519";

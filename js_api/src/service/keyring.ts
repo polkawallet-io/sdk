@@ -1,4 +1,4 @@
-import { keyExtractSuri, mnemonicGenerate, cryptoWaitReady, signatureVerify } from "@polkadot/util-crypto";
+import { keyExtractSuri, mnemonicGenerate, cryptoWaitReady, signatureVerify, encodeAddress } from "@polkadot/util-crypto";
 import { hexToU8a, u8aToHex } from "@polkadot/util";
 import BN from "bn.js";
 import { parseQrCode, getSigner, makeTx, getSubmittable } from "../utils/QrSigner";
@@ -14,15 +14,21 @@ import { ApiPromise, SubmittableResult } from "@polkadot/api";
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ITuple } from "@polkadot/types/types";
 import { DispatchError } from "@polkadot/types/interfaces";
+import account from "./account";
 let keyring = new Keyring({ ss58Format: 0, type: "sr25519" });
 
 /**
  * Generate a set of new mnemonic.
  */
-async function gen() {
+async function gen(ss58Format: number) {
   const mnemonic = mnemonicGenerate();
+  const keyPair = keyring.addFromMnemonic(mnemonic, {}, "sr25519");
+  const address = encodeAddress(keyPair.publicKey, ss58Format);
+  const icons = await account.genIcons([address]);
   return {
     mnemonic,
+    address,
+    svg: icons[0][1],
   };
 }
 
