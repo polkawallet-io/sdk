@@ -15,18 +15,18 @@ class ApiUOS {
   ApiUOS(this.apiRoot, this.service);
 
   final PolkawalletApi apiRoot;
-  final ServiceUOS? service;
+  final ServiceUOS service;
 
   /// parse data of QR code.
   /// @return: signer pubKey [String]
   Future<String> parseQrCode(Keyring keyring, String data) async {
-    return service!.parseQrCode(keyring.store.list.toList(), data);
+    return service.parseQrCode(keyring.store.list.toList(), data);
   }
 
   /// this function must be called after parseQrCode.
   /// @return: signature [String]
   Future<String?> signAsync(String chain, password) async {
-    return service!.signAsync(chain, password);
+    return service.signAsync(chain, password);
   }
 
   /// [onStatusChange] is a callback when tx status change.
@@ -36,7 +36,7 @@ class ApiUOS {
     signed,
     Function(String) onStatusChange,
   ) async {
-    final res = service!.addSignatureAndSend(
+    final res = service.addSignatureAndSend(
       address,
       signed,
       onStatusChange,
@@ -46,7 +46,7 @@ class ApiUOS {
 
   Future<Map?> makeQrCode(TxInfoData txInfo, List params,
       {String? rawParam}) async {
-    final Map? res = await service!.makeQrCode(
+    final Map? res = await service.makeQrCode(
       txInfo.toJson(),
       params,
       rawParam: rawParam,

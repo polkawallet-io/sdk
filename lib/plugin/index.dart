@@ -52,8 +52,8 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
 
   Future<void> updateNetworkState() async {
     final state = await Future.wait([
-      sdk.api!.service!.setting!.queryNetworkConst(),
-      sdk.api!.service!.setting!.queryNetworkProps(),
+      sdk.api.service.setting.queryNetworkConst(),
+      sdk.api.service.setting.queryNetworkProps(),
     ]);
     _cache.write(_getNetworkCacheKey(net_const_cache_key), state[0]);
     _cache.write(_getNetworkCacheKey(net_state_cache_key), state[1]);
@@ -74,7 +74,8 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
 
   /// This method will be called while user request to query balance.
   Future<void> updateBalances(KeyPairData acc) async {
-    final data = await (sdk.api!.account.queryBalance(acc.address) as FutureOr<BalanceData>);
+    final data = await (sdk.api.account.queryBalance(acc.address)
+        as FutureOr<BalanceData>);
     _updateBalances(acc, data);
   }
 
@@ -113,14 +114,14 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   /// 3. subscribe balances & set balancesStore.
   Future<NetworkParams?> start(Keyring keyring,
       {List<NetworkParams>? nodes}) async {
-    final res = await sdk.api!.connectNode(keyring, nodes ?? nodeList);
+    final res = await sdk.api.connectNode(keyring, nodes ?? nodeList);
     if (res == null) return null;
 
     keyring.setSS58(res.ss58);
     await updateNetworkState();
 
     if (keyring.current.address != null) {
-      sdk.api!.account.subscribeBalance(keyring.current.address,
+      sdk.api.account.subscribeBalance(keyring.current.address,
           (BalanceData data) {
         _updateBalances(keyring.current, data);
       });
@@ -133,9 +134,9 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
 
   /// This method will be called while App user changes account.
   void changeAccount(KeyPairData account) {
-    sdk.api!.account.unsubscribeBalance();
+    sdk.api.account.unsubscribeBalance();
     loadBalances(account);
-    sdk.api!.account.subscribeBalance(account.address, (BalanceData data) {
+    sdk.api.account.subscribeBalance(account.address, (BalanceData data) {
       _updateBalances(account, data);
     });
 
@@ -169,7 +170,8 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
 
 abstract class PolkawalletPluginBase {
   /// A plugin's basic info, including: name, primaryColor and icons.
-  final basic = PluginBasicData(name: 'kusama', primaryColor: Colors.black as MaterialColor?);
+  final basic = PluginBasicData(
+      name: 'kusama', primaryColor: Colors.black as MaterialColor?);
 
   /// Plugin should define a list of node to connect
   /// for users of Polkawallet App.

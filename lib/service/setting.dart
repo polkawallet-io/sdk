@@ -7,7 +7,7 @@ class ServiceSetting {
 
   final SubstrateService serviceRoot;
 
-  Future<Map?> queryNetworkConst() async {
+  Future<Map> queryNetworkConst() async {
     final dynamic res = await serviceRoot.webView!
         .evalJavascript('settings.getNetworkConst(api)');
     return res;
@@ -15,10 +15,12 @@ class ServiceSetting {
 
   Future<Map?> queryNetworkProps() async {
     // fetch network info
-    List<dynamic> res = await Future.wait([
-      serviceRoot.webView!.evalJavascript('settings.getNetworkProperties(api)'),
-      serviceRoot.webView!.evalJavascript('api.rpc.system.chain()'),
-    ]);
+    List res = await serviceRoot.webView!.evalJavascript(
+        'Promise.all([settings.getNetworkProperties(api), api.rpc.system.chain()])');
+    // List<dynamic> res = await Future.wait([
+    //   serviceRoot.webView!.evalJavascript('settings.getNetworkProperties(api)'),
+    //   serviceRoot.webView!.evalJavascript('api.rpc.system.chain()'),
+    // ]);
 
     if (res[0] == null || res[1] == null) {
       return null;

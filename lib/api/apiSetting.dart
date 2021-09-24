@@ -37,6 +37,6 @@ class ApiSetting {
   }
 
   Future<void> unsubscribeBestNumber() async {
-    apiRoot.service!.webView!.unsubscribeMessage(_msgChannel);
+    apiRoot.service.webView!.unsubscribeMessage(_msgChannel);
   }
 }

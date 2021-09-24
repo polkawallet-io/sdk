@@ -9,14 +9,14 @@ class ApiTx {
   ApiTx(this.apiRoot, this.service);
 
   final PolkawalletApi apiRoot;
-  final ServiceTx? service;
+  final ServiceTx service;
 
   /// Estimate tx fees, [params] will be ignored if we have [rawParam].
   Future<TxFeeEstimateResult> estimateFees(TxInfoData txInfo, List params,
       {String? rawParam}) async {
     final String param = rawParam != null ? rawParam : jsonEncode(params);
     final Map tx = txInfo.toJson();
-    final res = await (service!.estimateFees(tx, param)
+    final res = await (service.estimateFees(tx, param)
         as FutureOr<Map<dynamic, dynamic>>);
     return TxFeeEstimateResult.fromJson(res as Map<String, dynamic>);
   }
@@ -45,7 +45,7 @@ class ApiTx {
     final Map tx = txInfo.toJson();
     print(tx);
     print(param);
-    final res = await (service!.signAndSend(
+    final res = await (service.signAndSend(
       tx,
       param,
       password,

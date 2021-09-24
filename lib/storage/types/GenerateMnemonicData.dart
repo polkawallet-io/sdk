@@ -5,7 +5,7 @@ part 'GenerateMnemonicData.g.dart';
 ///这个标注是告诉生成器，这个类是需要生成Model类的
 @JsonSerializable()
 class GenerateMnemonicData {
-  final String mnemonic;
+  final String? mnemonic;
   final String address;
   final String svg;
 

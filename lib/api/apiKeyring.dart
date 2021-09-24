@@ -24,9 +24,37 @@ class ApiKeyring {
       {CryptoType cryptoType = CryptoType.sr25519,
       String derivePath = '',
       String? key}) async {
-    final mnemonic = await service!.generateMnemonic(ss58,
+    final mnemonicData = await service!.generateMnemonic(ss58,
         cryptoType: cryptoType, derivePath: derivePath, key: key);
-    return mnemonic;
+    return mnemonicData;
+  }
+
+  /// get address and avatar from mnemonic.
+  Future<GenerateMnemonicData> addressFromMnemonic(int ss58,
+      {CryptoType cryptoType = CryptoType.sr25519,
+      String derivePath = '',
+      required String mnemonic}) async {
+    final mnemonicData = await service!.addressFromMnemonic(ss58,
+        cryptoType: cryptoType, derivePath: derivePath, mnemonic: mnemonic);
+    return mnemonicData;
+  }
+
+  /// get address and avatar from rawSeed.
+  Future<GenerateMnemonicData> addressFromRawSeed(int ss58,
+      {CryptoType cryptoType = CryptoType.sr25519,
+      String derivePath = '',
+      required String rawSeed}) async {
+    final mnemonicData = await service!.addressFromRawSeed(ss58,
+        cryptoType: cryptoType, derivePath: derivePath, rawSeed: rawSeed);
+    return mnemonicData;
+  }
+
+  /// get address and avatar from KeyStore.
+  Future<dynamic> addressFromKeyStore(int ss58,
+      {String derivePath = '', required Map keyStore}) async {
+    final mnemonicData =
+        await service!.addressFromKeyStore(ss58, keyStore: keyStore);
+    return mnemonicData;
   }
 
   /// Import account from mnemonic/rawSeed/keystore.
@@ -90,7 +118,7 @@ class ApiKeyring {
 
   /// Add a contact.
   Future<KeyPairData> addContact(Keyring keyring, Map acc) async {
-    final pubKey = await (service!.serviceRoot.account!
+    final pubKey = await (service!.serviceRoot.account
         .decodeAddress([acc['address']]) as FutureOr<Map<dynamic, dynamic>>);
     acc['pubKey'] = pubKey.keys.toList()[0];
 

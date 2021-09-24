@@ -8,16 +8,16 @@ class ApiParachain {
   ApiParachain(this.apiRoot, this.service);
 
   final PolkawalletApi apiRoot;
-  final ServiceParachain? service;
+  final ServiceParachain service;
 
   Future<AuctionData> queryAuctionWithWinners() async {
-    final res = await (service!.queryAuctionWithWinners()
+    final res = await (service.queryAuctionWithWinners()
         as FutureOr<Map<dynamic, dynamic>>);
     return AuctionData.fromJson(res);
   }
 
   Future<List<String>> queryUserContributions(
       List<String> paraIds, String pubKey) async {
-    return service!.queryUserContributions(paraIds, pubKey);
+    return service.queryUserContributions(paraIds, pubKey);
   }
 }

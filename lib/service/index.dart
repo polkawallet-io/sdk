@@ -18,19 +18,19 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 /// The service calling JavaScript API of `polkadot-js/api` directly
 /// through [WebViewRunner], providing APIs for [PolkawalletApi].
 class SubstrateService {
-  ServiceKeyring? keyring;
-  ServiceSetting? setting;
-  ServiceAccount? account;
-  ServiceTx? tx;
+  late ServiceKeyring keyring;
+  late ServiceSetting setting;
+  late ServiceAccount account;
+  late ServiceTx tx;
 
-  ServiceStaking? staking;
-  ServiceGov? gov;
-  ServiceParachain? parachain;
-  ServiceAssets? assets;
-  ServiceUOS? uos;
-  ServiceRecovery? recovery;
+  late ServiceStaking staking;
+  late ServiceGov gov;
+  late ServiceParachain parachain;
+  late ServiceAssets assets;
+  late ServiceUOS uos;
+  late ServiceRecovery recovery;
 
-  ServiceWalletConnect? walletConnect;
+  late ServiceWalletConnect walletConnect;
 
   WebViewRunner? _web;
 

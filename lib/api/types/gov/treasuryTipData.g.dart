@@ -14,7 +14,7 @@ TreasuryTipData _$TreasuryTipDataFromJson(Map<String, dynamic> json) {
     ..closes = json['closes']
     ..finder = json['finder'] as String?
     ..deposit = json['deposit']
-    ..tips = (json['tips'] as List?)
+    ..tips = (json['tips'] as List<dynamic>?)
         ?.map((e) => TreasuryTipItemData.fromJson(e as Map<String, dynamic>))
         .toList();
 }

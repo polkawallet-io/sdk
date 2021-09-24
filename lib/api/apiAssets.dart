@@ -9,10 +9,10 @@ class ApiAssets {
   ApiAssets(this.apiRoot, this.service);
 
   final PolkawalletApi apiRoot;
-  final ServiceAssets? service;
+  final ServiceAssets service;
 
   Future<List<TokenBalanceData>> getAssetsAll() async {
-    final List res = await (service!.getAssetsAll() as FutureOr<List<dynamic>>);
+    final List res = await (service.getAssetsAll() as FutureOr<List<dynamic>>);
     return res
         .map((e) => TokenBalanceData(
               id: e['id'].toString(),
@@ -25,7 +25,7 @@ class ApiAssets {
 
   Future<List<AssetsBalanceData>> queryAssetsBalances(
       List<String> ids, String address) async {
-    final res = await (service!.queryAssetsBalances(ids, address)
+    final res = await (service.queryAssetsBalances(ids, address)
         as FutureOr<List<dynamic>>);
     return res
         .asMap()

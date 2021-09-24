@@ -26,43 +26,57 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 /// * [ApiUOS], provides the offline-signature ability of polkawallet.
 /// * [ApiRecovery], the social-recovery module of Kusama network.
 class PolkawalletApi {
-  PolkawalletApi(this.service);
+  PolkawalletApi(this.service) {
+    keyring = ApiKeyring(this, service.keyring);
+    setting = ApiSetting(this, service.setting);
+    account = ApiAccount(this, service.account);
+    tx = ApiTx(this, service.tx);
 
-  final SubstrateService? service;
+    staking = ApiStaking(this, service.staking);
+    gov = ApiGov(this, service.gov);
+    parachain = ApiParachain(this, service.parachain);
+    assets = ApiAssets(this, service.assets);
+    uos = ApiUOS(this, service.uos);
+    recovery = ApiRecovery(this, service.recovery);
+
+    walletConnect = ApiWalletConnect(this, service.walletConnect);
+  }
+
+  final SubstrateService service;
 
   NetworkParams? _connectedNode;
 
   late ApiKeyring keyring;
-  ApiSetting? setting;
+  late ApiSetting setting;
   late ApiAccount account;
-  ApiTx? tx;
+  late ApiTx tx;
 
-  ApiStaking? staking;
-  ApiGov? gov;
-  ApiParachain? parachain;
-  ApiAssets? assets;
-  ApiUOS? uos;
-  ApiRecovery? recovery;
+  late ApiStaking staking;
+  late ApiGov gov;
+  late ApiParachain parachain;
+  late ApiAssets assets;
+  late ApiUOS uos;
+  late ApiRecovery recovery;
 
-  ApiWalletConnect? walletConnect;
+  late ApiWalletConnect walletConnect;
 
   final SubScanApi subScan = SubScanApi();
 
-  void init() {
-    keyring = ApiKeyring(this, service!.keyring);
-    setting = ApiSetting(this, service!.setting);
-    account = ApiAccount(this, service!.account);
-    tx = ApiTx(this, service!.tx);
+  // void init() {
+  //   keyring = ApiKeyring(this, service.keyring);
+  //   setting = ApiSetting(this, service.setting);
+  //   account = ApiAccount(this, service.account);
+  //   tx = ApiTx(this, service.tx);
 
-    staking = ApiStaking(this, service!.staking);
-    gov = ApiGov(this, service!.gov);
-    parachain = ApiParachain(this, service!.parachain);
-    assets = ApiAssets(this, service!.assets);
-    uos = ApiUOS(this, service!.uos);
-    recovery = ApiRecovery(this, service!.recovery);
+  //   staking = ApiStaking(this, service.staking);
+  //   gov = ApiGov(this, service.gov);
+  //   parachain = ApiParachain(this, service.parachain);
+  //   assets = ApiAssets(this, service.assets);
+  //   uos = ApiUOS(this, service.uos);
+  //   recovery = ApiRecovery(this, service.recovery);
 
-    walletConnect = ApiWalletConnect(this, service!.walletConnect);
-  }
+  //   walletConnect = ApiWalletConnect(this, service.walletConnect);
+  // }
 
   NetworkParams? get connectedNode => _connectedNode;
 
@@ -70,7 +84,7 @@ class PolkawalletApi {
   Future<NetworkParams?> connectNode(
       Keyring keyringStorage, List<NetworkParams> nodes) async {
     _connectedNode = null;
-    final NetworkParams? res = await service!.webView!.connectNode(nodes);
+    final NetworkParams? res = await service.webView!.connectNode(nodes);
     if (res != null) {
       _connectedNode = res;
 
@@ -87,7 +101,7 @@ class PolkawalletApi {
     String channel,
     Function callback,
   ) async {
-    service!.webView!.subscribeMessage(
+    service.webView!.subscribeMessage(
       'settings.subscribeMessage($JSCall, ${jsonEncode(params)}, "$channel")',
       channel,
       callback,
@@ -96,6 +110,6 @@ class PolkawalletApi {
 
   /// unsubscribe message.
   void unsubscribeMessage(String channel) {
-    service!.webView!.unsubscribeMessage(channel);
+    service.webView!.unsubscribeMessage(channel);
   }
 }

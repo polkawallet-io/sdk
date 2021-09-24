@@ -16,11 +16,11 @@ class ServiceKeyring {
   Future<Map?> getPubKeyAddressMap(List keyPairs, List<int> ss58) async {
     final List<String> pubKeys =
         keyPairs.map((e) => e['pubKey'].toString()).toList();
-    return await serviceRoot.account!.encodeAddress(pubKeys, ss58);
+    return await serviceRoot.account.encodeAddress(pubKeys, ss58);
   }
 
   Future<List?> getPubKeyIconsMap(List<String?> pubKeys) async {
-    return await serviceRoot.account!.getPubKeyIcons(pubKeys);
+    return await serviceRoot.account.getPubKeyIcons(pubKeys);
   }
 
   Future<Map?> injectKeyPairsToWebView(Keyring keyring) async {
@@ -60,6 +60,39 @@ class ServiceKeyring {
     final dynamic acc = await serviceRoot.webView!
         .evalJavascript('keyring.gen("$key",$ss58,"$crypto","$derivePath")');
     return GenerateMnemonicData.fromJson(acc);
+  }
+
+  /// get address and avatar from mnemonic.
+  Future<GenerateMnemonicData> addressFromMnemonic(int ss58,
+      {CryptoType cryptoType = CryptoType.sr25519,
+      String derivePath = '',
+      required String mnemonic}) async {
+    final String crypto = cryptoType.toString().split('.')[1];
+    final dynamic acc = await serviceRoot.webView!.evalJavascript(
+        'keyring.addressFromMnemonic("$mnemonic",$ss58,"$crypto","$derivePath")');
+    return GenerateMnemonicData.fromJson(acc);
+  }
+
+  /// get address and avatar from rawSeed.
+  Future<GenerateMnemonicData> addressFromRawSeed(int ss58,
+      {CryptoType cryptoType = CryptoType.sr25519,
+      String derivePath = '',
+      required String rawSeed}) async {
+    final String crypto = cryptoType.toString().split('.')[1];
+    final dynamic acc = await serviceRoot.webView!.evalJavascript(
+        'keyring.addressFromRawSeed("$rawSeed",$ss58,"$crypto","$derivePath")');
+    return GenerateMnemonicData.fromJson(acc);
+  }
+
+  /// get address and avatar from KeyStore.
+  Future<dynamic> addressFromKeyStore(int ss58, {required Map keyStore}) async {
+    final String addressOld = keyStore['address'];
+    final dynamic acc = await serviceRoot.webView!
+        .evalJavascript('account.decodeAddress(["$addressOld"])'
+            '.then(res => account.encodeAddress(Object.keys(res), [$ss58]))'
+            '.then(res => account.genIcons(Object.values(res[$ss58])))');
+    print(acc);
+    return acc;
   }
 
   /// Import account from mnemonic/rawSeed/keystore.

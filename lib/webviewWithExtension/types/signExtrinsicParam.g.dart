@@ -6,13 +6,13 @@ part of 'signExtrinsicParam.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-SignAsExtensionParam _$SignAsExtensionParamFromJson(
-        Map<String, dynamic> json) =>
-    SignAsExtensionParam()
-      ..id = json['id'] as String?
-      ..url = json['url'] as String?
-      ..msgType = json['msgType'] as String?
-      ..request = json['request'] as Map<String, dynamic>?;
+SignAsExtensionParam _$SignAsExtensionParamFromJson(Map<String, dynamic> json) {
+  return SignAsExtensionParam()
+    ..id = json['id'] as String?
+    ..url = json['url'] as String?
+    ..msgType = json['msgType'] as String?
+    ..request = json['request'] as Map<String, dynamic>?;
+}
 
 Map<String, dynamic> _$SignAsExtensionParamToJson(
         SignAsExtensionParam instance) =>
@@ -23,24 +23,24 @@ Map<String, dynamic> _$SignAsExtensionParamToJson(
       'request': instance.request,
     };
 
-SignExtrinsicRequest _$SignExtrinsicRequestFromJson(
-        Map<String, dynamic> json) =>
-    SignExtrinsicRequest()
-      ..address = json['address'] as String?
-      ..blockHash = json['blockHash'] as String?
-      ..blockNumber = json['blockNumber'] as String?
-      ..era = json['era'] as String?
-      ..genesisHash = json['genesisHash'] as String?
-      ..method = json['method'] as String?
-      ..nonce = json['nonce'] as String?
-      ..signedExtensions = (json['signedExtensions'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList()
-      ..specVersion = json['specVersion'] as String?
-      ..tip = json['tip'] as String?
-      ..transactionVersion = json['transactionVersion'] as String?
-      ..version = json['version'] as int?
-      ..payload = json['payload'] as Map<String, dynamic>?;
+SignExtrinsicRequest _$SignExtrinsicRequestFromJson(Map<String, dynamic> json) {
+  return SignExtrinsicRequest()
+    ..address = json['address'] as String?
+    ..blockHash = json['blockHash'] as String?
+    ..blockNumber = json['blockNumber'] as String?
+    ..era = json['era'] as String?
+    ..genesisHash = json['genesisHash'] as String?
+    ..method = json['method'] as String?
+    ..nonce = json['nonce'] as String?
+    ..signedExtensions = (json['signedExtensions'] as List<dynamic>?)
+        ?.map((e) => e as String)
+        .toList()
+    ..specVersion = json['specVersion'] as String?
+    ..tip = json['tip'] as String?
+    ..transactionVersion = json['transactionVersion'] as String?
+    ..version = json['version'] as int?
+    ..payload = json['payload'] as Map<String, dynamic>?;
+}
 
 Map<String, dynamic> _$SignExtrinsicRequestToJson(
         SignExtrinsicRequest instance) =>
@@ -60,11 +60,12 @@ Map<String, dynamic> _$SignExtrinsicRequestToJson(
       'payload': instance.payload,
     };
 
-SignBytesRequest _$SignBytesRequestFromJson(Map<String, dynamic> json) =>
-    SignBytesRequest()
-      ..address = json['address'] as String?
-      ..data = json['data'] as String?
-      ..type = json['type'] as String?;
+SignBytesRequest _$SignBytesRequestFromJson(Map<String, dynamic> json) {
+  return SignBytesRequest()
+    ..address = json['address'] as String?
+    ..data = json['data'] as String?
+    ..type = json['type'] as String?;
+}
 
 Map<String, dynamic> _$SignBytesRequestToJson(SignBytesRequest instance) =>
     <String, dynamic>{
@@ -73,10 +74,11 @@ Map<String, dynamic> _$SignBytesRequestToJson(SignBytesRequest instance) =>
       'type': instance.type,
     };
 
-ExtensionSignResult _$ExtensionSignResultFromJson(Map<String, dynamic> json) =>
-    ExtensionSignResult()
-      ..id = json['id'] as String?
-      ..signature = json['signature'] as String?;
+ExtensionSignResult _$ExtensionSignResultFromJson(Map<String, dynamic> json) {
+  return ExtensionSignResult()
+    ..id = json['id'] as String?
+    ..signature = json['signature'] as String?;
+}
 
 Map<String, dynamic> _$ExtensionSignResultToJson(
         ExtensionSignResult instance) =>

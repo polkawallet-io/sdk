@@ -15,7 +15,7 @@ void main() {
   group('sdk test', () {
     test('init sdk', () async {
       final sdk = WalletSDK();
-      expect(sdk.api, isNull);
+      expect(sdk.api, null);
     });
 
     // test('account test', () async {
