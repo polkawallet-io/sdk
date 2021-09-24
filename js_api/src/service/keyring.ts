@@ -20,16 +20,52 @@ let keyring = new Keyring({ ss58Format: 0, type: "sr25519" });
 /**
  * Generate a set of new mnemonic.
  */
-async function gen(key: string, ss58Format: number, cryptoType: KeypairType, derivePath: string) {
-  const mnemonic = key || mnemonicGenerate();
-  const keyPair = keyring.addFromMnemonic(mnemonic + (derivePath || ""), {}, cryptoType);
+async function gen(mnemonic: string, ss58Format: number, cryptoType: KeypairType, derivePath: string) {
+  const key = mnemonic || mnemonicGenerate();
+  const keyPair = keyring.addFromMnemonic(key + (derivePath || ""), {}, cryptoType);
   const address = encodeAddress(keyPair.publicKey, ss58Format);
   const icons = await account.genIcons([address]);
   return {
-    mnemonic,
+    mnemonic: key,
     address,
     svg: icons[0][1],
   };
+}
+
+/**
+ * get address and avatar from mnemonic.
+ */
+async function addressFromMnemonic(mnemonic: string, ss58Format: number, cryptoType: KeypairType, derivePath: string) {
+  let keyPair: KeyringPair;
+  try {
+    keyPair = keyring.addFromMnemonic(mnemonic + (derivePath || ""), {}, cryptoType);
+    const address = encodeAddress(keyPair.publicKey, ss58Format);
+    const icons = await account.genIcons([address]);
+    return {
+      address,
+      svg: icons[0][1],
+    };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
+/**
+ * get address and avatar from rawSeed.
+ */
+async function addressFromRawSeed(rawSeed: string, ss58Format: number, cryptoType: KeypairType, derivePath: string) {
+  let keyPair: KeyringPair;
+  try {
+    keyPair = keyring.addFromUri(rawSeed + (derivePath || ""), {}, cryptoType);
+    const address = encodeAddress(keyPair.publicKey, ss58Format);
+    const icons = await account.genIcons([address]);
+    return {
+      address,
+      svg: icons[0][1],
+    };
+  } catch (err) {
+    return { error: err.message };
+  }
 }
 
 /**
@@ -430,6 +466,8 @@ async function verifySignature(message: string, signature: string, address: stri
 export default {
   initKeys,
   gen,
+  addressFromMnemonic,
+  addressFromRawSeed,
   recover,
   txFeeEstimate,
   sendTx,

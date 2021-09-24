@@ -34,6 +34,12 @@ async function runKeyringTest() {
   expect(mnemonic.mnemonic.split(" ").length, 12);
   expect(!!mnemonic.svg.match("<svg"), true);
 
+  console.log("get address from mnemonic/seed");
+  const addrWithIcon = await keyring.addressFromMnemonic(mnemonic.mnemonic, 0, "sr25519", "");
+  expect(!!addrWithIcon.svg.match("<svg"), true);
+  const addrWithIcon2 = await keyring.addressFromRawSeed("Alice", 0, "sr25519", "");
+  expect(!!addrWithIcon2.svg.match("<svg"), true);
+
   console.log("import account from mnemonic");
   const sr25519 = "sr25519";
   const password = "a111111";
