@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/types/GenerateMnemonicData.dart';
-import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 class ServiceKeyring {
   ServiceKeyring(this.serviceRoot);
@@ -69,7 +67,7 @@ class ServiceKeyring {
       required String mnemonic}) async {
     final String crypto = cryptoType.toString().split('.')[1];
     final dynamic acc = await serviceRoot.webView!.evalJavascript(
-        'keyring.addressFromMnemonic("$mnemonic",$ss58,"$crypto","$derivePath")');
+        'keyring.addressFromMnemonic && keyring.addressFromMnemonic("$mnemonic",$ss58,"$crypto","$derivePath")');
     return GenerateMnemonicData.fromJson(acc);
   }
 
@@ -80,7 +78,7 @@ class ServiceKeyring {
       required String rawSeed}) async {
     final String crypto = cryptoType.toString().split('.')[1];
     final dynamic acc = await serviceRoot.webView!.evalJavascript(
-        'keyring.addressFromRawSeed("$rawSeed",$ss58,"$crypto","$derivePath")');
+        'keyring.addressFromRawSeed && keyring.addressFromRawSeed("$rawSeed",$ss58,"$crypto","$derivePath")');
     return GenerateMnemonicData.fromJson(acc);
   }
 
