@@ -6,8 +6,8 @@ part 'GenerateMnemonicData.g.dart';
 @JsonSerializable()
 class GenerateMnemonicData {
   final String? mnemonic;
-  final String address;
-  final String svg;
+  final String? address;
+  final String? svg;
 
   GenerateMnemonicData(this.mnemonic, this.address, this.svg);
 

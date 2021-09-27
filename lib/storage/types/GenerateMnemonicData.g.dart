@@ -9,8 +9,8 @@ part of 'GenerateMnemonicData.dart';
 GenerateMnemonicData _$GenerateMnemonicDataFromJson(Map<String, dynamic> json) {
   return GenerateMnemonicData(
     json['mnemonic'] as String?,
-    json['address'] as String,
-    json['svg'] as String,
+    json['address'] as String?,
+    json['svg'] as String?,
   );
 }
 

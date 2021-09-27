@@ -55,8 +55,8 @@ class ServiceKeyring {
       String derivePath = '',
       String? key}) async {
     final String crypto = cryptoType.toString().split('.')[1];
-    final dynamic acc = await serviceRoot.webView!
-        .evalJavascript('keyring.gen("$key",$ss58,"$crypto","$derivePath")');
+    final dynamic acc = await serviceRoot.webView!.evalJavascript(
+        'keyring.addressFromMnemonic ? keyring.gen("$key",$ss58,"$crypto","$derivePath") : keyring.gen()');
     return GenerateMnemonicData.fromJson(acc);
   }
 
