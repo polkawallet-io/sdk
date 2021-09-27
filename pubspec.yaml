@@ -1,6 +1,6 @@
 name: polkawallet_sdk
 description: Flutter SDK for building plugin package for polkawallet.
-version: 0.3.2
+version: 0.3.3
 homepage: https://polkawallet.io
 
 environment:
@@ -30,10 +30,7 @@ dev_dependencies:
   build_runner: ^2.1.2
   json_serializable: ^4.1.4
 
-
 dependency_overrides:
-#  qr_flutter_fork:
-#    path: ../qr_flutter
   aes_ecb_pkcs5_flutter:
     path: ../aes_ecb_pkcs5_flutter
 
