@@ -16,8 +16,8 @@ class ApiETHKeyring {
   /// Generate a set of new mnemonic.
   Future<GenerateMnemonicData> generateMnemonic(
       {int? index, String? mnemonic}) async {
-    final mnemonicData =
-        await service!.generateMnemonic(index: index, mnemonic: mnemonic);
+    final mnemonicData = await service!
+        .generateMnemonic(index: index ?? 0, mnemonic: mnemonic ?? "");
     return mnemonicData;
   }
 
@@ -45,6 +45,7 @@ class ApiETHKeyring {
     required ETH_KeyType keyType,
     required String key,
     required String derivePath,
+    required String name,
     required String password,
   }) async {
     final dynamic acc = await service!.importAccount(
@@ -52,6 +53,7 @@ class ApiETHKeyring {
       key: key,
       derivePath: derivePath,
       password: password,
+      name: name,
     );
     if (acc == null) {
       return null;
@@ -117,5 +119,37 @@ class ApiETHKeyring {
       throw Exception(res['error']);
     }
     return res;
+  }
+
+  /// Add account to local storage.
+  Future<KeyPairETHData> addAccount(
+    KeyringETH keyring, {
+    required ETH_KeyType keyType,
+    required Map acc,
+    required String password,
+  }) async {
+    // save seed and remove it before add account
+    if (keyType == ETH_KeyType.mnemonic || keyType == ETH_KeyType.privateKey) {
+      final String type = keyType.toString().split('.')[1];
+      final String? seed = acc[type];
+      if (seed != null && seed.isNotEmpty) {
+        //acc['pubKey'], acc[type], type, password
+        keyring.store.encryptSeedAndSave(
+            address: acc["address"],
+            seed: acc[type],
+            seedType: type,
+            password: password);
+        acc.remove(type);
+      }
+    }
+
+    // save keystore to storage
+    await keyring.store.addAccount(acc);
+
+    // await updatePubKeyIconsMap(keyring, [acc['pubKey']]);
+    // updatePubKeyAddressMap(keyring);
+    // updateIndicesMap(keyring, [acc['address']]);
+
+    return KeyPairETHData.fromJson(acc as Map<String, dynamic>);
   }
 }

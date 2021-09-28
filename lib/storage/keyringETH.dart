@@ -26,6 +26,12 @@ class KeyringETH {
     return KeyPairETHData();
   }
 
+  List<KeyPairETHData> get optionals {
+    final res = keyPairs;
+    res.removeWhere((e) => e.pubKey == current.pubKey);
+    return res;
+  }
+
   List<KeyPairETHData> get keyPairs {
     return store.keyPairs
         .toList()
@@ -119,5 +125,15 @@ class KeyringPrivateStore {
       seeds.addAll({address: encrypted});
       _storage.encryptedPrivateKey.val = seeds;
     }
+  }
+
+  Future<void> addAccount(Map acc) async {
+    final pairs = _storage.keyPairs.val.toList();
+    // remove duplicated account and add a new one
+    pairs.retainWhere((e) => e['address'] != acc['address']);
+    pairs.add(acc);
+    _storage.keyPairs.val = pairs;
+
+    setCurrentAddress(acc['address']);
   }
 }

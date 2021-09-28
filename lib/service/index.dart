@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/eth/index.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/service/account.dart';
 import 'package:polkawallet_sdk/service/assets.dart';
 import 'package:polkawallet_sdk/service/gov.dart';
@@ -43,6 +44,7 @@ class SubstrateService {
     WebViewRunner? webViewParam,
     Function? onInitiated,
     String? jsCode,
+    required PluginType pluginType,
   }) async {
     keyring = ServiceKeyring(this);
     setting = ServiceSetting(this);
@@ -60,6 +62,7 @@ class SubstrateService {
     eth = EthereumService.init(this);
 
     _web = webViewParam ?? WebViewRunner();
-    await _web!.launch(keyring, onInitiated, jsCode: jsCode);
+    await _web!
+        .launch(keyring, onInitiated, jsCode: jsCode, pluginType: pluginType);
   }
 }

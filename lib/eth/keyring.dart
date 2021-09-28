@@ -36,14 +36,16 @@ class ETHServiceKeyring {
     required ETH_KeyType keyType,
     required String key,
     required String derivePath,
+    required String name,
     required String password,
   }) async {
     // generate json from js-api
     final String type = keyType.toString().split('.')[1];
     String code =
-        'keyring.recover("$type", "$key", "$derivePath", "$password")';
+        'eth.keyring.recover("$type", "$key", "$derivePath", "$password")';
     code = code.replaceAll(RegExp(r'\t|\n|\r'), '');
-    final dynamic acc = await serviceRoot.webView!.evalJavascript(code);
+    dynamic acc = await serviceRoot.webView!.evalJavascript(code);
+    acc["name"] = name;
 
     return acc;
   }
@@ -63,7 +65,7 @@ class ETHServiceKeyring {
       required String passOld,
       required String passNew}) async {
     final res = await serviceRoot.webView!.evalJavascript(
-        'keyring.changePassword("$keystore", "$passOld", "$passNew")');
+        'eth.keyring.changePassword("$keystore", "$passOld", "$passNew")');
     return res;
   }
 
@@ -73,15 +75,15 @@ class ETHServiceKeyring {
       required String keystore,
       required String pass}) async {
     final res = await serviceRoot.webView!.evalJavascript(
-        'keyring.signMessage("$message", "$keystore", "$pass")');
+        'eth.keyring.signMessage("$message", "$keystore", "$pass")');
     return res;
   }
 
   /// get signer of a signature. so we can verify the signer.
   Future<dynamic> verifySignature(
       {required String message, required String signature}) async {
-    final res = await serviceRoot.webView!
-        .evalJavascript('keyring.verifySignature("$message", "$signature")');
+    final res = await serviceRoot.webView!.evalJavascript(
+        'eth.keyring.verifySignature("$message", "$signature")');
     return res;
   }
 }

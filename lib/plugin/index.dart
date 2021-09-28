@@ -18,7 +18,7 @@ const String net_state_cache_key = 'network_state';
 const String net_const_cache_key = 'network_const';
 const String balance_cache_key = 'balances';
 
-enum Plugin_Type { Substrate, Etherem }
+enum PluginType { Substrate, Etherem }
 
 abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   /// A plugin has a [WalletSDK] instance for connecting to it's node.
@@ -34,7 +34,7 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
 
   final recoveryEnabled = false;
 
-  final Plugin_Type plugin_type = Plugin_Type.Substrate;
+  PluginType pluginType = PluginType.Substrate;
 
   /// Plugin should retrieve [networkState] & [networkConst] while start
   NetworkStateData get networkState {
@@ -108,6 +108,7 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
     await sdk.init(
       keyring,
       keyringETH,
+      pluginType: pluginType,
       webView: webView,
       jsCode: jsCode ?? (await loadJSCode()),
     );

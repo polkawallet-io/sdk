@@ -3,6 +3,7 @@ library polkawallet_sdk;
 import 'dart:async';
 
 import 'package:polkawallet_sdk/api/api.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 import 'package:polkawallet_sdk/service/webViewRunner.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
@@ -26,6 +27,7 @@ class WalletSDK {
     KeyringETH keyringETH, {
     WebViewRunner? webView,
     String? jsCode,
+    required PluginType pluginType,
   }) async {
     final c = Completer();
 
@@ -34,12 +36,14 @@ class WalletSDK {
       // keyring,
       webViewParam: webView,
       jsCode: jsCode,
+      pluginType: pluginType,
       onInitiated: () {
         // inject keyPairs after webView launched
         _service.keyring.injectKeyPairsToWebView(keyring);
 
         // and initiate pubKeyIconsMap
         api.keyring.updatePubKeyIconsMap(keyring);
+        print("api.keyring.updatePubKeyIconsMap");
 
         if (!c.isCompleted) {
           c.complete();
