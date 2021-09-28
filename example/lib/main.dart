@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
+import 'package:polkawallet_sdk/storage/keyringETH.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk_example/pages/account.dart';
 import 'package:polkawallet_sdk_example/pages/dAppPage.dart';
@@ -29,9 +30,9 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _initApi() async {
     await keyring.init([0, 2]);
-    aw
+    await keyringETH.init();
 
-    await sdk.init(keyring);
+    await sdk.init(keyring, keyringETH);
     setState(() {
       _sdkReady = true;
     });
