@@ -8,7 +8,21 @@ class KeyringStorage {
 
   final keyPairs = [].val('keyPairs', getBox: _storage);
   final contacts = [].val('contacts', getBox: _storage);
-  final ReadWriteValue<String?> currentPubKey = ''.val('currentPubKey', getBox: _storage);
+  final ReadWriteValue<String?> currentPubKey =
+      ''.val('currentPubKey', getBox: _storage);
   final encryptedRawSeeds = {}.val('encryptedRawSeeds', getBox: _storage);
   final encryptedMnemonics = {}.val('encryptedMnemonics', getBox: _storage);
+}
+
+const String sdk_storage_eth_key = 'polka_wallet_eth_sdk';
+
+class KeyringETHStorage {
+  static final _storage = () => GetStorage(sdk_storage_eth_key);
+
+  final keyPairs = [].val('keyPairs', getBox: _storage);
+  final contacts = [].val('contacts', getBox: _storage);
+  final encryptedMnemonics = {}.val('encryptedMnemonics', getBox: _storage);
+  final encryptedPrivateKey = {}.val('encryptedPrivateKey', getBox: _storage);
+  final ReadWriteValue<String?> currentAddress =
+      ''.val('currentAddress', getBox: _storage);
 }

@@ -10,6 +10,7 @@ import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/service/webViewRunner.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_sdk/storage/keyringETH.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 const String sdk_cache_key = 'polka_wallet_sdk_cache';
@@ -95,12 +96,14 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   /// In this method, the plugin will init [WalletSDK] and start
   /// a webView for running `polkadot-js/api`.
   Future<void> beforeStart(
-    Keyring keyring, {
+    Keyring keyring,
+    KeyringETH keyringETH, {
     WebViewRunner? webView,
     String? jsCode,
   }) async {
     await sdk.init(
       keyring,
+      keyringETH,
       webView: webView,
       jsCode: jsCode ?? (await loadJSCode()),
     );

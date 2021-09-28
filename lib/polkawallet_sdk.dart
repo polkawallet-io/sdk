@@ -6,6 +6,7 @@ import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 import 'package:polkawallet_sdk/service/webViewRunner.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_sdk/storage/keyringETH.dart';
 
 /// SDK launchs a hidden webView to run polkadot.js/api for interacting
 /// with the substrate-based block-chain network.
@@ -21,7 +22,8 @@ class WalletSDK {
   /// param [jsCode] is customized js code of parachain,
   /// the api works without [jsCode] param in Kusama/Polkadot.
   Future<void> init(
-    Keyring keyring, {
+    Keyring keyring,
+    KeyringETH keyringETH, {
     WebViewRunner? webView,
     String? jsCode,
   }) async {
@@ -29,7 +31,7 @@ class WalletSDK {
 
     _service = SubstrateService();
     await _service.init(
-      keyring,
+      // keyring,
       webViewParam: webView,
       jsCode: jsCode,
       onInitiated: () {

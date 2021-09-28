@@ -70,7 +70,7 @@ class ApiKeyring {
     CryptoType cryptoType = CryptoType.sr25519,
     String derivePath = '',
   }) async {
-    final dynamic? acc = await service!.importAccount(
+    final dynamic acc = await service!.importAccount(
       keyType: keyType,
       key: key,
       name: name,

@@ -11,6 +11,7 @@ GenerateMnemonicData _$GenerateMnemonicDataFromJson(Map<String, dynamic> json) {
     json['mnemonic'] as String?,
     json['address'] as String?,
     json['svg'] as String?,
+    json['path'] as String?,
   );
 }
 
@@ -20,4 +21,5 @@ Map<String, dynamic> _$GenerateMnemonicDataToJson(
       'mnemonic': instance.mnemonic,
       'address': instance.address,
       'svg': instance.svg,
+      'path': instance.path,
     };

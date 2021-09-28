@@ -22,12 +22,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final WalletSDK sdk = WalletSDK();
+  final KeyringETH keyringETH = KeyringETH();
   final Keyring keyring = Keyring();
 
   bool _sdkReady = false;
 
   Future<void> _initApi() async {
     await keyring.init([0, 2]);
+    aw
 
     await sdk.init(keyring);
     setState(() {
