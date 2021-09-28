@@ -8,8 +8,9 @@ class GenerateMnemonicData {
   final String? mnemonic;
   final String? address;
   final String? svg;
+  final String? path;
 
-  GenerateMnemonicData(this.mnemonic, this.address, this.svg);
+  GenerateMnemonicData(this.mnemonic, this.address, this.svg, this.path);
 
   //反序列化,factory *.fromJson(Map<String, dynamic> json) =>_$*FromJson(json);
   factory GenerateMnemonicData.fromJson(Map<String, dynamic> json) =>

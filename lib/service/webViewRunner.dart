@@ -9,7 +9,7 @@ import 'package:jaguar/jaguar.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/service/jaguar_flutter_asset.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
-import 'package:polkawallet_sdk/storage/keyring.dart';
+// import 'package:polkawallet_sdk/storage/keyring.dart';
 
 class WebViewRunner {
   HeadlessInAppWebView? _web;
@@ -25,7 +25,7 @@ class WebViewRunner {
 
   Future<void> launch(
     ServiceKeyring? keyring,
-    Keyring keyringStorage,
+    // Keyring keyringStorage,
     Function? onLaunched, {
     String? jsCode,
   }) async {
@@ -75,7 +75,7 @@ class WebViewRunner {
           if (_webViewLoaded) return;
 
           _handleReloaded();
-          await _startJSCode(keyring, keyringStorage);
+          await _startJSCode(keyring);
         },
       );
 
@@ -114,8 +114,7 @@ class WebViewRunner {
     await server.serve(logRequests: false);
   }
 
-  Future<void> _startJSCode(
-      ServiceKeyring? keyring, Keyring keyringStorage) async {
+  Future<void> _startJSCode(ServiceKeyring? keyring) async {
     // inject js file to webView
     await _web!.webViewController.evaluateJavascript(source: _jsCode);
 

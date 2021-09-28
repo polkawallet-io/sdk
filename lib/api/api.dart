@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:polkawallet_sdk/api/apiAccount.dart';
 import 'package:polkawallet_sdk/api/apiAssets.dart';
+import 'package:polkawallet_sdk/api/apiETHKeyring.dart';
 import 'package:polkawallet_sdk/api/apiGov.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/api/apiParachain.dart';
@@ -40,6 +41,8 @@ class PolkawalletApi {
     recovery = ApiRecovery(this, service.recovery);
 
     walletConnect = ApiWalletConnect(this, service.walletConnect);
+
+    eth_keyring = ApiETHKeyring(this, service.eth.keyring);
   }
 
   final SubstrateService service;
@@ -59,6 +62,8 @@ class PolkawalletApi {
   late ApiRecovery recovery;
 
   late ApiWalletConnect walletConnect;
+
+  late ApiETHKeyring eth_keyring;
 
   final SubScanApi subScan = SubScanApi();
 

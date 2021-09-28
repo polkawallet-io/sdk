@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:polkawallet_sdk/api/api.dart';
+import 'package:polkawallet_sdk/eth/index.dart';
 import 'package:polkawallet_sdk/service/account.dart';
 import 'package:polkawallet_sdk/service/assets.dart';
 import 'package:polkawallet_sdk/service/gov.dart';
@@ -13,7 +14,7 @@ import 'package:polkawallet_sdk/service/tx.dart';
 import 'package:polkawallet_sdk/service/uos.dart';
 import 'package:polkawallet_sdk/service/walletConnect.dart';
 import 'package:polkawallet_sdk/service/webViewRunner.dart';
-import 'package:polkawallet_sdk/storage/keyring.dart';
+// import 'package:polkawallet_sdk/storage/keyring.dart';
 
 /// The service calling JavaScript API of `polkadot-js/api` directly
 /// through [WebViewRunner], providing APIs for [PolkawalletApi].
@@ -32,12 +33,13 @@ class SubstrateService {
 
   late ServiceWalletConnect walletConnect;
 
+  late EthereumService eth;
+
   WebViewRunner? _web;
 
   WebViewRunner? get webView => _web;
 
-  Future<void> init(
-    Keyring keyringStorage, {
+  Future<void> init({
     WebViewRunner? webViewParam,
     Function? onInitiated,
     String? jsCode,
@@ -55,7 +57,9 @@ class SubstrateService {
 
     walletConnect = ServiceWalletConnect(this);
 
+    eth = EthereumService.init(this);
+
     _web = webViewParam ?? WebViewRunner();
-    await _web!.launch(keyring, keyringStorage, onInitiated, jsCode: jsCode);
+    await _web!.launch(keyring, onInitiated, jsCode: jsCode);
   }
 }
