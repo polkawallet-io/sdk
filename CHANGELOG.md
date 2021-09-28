@@ -1,6 +1,7 @@
 ## [0.3.3] - 20210927
 
 * bump polkadot-js/api v6.0.5
+* bump aes_ecb_pkcs5_flutter v0.1.2 hosted
 * support flutter 2.5.x
 
 ## [0.3.2] - 20210913

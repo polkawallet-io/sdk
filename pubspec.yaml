@@ -16,7 +16,7 @@ dependencies:
   shared_preferences: ^2.0.7
   get_storage: ^2.0.3
   json_annotation: ^4.0.1
-  aes_ecb_pkcs5_flutter: ^0.1.1
+  aes_ecb_pkcs5_flutter: ^0.1.2
 
   convert: ^3.0.1
   mobx: ^2.0.4
@@ -29,10 +29,6 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^2.1.2
   json_serializable: ^4.1.4
-
-dependency_overrides:
-  aes_ecb_pkcs5_flutter:
-    path: ../aes_ecb_pkcs5_flutter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
