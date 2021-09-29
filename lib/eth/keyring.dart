@@ -19,6 +19,7 @@ class ETHServiceKeyring {
   /// get address and avatar from mnemonic.
   Future<dynamic> addressFromMnemonic(
       {required String derivePath, required String mnemonic}) async {
+    print('eth.keyring.addressFromMnemonic("$mnemonic","$derivePath")');
     final dynamic acc = await serviceRoot.webView!.evalJavascript(
         'eth.keyring.addressFromMnemonic("$mnemonic","$derivePath")');
     return acc;
