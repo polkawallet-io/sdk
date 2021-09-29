@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:polkawallet_sdk/api/apiETHKeyring.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 import 'package:polkawallet_sdk/storage/types/GenerateMnemonicData.dart';
@@ -53,6 +54,7 @@ class ETHServiceKeyring {
   /// check password of account
   Future<bool> checkPassword(
       {required String keystore, required String pass}) async {
+    keystore = keystore.replaceAll("\"", "\\\"");
     final res = await serviceRoot.webView!
         .evalJavascript('eth.keyring.checkPassword("$keystore", "$pass")');
     //An error Message is displayed if it fails :{ success: false, error: err.message }
@@ -64,6 +66,7 @@ class ETHServiceKeyring {
       {required String keystore,
       required String passOld,
       required String passNew}) async {
+    keystore = keystore.replaceAll("\"", "\\\"");
     final res = await serviceRoot.webView!.evalJavascript(
         'eth.keyring.changePassword("$keystore", "$passOld", "$passNew")');
     return res;
@@ -74,6 +77,7 @@ class ETHServiceKeyring {
       {required String message,
       required String keystore,
       required String pass}) async {
+    keystore = keystore.replaceAll("\"", "\\\"");
     final res = await serviceRoot.webView!.evalJavascript(
         'eth.keyring.signMessage("$message", "$keystore", "$pass")');
     return res;
@@ -85,5 +89,19 @@ class ETHServiceKeyring {
     final res = await serviceRoot.webView!.evalJavascript(
         'eth.keyring.verifySignature("$message", "$signature")');
     return res;
+  }
+
+  Future<List?> getPubKeyIconsMap(List<String?> pubKeys) async {
+    return await serviceRoot.eth.account.getAddressIcons(pubKeys);
+  }
+
+  Map updateKeyPairMetaData(Map acc, String? name) {
+    acc['name'] = name;
+    // acc['meta']['name'] = name;
+    // if (acc['meta']['whenCreated'] == null) {
+    //   acc['meta']['whenCreated'] = DateTime.now().millisecondsSinceEpoch;
+    // }
+    // acc['meta']['whenEdited'] = DateTime.now().millisecondsSinceEpoch;
+    return acc;
   }
 }

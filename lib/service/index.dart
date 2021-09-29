@@ -62,7 +62,6 @@ class SubstrateService {
     eth = EthereumService.init(this);
 
     _web = webViewParam ?? WebViewRunner();
-    await _web!
-        .launch(keyring, onInitiated, jsCode: jsCode, pluginType: pluginType);
+    await _web!.launch(keyring, pluginType, onInitiated, jsCode: jsCode);
   }
 }

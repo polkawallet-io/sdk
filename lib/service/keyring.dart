@@ -55,11 +55,14 @@ class ServiceKeyring {
       String derivePath = '',
       String? key}) async {
     final String crypto = cryptoType.toString().split('.')[1];
-    print(
-        'keyring.addressFromMnemonic ? keyring.gen("$key",$ss58,"$crypto","$derivePath") : keyring.gen()');
+    final isAvatarSupport = (await serviceRoot.webView!.evalJavascript(
+            'keyring.addressFromMnemonic ? {}:null',
+            wrapPromise: false)) !=
+        null;
     final dynamic acc = await serviceRoot.webView!.evalJavascript(
-        'keyring.addressFromMnemonic ? keyring.gen("$key",$ss58,"$crypto","$derivePath") : keyring.gen()');
-    print("generateMnemonic=======$acc");
+        isAvatarSupport
+            ? 'keyring.gen("$key",$ss58,"$crypto","$derivePath")'
+            : 'keyring.gen()');
     return GenerateMnemonicData.fromJson(acc);
   }
 
@@ -69,9 +72,15 @@ class ServiceKeyring {
       String derivePath = '',
       required String mnemonic}) async {
     final String crypto = cryptoType.toString().split('.')[1];
-    final dynamic acc = await serviceRoot.webView!.evalJavascript(
-        'keyring.addressFromMnemonic && keyring.addressFromMnemonic("$mnemonic",$ss58,"$crypto","$derivePath")');
-    return GenerateMnemonicData.fromJson(acc);
+    final isAvatarSupport = (await serviceRoot.webView!.evalJavascript(
+            'keyring.addressFromMnemonic ? {}:null',
+            wrapPromise: false)) !=
+        null;
+    final dynamic acc = isAvatarSupport
+        ? (await serviceRoot.webView!.evalJavascript(
+            'keyring.addressFromMnemonic("$mnemonic",$ss58,"$crypto","$derivePath")'))
+        : {};
+    return GenerateMnemonicData.fromJson(Map<String, dynamic>.from(acc));
   }
 
   /// get address and avatar from rawSeed.
@@ -80,9 +89,15 @@ class ServiceKeyring {
       String derivePath = '',
       required String rawSeed}) async {
     final String crypto = cryptoType.toString().split('.')[1];
-    final dynamic acc = await serviceRoot.webView!.evalJavascript(
-        'keyring.addressFromRawSeed && keyring.addressFromRawSeed("$rawSeed",$ss58,"$crypto","$derivePath")');
-    return GenerateMnemonicData.fromJson(acc);
+    final isAvatarSupport = (await serviceRoot.webView!.evalJavascript(
+            'keyring.addressFromMnemonic ? {}:null',
+            wrapPromise: false)) !=
+        null;
+    final dynamic acc = isAvatarSupport
+        ? (await serviceRoot.webView!.evalJavascript(
+            'keyring.addressFromRawSeed("$rawSeed",$ss58,"$crypto","$derivePath")'))
+        : {};
+    return GenerateMnemonicData.fromJson(Map<String, dynamic>.from(acc));
   }
 
   /// get address and avatar from KeyStore.

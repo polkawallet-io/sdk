@@ -12,6 +12,7 @@ KeyPairETHData _$KeyPairETHDataFromJson(Map<String, dynamic> json) {
     address: json['address'] as String?,
     keystore: json['keystore'] as String?,
     name: json['name'] as String?,
+    icon: json['icon'] as String?,
   );
 }
 
@@ -21,4 +22,5 @@ Map<String, dynamic> _$KeyPairETHDataToJson(KeyPairETHData instance) =>
       'address': instance.address,
       'keystore': instance.keystore,
       'name': instance.name,
+      'icon': instance.name,
     };

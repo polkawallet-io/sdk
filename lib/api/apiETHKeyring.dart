@@ -1,7 +1,9 @@
 import 'package:polkawallet_sdk/eth/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyringETH.dart';
 import 'package:polkawallet_sdk/storage/types/GenerateMnemonicData.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairETHData.dart';
+import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
 
 import 'api.dart';
 
@@ -49,12 +51,11 @@ class ApiETHKeyring {
     required String password,
   }) async {
     final dynamic acc = await service!.importAccount(
-      keyType: keyType,
-      key: key,
-      derivePath: derivePath,
-      password: password,
-      name: name,
-    );
+        keyType: keyType,
+        key: key,
+        derivePath: derivePath,
+        password: password,
+        name: name);
     if (acc == null) {
       return null;
     }
@@ -80,19 +81,25 @@ class ApiETHKeyring {
     // 1. change password of keyPair in webView
     final res = await service!.changePassword(
         keystore: keyring.current.keystore!,
-        passNew: passOld,
-        passOld: passNew);
+        passNew: passNew,
+        passOld: passOld);
     if (res == null) {
       return null;
     }
+
+    if (res['error'] != null) {
+      throw Exception(res['error']);
+    }
+
+    res['name'] = keyring.current.name;
+
     // 2. if success in webView, then update encrypted seed in local storage.
     keyring.store.updateEncryptedSeed(
         address: keyring.current.address!, passOld: passOld, passNew: passNew);
 
-    KeyPairETHData data = KeyPairETHData.fromJson(res as Map<String, dynamic>);
     // update keyPair date in storage
-    keyring.store.updateAccount(data);
-    return data;
+    keyring.store.updateAccount(res as Map<String, dynamic>);
+    return KeyPairETHData.fromJson(res);
   }
 
   /// sign message with private key of an account.
@@ -135,7 +142,7 @@ class ApiETHKeyring {
       if (seed != null && seed.isNotEmpty) {
         //acc['pubKey'], acc[type], type, password
         keyring.store.encryptSeedAndSave(
-            address: acc["address"],
+            address: acc['address'],
             seed: acc[type],
             seedType: type,
             password: password);
@@ -146,10 +153,90 @@ class ApiETHKeyring {
     // save keystore to storage
     await keyring.store.addAccount(acc);
 
-    // await updatePubKeyIconsMap(keyring, [acc['pubKey']]);
+    await updatePubKeyIconsMap(keyring, [acc['address']]);
     // updatePubKeyAddressMap(keyring);
     // updateIndicesMap(keyring, [acc['address']]);
 
     return KeyPairETHData.fromJson(acc as Map<String, dynamic>);
+  }
+
+  /// This method query account icons and set icons to [Keyring.store]
+  /// so we can get icon of an account from [Keyring] instance.
+  Future<void> updatePubKeyIconsMap(KeyringETH keyring, [List? address]) async {
+    final List<String?> ls = [];
+    if (address != null) {
+      ls.addAll(List<String>.from(address));
+    } else {
+      ls.addAll(keyring.keyPairs.map((e) => e.address).toList());
+      ls.addAll(keyring.contacts.map((e) => e.address).toList());
+    }
+
+    if (ls.length == 0) return;
+    // get icons from webView.
+    final res = await service!.getPubKeyIconsMap(ls);
+    // set new icons to Keyring instance.
+    if (res != null) {
+      final data = {};
+      res.forEach((e) {
+        data[e[0]] = e[1];
+      });
+      keyring.store.updateIconsMap(Map<String, String>.from(data));
+    }
+  }
+
+  /// change name of account
+  Future<KeyPairETHData> changeName(KeyringETH keyring, String name) async {
+    final json = keyring.current.toJson();
+    // update json meta data
+    service!.updateKeyPairMetaData(json, name);
+    // update keyPair date in storage
+    keyring.store.updateAccount(json);
+    return KeyPairETHData.fromJson(json);
+  }
+
+  /// delete account from storage
+  Future<void> deleteAccount(KeyringETH keyring, KeyPairETHData account) async {
+    if (account != null) {
+      // await keyring.store.deleteAccount(account.pubKey);
+    }
+  }
+
+  /// Open a new webView for a DApp,
+  /// sign extrinsic or msg for the DApp.
+  Future<ExtensionSignResult?> signMessage(
+    String password,
+    String message,
+    String keystore,
+  ) async {
+    final signature = await service!
+        .signMessage(keystore: keystore, message: message, pass: password);
+    if (signature == null) {
+      return null;
+    }
+    final ExtensionSignResult res = ExtensionSignResult();
+    res.signature = signature['signature'];
+    return res;
+  }
+
+  Future<dynamic> signatureVerify(String message, signature) async {
+    final res =
+        await service!.verifySignature(message: message, signature: signature);
+    if (res == null) {
+      return null;
+    }
+    return res;
+  }
+
+  /// Decrypt and get the backup of seed.
+  Future<SeedBackupData?> getDecryptedSeed(KeyringETH keyring, password) async {
+    final Map? data = await keyring.store.getDecryptedSeed(
+        address: keyring.current.address!, password: password);
+    if (data == null) {
+      return null;
+    }
+    if (data['seed'] == null) {
+      data['error'] = 'wrong password';
+    }
+    return SeedBackupData.fromJson(data as Map<String, dynamic>);
   }
 }
