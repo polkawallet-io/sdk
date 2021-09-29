@@ -52,6 +52,10 @@ class KeyringETH {
     res.forEach((element) => print("allWithContacts==${element.toJson()}"));
     return res;
   }
+
+  Map<String, String> get icons {
+    return store._iconsMap;
+  }
 }
 
 class KeyringPrivateStore {

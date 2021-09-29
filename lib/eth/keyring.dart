@@ -43,9 +43,13 @@ class ETHServiceKeyring {
   }) async {
     // generate json from js-api
     final String type = keyType.toString().split('.')[1];
+    if(type=="keystore"){
+      key = key.replaceAll("\"", "\\\"");
+    }
     String code =
         'eth.keyring.recover("$type", "$key", "$derivePath", "$password")';
     code = code.replaceAll(RegExp(r'\t|\n|\r'), '');
+    print(code);
     dynamic acc = await serviceRoot.webView!.evalJavascript(code);
     acc["name"] = name;
 
