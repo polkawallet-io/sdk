@@ -34,7 +34,7 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
 
   final recoveryEnabled = false;
 
-  PluginType pluginType = PluginType.Substrate;
+  final PluginType pluginType = PluginType.Substrate;
 
   /// Plugin should retrieve [networkState] & [networkConst] while start
   NetworkStateData get networkState {

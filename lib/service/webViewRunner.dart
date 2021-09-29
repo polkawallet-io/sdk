@@ -17,7 +17,7 @@ class WebViewRunner {
   Function? _onLaunched;
 
   late String _jsCode;
-  String? _jsCodeETH;
+  String? _jsCodeEth;
   Map<String, Function> _msgHandlers = {};
   Map<String, Completer> _msgCompleters = {};
   int _evalJavascriptUID = 0;
@@ -28,10 +28,10 @@ class WebViewRunner {
 
   Future<void> launch(
     ServiceKeyring? keyring,
+    PluginType pluginType,
     // Keyring keyringStorage,
     Function? onLaunched, {
     String? jsCode,
-    required PluginType pluginType,
   }) async {
     /// reset state before webView launch or reload
     _msgHandlers = {};
@@ -123,10 +123,11 @@ class WebViewRunner {
     // inject js file to webView
     await _web!.webViewController.evaluateJavascript(source: _jsCode);
     if (_pluginType == PluginType.Etherem) {
-      _jsCodeETH = _jsCodeETH ??
+      _jsCodeEth = _jsCodeEth ??
           await rootBundle
               .loadString('packages/polkawallet_sdk/js_api_eth/dist/main.js');
-      await _web!.webViewController.evaluateJavascript(source: _jsCodeETH!);
+
+      await _web!.webViewController.evaluateJavascript(source: _jsCodeEth!);
     }
 
     _onLaunched!();

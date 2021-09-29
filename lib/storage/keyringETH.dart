@@ -16,20 +16,20 @@ class KeyringETH {
     await store.init();
   }
 
+  List<KeyPairETHData> get optionals {
+    final res = keyPairs;
+    res.removeWhere((e) => e.address == current.address);
+    return res;
+  }
+
   KeyPairETHData get current {
     var keypairs = keyPairs;
     if (keypairs.length > 0) {
-      return keypairs.firstWhere(
-          (element) => element.address == store.currentAddress,
-          orElse: () => KeyPairETHData());
+      return keypairs.firstWhere((element) {
+        return element.address == store.currentAddress;
+      }, orElse: () => KeyPairETHData());
     }
     return KeyPairETHData();
-  }
-
-  List<KeyPairETHData> get optionals {
-    final res = keyPairs;
-    res.removeWhere((e) => e.pubKey == current.pubKey);
-    return res;
   }
 
   List<KeyPairETHData> get keyPairs {
@@ -38,31 +38,59 @@ class KeyringETH {
         .map((e) => KeyPairETHData.fromJson(e))
         .toList();
   }
+
+  List<KeyPairETHData> get contacts {
+    return store.contacts
+        .toList()
+        .map((e) => KeyPairETHData.fromJson(e))
+        .toList();
+  }
+
+  List<KeyPairETHData> get allWithContacts {
+    final res = keyPairs;
+    res.addAll(contacts);
+    res.forEach((element) => print("allWithContacts==${element.toJson()}"));
+    return res;
+  }
 }
 
 class KeyringPrivateStore {
   final KeyringETHStorage _storage = KeyringETHStorage();
 
+  Map<String, String> _iconsMap = {};
   String? get currentAddress => _storage.currentAddress.val;
   void setCurrentAddress(String? address) {
     _storage.currentAddress.val = address;
   }
 
-  List get keyPairs => _storage.keyPairs.val;
+  List get keyPairs {
+    return _formatAccount(_storage.keyPairs.val.toList());
+  }
+
+  List get contacts {
+    return _formatAccount(_storage.contacts.val.toList());
+  }
+
+  List _formatAccount(List ls) {
+    ls.forEach((e) {
+      e['icon'] = _iconsMap[e['address']];
+    });
+    return ls;
+  }
 
   Future<void> init() async {
     await GetStorage.init(sdk_storage_eth_key);
   }
 
-  void updateAccount(KeyPairETHData data) {
-    _storage.currentAddress.val = data.address;
-    _updateKeyPair(data);
+  void updateAccount(Map acc) {
+    _storage.currentAddress.val = acc["address"];
+    _updateKeyPair(acc);
   }
 
-  Future<void> _updateKeyPair(KeyPairETHData data) async {
+  Future<void> _updateKeyPair(Map acc) async {
     final List pairs = _storage.keyPairs.val.toList();
-    pairs.removeWhere((e) => e['address'] == data.address);
-    pairs.add(data);
+    pairs.removeWhere((e) => e['address'] == acc["address"]);
+    pairs.add(acc);
     _storage.keyPairs.val = pairs;
   }
 
@@ -136,4 +164,44 @@ class KeyringPrivateStore {
 
     setCurrentAddress(acc['address']);
   }
+
+  void updateIconsMap(Map<String, String> data) {
+    _iconsMap.addAll(data);
+  }
+
+  Future<bool> checkSeedExist(ETH_KeyType keyType, String address) async {
+    switch (keyType) {
+      case ETH_KeyType.mnemonic:
+        return _storage.encryptedMnemonics.val[address] != null;
+      case ETH_KeyType.privateKey:
+        return _storage.encryptedPrivateKey.val[address] != null;
+      default:
+        return false;
+    }
+  }
+
+  // Future<void> deleteAccount(String? pubKey) async {
+  //   _deleteKeyPair(pubKey);
+
+  //   final mnemonics = Map.of(_storage.encryptedMnemonics.val);
+  //   mnemonics.removeWhere((key, _) => key == pubKey);
+  //   _storage.encryptedMnemonics.val = mnemonics;
+  //   final seeds = Map.of(_storage.encryptedRawSeeds.val);
+  //   seeds.removeWhere((key, _) => key == pubKey);
+  //   _storage.encryptedRawSeeds.val = seeds;
+  // }
+
+  // Future<void> _deleteKeyPair(String? pubKey) async {
+  //   final List pairs = _storage.keyPairs.val.toList();
+  //   pairs.removeWhere((e) => e['pubKey'] == pubKey);
+  //   _storage.keyPairs.val = pairs;
+
+  //   if (pairs.length > 0) {
+  //     setCurrentAddress(pairs[0]['address']);
+  //   } else if (externals.length > 0) {
+  //     setCurrentPubKey(externals[0]['pubKey']);
+  //   } else {
+  //     setCurrentPubKey('');
+  //   }
+  // }
 }
