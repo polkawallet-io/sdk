@@ -180,28 +180,29 @@ class KeyringPrivateStore {
     }
   }
 
-  // Future<void> deleteAccount(String? pubKey) async {
-  //   _deleteKeyPair(pubKey);
+  Future<void> deleteAccount(String? address) async {
+    _deleteKeyPair(address);
 
-  //   final mnemonics = Map.of(_storage.encryptedMnemonics.val);
-  //   mnemonics.removeWhere((key, _) => key == pubKey);
-  //   _storage.encryptedMnemonics.val = mnemonics;
-  //   final seeds = Map.of(_storage.encryptedRawSeeds.val);
-  //   seeds.removeWhere((key, _) => key == pubKey);
-  //   _storage.encryptedRawSeeds.val = seeds;
-  // }
+    final mnemonics = Map.of(_storage.encryptedMnemonics.val);
+    mnemonics.removeWhere((key, _) => key == address);
+    _storage.encryptedMnemonics.val = mnemonics;
+    final seeds = Map.of(_storage.encryptedPrivateKey.val);
+    seeds.removeWhere((key, _) => key == address);
+    _storage.encryptedPrivateKey.val = seeds;
+  }
 
-  // Future<void> _deleteKeyPair(String? pubKey) async {
-  //   final List pairs = _storage.keyPairs.val.toList();
-  //   pairs.removeWhere((e) => e['pubKey'] == pubKey);
-  //   _storage.keyPairs.val = pairs;
+  Future<void> _deleteKeyPair(String? address) async {
+    final List pairs = _storage.keyPairs.val.toList();
+    pairs.removeWhere((e) => e['address'] == address);
+    _storage.keyPairs.val = pairs;
 
-  //   if (pairs.length > 0) {
-  //     setCurrentAddress(pairs[0]['address']);
-  //   } else if (externals.length > 0) {
-  //     setCurrentPubKey(externals[0]['pubKey']);
-  //   } else {
-  //     setCurrentPubKey('');
-  //   }
-  // }
+    if (pairs.length > 0) {
+      setCurrentAddress(pairs[0]['address']);
+    }
+    // else if (externals.length > 0) {
+    //   setCurrentPubKey(externals[0]['pubKey']);
+    // } else {
+    //   setCurrentPubKey('');
+    // }
+  }
 }
