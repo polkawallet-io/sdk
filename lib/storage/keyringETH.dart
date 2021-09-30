@@ -56,6 +56,10 @@ class KeyringETH {
   Map<String, String> get icons {
     return store._iconsMap;
   }
+
+  List<KeyPairETHData> get externals {
+    return store.externals.map((e) => KeyPairETHData.fromJson(e)).toList();
+  }
 }
 
 class KeyringPrivateStore {
@@ -80,6 +84,12 @@ class KeyringPrivateStore {
       e['icon'] = _iconsMap[e['address']];
     });
     return ls;
+  }
+
+  List get externals {
+    final ls = _storage.contacts.val.toList();
+    ls.retainWhere((e) => e['observation'] ?? false);
+    return _formatAccount(ls);
   }
 
   Future<void> init() async {
@@ -202,11 +212,10 @@ class KeyringPrivateStore {
 
     if (pairs.length > 0) {
       setCurrentAddress(pairs[0]['address']);
+    } else if (externals.length > 0) {
+      setCurrentAddress(externals[0]['address']);
+    } else {
+      setCurrentAddress('');
     }
-    // else if (externals.length > 0) {
-    //   setCurrentPubKey(externals[0]['pubKey']);
-    // } else {
-    //   setCurrentPubKey('');
-    // }
   }
 }
