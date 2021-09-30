@@ -34,8 +34,6 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
 
   final recoveryEnabled = false;
 
-  final PluginType pluginType = PluginType.Substrate;
-
   /// Plugin should retrieve [networkState] & [networkConst] while start
   NetworkStateData get networkState {
     try {
@@ -108,7 +106,7 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
     await sdk.init(
       keyring,
       keyringETH,
-      pluginType: pluginType,
+      pluginType: basic.pluginType,
       webView: webView,
       jsCode: jsCode ?? (await loadJSCode()),
     );
@@ -179,7 +177,9 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
 abstract class PolkawalletPluginBase {
   /// A plugin's basic info, including: name, primaryColor and icons.
   final basic = PluginBasicData(
-      name: 'kusama', primaryColor: Colors.black as MaterialColor?);
+      name: 'kusama',
+      primaryColor: Colors.black as MaterialColor?,
+      pluginType: PluginType.Substrate);
 
   /// Plugin should define a list of node to connect
   /// for users of Polkawallet App.
@@ -215,12 +215,14 @@ class PluginBasicData {
     this.isTestNet = true,
     this.isXCMSupport = false,
     this.parachainId,
+    this.pluginType = PluginType.Substrate,
   });
   final String? name;
   final String? genesisHash;
   final int? ss58;
   final MaterialColor? primaryColor;
   final Color? gradientColor;
+  final PluginType pluginType;
 
   /// The image will be displayed in network-select page
   final AssetImage? backgroundImage;
