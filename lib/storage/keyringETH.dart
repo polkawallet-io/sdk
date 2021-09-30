@@ -60,13 +60,25 @@ class KeyringETH {
   List<KeyPairETHData> get externals {
     return store.externals.map((e) => KeyPairETHData.fromJson(e)).toList();
   }
+
+  List<KeyPairETHData> get allAccounts {
+    final res = keyPairs;
+    res.addAll(externals);
+    return res;
+  }
+
+  void setCurrent(KeyPairETHData acc) {
+    store.setCurrentAddress(acc.address);
+  }
 }
 
 class KeyringPrivateStore {
   final KeyringETHStorage _storage = KeyringETHStorage();
 
   Map<String, String> _iconsMap = {};
+
   String? get currentAddress => _storage.currentAddress.val;
+
   void setCurrentAddress(String? address) {
     _storage.currentAddress.val = address;
   }
@@ -96,9 +108,13 @@ class KeyringPrivateStore {
     await GetStorage.init(sdk_storage_eth_key);
   }
 
-  void updateAccount(Map acc) {
+  void updateAccount(Map acc, {bool isExternal: false}) {
     _storage.currentAddress.val = acc["address"];
-    _updateKeyPair(acc);
+    if (isExternal) {
+      updateContact(acc);
+    } else {
+      _updateKeyPair(acc);
+    }
   }
 
   Future<void> _updateKeyPair(Map acc) async {
@@ -217,5 +233,28 @@ class KeyringPrivateStore {
     } else {
       setCurrentAddress('');
     }
+  }
+
+  Future<void> addContact(Map acc) async {
+    final ls = _storage.contacts.val.toList();
+    ls.add(acc);
+    _storage.contacts.val = ls;
+
+    if (acc['observation'] ?? false) {
+      setCurrentAddress(acc['address']);
+    }
+  }
+
+  Future<void> updateContact(Map acc) async {
+    final ls = _storage.contacts.val.toList();
+    ls.removeWhere((e) => e['address'] == acc['address']);
+    ls.add(acc);
+    _storage.contacts.val = ls;
+  }
+
+  Future<void> deleteContact(String address) async {
+    final ls = _storage.contacts.val.toList();
+    ls.removeWhere((e) => e['address'] == address);
+    _storage.contacts.val = ls;
   }
 }
