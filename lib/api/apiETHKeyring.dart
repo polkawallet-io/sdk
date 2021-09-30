@@ -223,4 +223,15 @@ class ApiETHKeyring {
     }
     return SeedBackupData.fromJson(data as Map<String, dynamic>);
   }
+
+  /// Add a contact.
+  Future<KeyPairData> addContact(KeyringETH keyring, Map acc) async {
+    // save keystore to storage
+    await keyring.store.addContact(acc);
+
+    await updatePubKeyIconsMap(keyring, [acc['address']]);
+    // updateIndicesMap(keyring, [acc['address']]);
+
+    return keyring.contacts.firstWhere((e) => e.address == acc['address']);
+  }
 }

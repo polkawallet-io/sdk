@@ -8,13 +8,13 @@ part of 'keyPairETHData.dart';
 
 KeyPairETHData _$KeyPairETHDataFromJson(Map<String, dynamic> json) {
   return KeyPairETHData(
-    pubKey: json['pubKey'] as String?,
-    address: json['address'] as String?,
-    keystore: json['keystore'] as String?,
-    name: json['name'] as String?,
-    icon: json['icon'] as String?,
-    observation: json['observation'] as bool?,
-  );
+      pubKey: json['pubKey'] as String?,
+      address: json['address'] as String?,
+      keystore: json['keystore'] as String?,
+      name: json['name'] as String?,
+      icon: json['icon'] as String?,
+      observation: json['observation'] as bool?,
+      memo: json['memo'] as String?);
 }
 
 Map<String, dynamic> _$KeyPairETHDataToJson(KeyPairETHData instance) =>
@@ -25,4 +25,5 @@ Map<String, dynamic> _$KeyPairETHDataToJson(KeyPairETHData instance) =>
       'name': instance.name,
       'icon': instance.name,
       'observation': instance.observation,
+      'memo': instance.memo,
     };
