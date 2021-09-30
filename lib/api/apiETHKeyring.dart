@@ -182,9 +182,7 @@ class ApiETHKeyring {
 
   /// delete account from storage
   Future<void> deleteAccount(KeyringETH keyring, KeyPairETHData account) async {
-    if (account != null) {
-      await keyring.store.deleteAccount(account.pubKey);
-    }
+    await keyring.store.deleteAccount(account.address);
   }
 
   /// Open a new webView for a DApp,

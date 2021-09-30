@@ -10,9 +10,15 @@ class KeyPairETHData extends KeyPairData {
   String? keystore;
   String? name;
   String? icon;
+  bool? observation = false;
 
   KeyPairETHData(
-      {this.pubKey, this.address, this.keystore, this.name, this.icon});
+      {this.pubKey,
+      this.address,
+      this.keystore,
+      this.name,
+      this.icon,
+      this.observation});
 
   factory KeyPairETHData.fromJson(Map<String, dynamic> json) =>
       _$KeyPairETHDataFromJson(json);

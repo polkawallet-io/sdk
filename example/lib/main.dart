@@ -9,6 +9,7 @@ import 'package:polkawallet_sdk_example/pages/dAppPage.dart';
 import 'package:polkawallet_sdk_example/pages/keyring.dart';
 import 'package:polkawallet_sdk_example/pages/setting.dart';
 import 'package:polkawallet_sdk_example/pages/tx.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 
 import 'pages/staking.dart';
 
@@ -32,7 +33,7 @@ class _MyAppState extends State<MyApp> {
     await keyring.init([0, 2]);
     await keyringETH.init();
 
-    await sdk.init(keyring, keyringETH);
+    await sdk.init(keyring, keyringETH, pluginType: PluginType.Substrate);
     setState(() {
       _sdkReady = true;
     });

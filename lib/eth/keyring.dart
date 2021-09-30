@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:polkawallet_sdk/api/apiETHKeyring.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 import 'package:polkawallet_sdk/storage/types/GenerateMnemonicData.dart';
@@ -43,7 +42,7 @@ class ETHServiceKeyring {
   }) async {
     // generate json from js-api
     final String type = keyType.toString().split('.')[1];
-    if(type=="keystore"){
+    if (type == "keystore") {
       key = key.replaceAll("\"", "\\\"");
     }
     String code =
