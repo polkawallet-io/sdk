@@ -127,7 +127,7 @@ class ApiETHKeyring {
     // save keystore to storage
     await keyring.store.addAccount(acc);
 
-    await updatePubKeyIconsMap(keyring, [acc['address']]);
+    await updateAddressIconsMap(keyring, [acc['address']]);
     // updatePubKeyAddressMap(keyring);
     // updateIndicesMap(keyring, [acc['address']]);
 
@@ -136,7 +136,8 @@ class ApiETHKeyring {
 
   /// This method query account icons and set icons to [Keyring.store]
   /// so we can get icon of an account from [Keyring] instance.
-  Future<void> updatePubKeyIconsMap(KeyringETH keyring, [List? address]) async {
+  Future<void> updateAddressIconsMap(KeyringETH keyring,
+      [List? address]) async {
     final List<String?> ls = [];
     if (address != null) {
       ls.addAll(List<String>.from(address));
@@ -218,7 +219,7 @@ class ApiETHKeyring {
     // save keystore to storage
     await keyring.store.addContact(acc);
 
-    await updatePubKeyIconsMap(keyring, [acc['address']]);
+    await updateAddressIconsMap(keyring, [acc['address']]);
     // updateIndicesMap(keyring, [acc['address']]);
 
     return keyring.contacts.firstWhere((e) => e.address == acc['address']);

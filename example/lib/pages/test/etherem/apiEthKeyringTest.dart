@@ -158,8 +158,8 @@ class ApiEthKeyringTest {
     assert(verifySign != null);
     assert(verifySign["signer"] == newData.address);
 
-    print("update PubKey Icons Map");
-    await sdk.api.ethKeyring.updatePubKeyIconsMap(keyringEth);
+    print("update Address Icons Map");
+    await sdk.api.ethKeyring.updateAddressIconsMap(keyringEth);
     assert(keyringEth.current.icon != null);
 
     print("get Decrypted Seed");
