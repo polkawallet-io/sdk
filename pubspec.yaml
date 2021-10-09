@@ -42,6 +42,7 @@ flutter:
      - lib/ssl/keys.pem
      - assets/index.html
      - js_api/dist/main.js
+     - js_api_eth/dist/main.js
      - js_as_extension/dist/main.js
   #   - images/a_dot_ham.jpeg
   #

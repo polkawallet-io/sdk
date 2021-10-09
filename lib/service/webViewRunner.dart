@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:jaguar/jaguar.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
+import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/service/jaguar_flutter_asset.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
 // import 'package:polkawallet_sdk/storage/keyring.dart';
@@ -16,18 +17,21 @@ class WebViewRunner {
   Function? _onLaunched;
 
   late String _jsCode;
+  String? _jsCodeETH;
   Map<String, Function> _msgHandlers = {};
   Map<String, Completer> _msgCompleters = {};
   int _evalJavascriptUID = 0;
 
   bool _webViewLoaded = false;
   Timer? _webViewReloadTimer;
+  PluginType _pluginType = PluginType.Substrate;
 
   Future<void> launch(
     ServiceKeyring? keyring,
     // Keyring keyringStorage,
     Function? onLaunched, {
     String? jsCode,
+    required PluginType pluginType,
   }) async {
     /// reset state before webView launch or reload
     _msgHandlers = {};
@@ -35,6 +39,7 @@ class WebViewRunner {
     _evalJavascriptUID = 0;
     _onLaunched = onLaunched;
     _webViewLoaded = false;
+    _pluginType = pluginType;
 
     _jsCode = jsCode ??
         await rootBundle
@@ -117,6 +122,12 @@ class WebViewRunner {
   Future<void> _startJSCode(ServiceKeyring? keyring) async {
     // inject js file to webView
     await _web!.webViewController.evaluateJavascript(source: _jsCode);
+    if (_pluginType == PluginType.Etherem) {
+      _jsCodeETH = _jsCodeETH ??
+          await rootBundle
+              .loadString('packages/polkawallet_sdk/js_api_eth/dist/main.js');
+      await _web!.webViewController.evaluateJavascript(source: _jsCodeETH!);
+    }
 
     _onLaunched!();
   }

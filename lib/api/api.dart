@@ -42,7 +42,7 @@ class PolkawalletApi {
 
     walletConnect = ApiWalletConnect(this, service.walletConnect);
 
-    eth_keyring = ApiETHKeyring(this, service.eth.keyring);
+    ethKeyring = ApiETHKeyring(this, service.eth.keyring);
   }
 
   final SubstrateService service;
@@ -63,7 +63,7 @@ class PolkawalletApi {
 
   late ApiWalletConnect walletConnect;
 
-  late ApiETHKeyring eth_keyring;
+  late ApiETHKeyring ethKeyring;
 
   final SubScanApi subScan = SubScanApi();
 
