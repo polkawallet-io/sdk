@@ -27,7 +27,7 @@ class ApiKeyringTest {
   static Future<void> _test() async {
     print("generate mnemonic");
     GenerateMnemonicData generatedata =
-        await sdk.api.keyring.generateMnemonic(network_ss58_map['kusama']);
+        await sdk.api.keyring.generateMnemonic(network_ss58_map['polkadot']);
     assert(generatedata.mnemonic.split(' ').length == 12);
     assert(generatedata.svg != null);
 
@@ -49,20 +49,20 @@ class ApiKeyringTest {
     assert(keyring.current.address != null);
 
     GenerateMnemonicData generateDataNew = await sdk.api.keyring
-        .generateMnemonic(network_ss58_map['kusama'],
+        .generateMnemonic(network_ss58_map['polkadot'],
             key: generatedata.mnemonic);
     assert(generateDataNew.mnemonic == generatedata.mnemonic);
     assert(generateDataNew.svg != null);
 
     print("address from mnemonic");
     generatedata = await sdk.api.keyring.addressFromMnemonic(
-        network_ss58_map['kusama'],
+        network_ss58_map['polkadot'],
         mnemonic: generatedata.mnemonic);
     assert(generatedata.svg != null);
 
     print("address from KeyStore");
     dynamic dynamicData = await sdk.api.keyring.addressFromKeyStore(
-        network_ss58_map['kusama'],
+        network_ss58_map['polkadot'],
         keyStore: jsonDecode(_testKeystore));
     assert(dynamicData != null && dynamicData[0] != null);
 
@@ -83,7 +83,7 @@ class ApiKeyringTest {
 
     print("address from RawSeed");
     generatedata = await sdk.api.keyring
-        .addressFromRawSeed(network_ss58_map['kusama'], rawSeed: "Alice");
+        .addressFromRawSeed(network_ss58_map['polkadot'], rawSeed: "Alice");
     assert(generatedata.svg != null);
 
     print("import account from rawSeed");
