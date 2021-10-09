@@ -1,6 +1,6 @@
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
-import 'package:polkawallet_sdk_example/pages/test/substrate/apiAccountTest.dart';
+import 'package:polkawallet_sdk_example/test/substrate/apiAccountTest.dart';
 
 import 'apiKeyringTest.dart';
 

@@ -12,9 +12,7 @@ import 'package:polkawallet_sdk_example/pages/tx.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 
 import 'pages/staking.dart';
-import 'pages/test/etherem/ethTest.dart';
-import 'pages/test/substrate/substrateTest.dart';
-import 'pages/test/test.dart';
+import 'test/test.dart';
 
 void main() {
   runApp(MyApp());
