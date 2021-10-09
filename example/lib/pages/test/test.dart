@@ -8,7 +8,7 @@ import 'substrate/substrateTest.dart';
 class Test {
   static Future<void> runTest(
       WalletSDK walletSDK, Keyring key, KeyringETH keyringEth) async {
-    await EthTest.runEthTest(walletSDK, keyringEth);
+    // await EthTest.runEthTest(walletSDK, keyringEth);
     await SubstrateTest.runSubstrateTest(walletSDK, key);
   }
 }
