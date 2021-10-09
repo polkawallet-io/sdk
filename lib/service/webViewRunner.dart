@@ -17,7 +17,7 @@ class WebViewRunner {
   Function? _onLaunched;
 
   late String _jsCode;
-  String? _jsCodeEth;
+  late String _jsCodeEth;
   Map<String, Function> _msgHandlers = {};
   Map<String, Completer> _msgCompleters = {};
   int _evalJavascriptUID = 0;
@@ -32,6 +32,7 @@ class WebViewRunner {
     // Keyring keyringStorage,
     Function? onLaunched, {
     String? jsCode,
+    String? jsCodeEth,
   }) async {
     /// reset state before webView launch or reload
     _msgHandlers = {};
@@ -45,6 +46,12 @@ class WebViewRunner {
         await rootBundle
             .loadString('packages/polkawallet_sdk/js_api/dist/main.js');
     print('js file loaded');
+
+    /// It may also be necessary to load the ETH head onto the Substrate(NetworkSelectPage)
+    _jsCodeEth = jsCodeEth ??
+        await rootBundle
+            .loadString('packages/polkawallet_sdk/js_api_eth/dist/main.js');
+    print('eth js file loaded');
 
     if (_web == null) {
       await _startLocalServer();
@@ -122,13 +129,7 @@ class WebViewRunner {
   Future<void> _startJSCode(ServiceKeyring? keyring) async {
     // inject js file to webView
     await _web!.webViewController.evaluateJavascript(source: _jsCode);
-    if (_pluginType == PluginType.Etherem) {
-      _jsCodeEth = _jsCodeEth ??
-          await rootBundle
-              .loadString('packages/polkawallet_sdk/js_api_eth/dist/main.js');
-
-      await _web!.webViewController.evaluateJavascript(source: _jsCodeEth!);
-    }
+    await _web!.webViewController.evaluateJavascript(source: _jsCodeEth);
 
     _onLaunched!();
   }
