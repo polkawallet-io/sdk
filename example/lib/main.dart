@@ -12,6 +12,9 @@ import 'package:polkawallet_sdk_example/pages/tx.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 
 import 'pages/staking.dart';
+import 'pages/test/etherem/ethTest.dart';
+import 'pages/test/substrate/substrateTest.dart';
+import 'pages/test/test.dart';
 
 void main() {
   runApp(MyApp());
@@ -33,7 +36,7 @@ class _MyAppState extends State<MyApp> {
     await keyring.init([0, 2]);
     await keyringETH.init();
 
-    await sdk.init(keyring, keyringETH, pluginType: PluginType.Substrate);
+    await sdk.init(keyring, keyringETH, pluginType: PluginType.Etherem);
     setState(() {
       _sdkReady = true;
     });
@@ -73,7 +76,7 @@ class _MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(sdk, keyring, _sdkReady),
+      home: MyHomePage(sdk, keyring, _sdkReady, keyringETH),
       routes: {
         DAppPage.route: (_) => DAppPage(sdk, keyring),
         KeyringPage.route: (_) => KeyringPage(sdk, keyring, _showResult),
@@ -87,11 +90,12 @@ class _MyAppState extends State<MyApp> {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage(this.sdk, this.keyring, this.sdkReady);
+  MyHomePage(this.sdk, this.keyring, this.sdkReady, this.keyringEth);
 
   final WalletSDK sdk;
   final Keyring keyring;
   final bool sdkReady;
+  final KeyringETH keyringEth;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -100,6 +104,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool _connecting = false;
   bool _apiConnected = false;
+  bool _submitting = false;
 
   Future<void> _connectNode() async {
     setState(() {
@@ -160,6 +165,27 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
+            Divider(),
+            ListTile(
+                title: Text('sdk test'),
+                trailing: SubmitButton(
+                  needConnect: widget.sdkReady
+                      ? widget.sdk.api.connectedNode == null
+                      : true,
+                  submitting: _submitting,
+                  call: () async {
+                    if (!_submitting) {
+                      setState(() {
+                        _submitting = true;
+                      });
+                      await Test.runTest(
+                          widget.sdk, widget.keyring, widget.keyringEth);
+                      setState(() {
+                        _submitting = false;
+                      });
+                    }
+                  },
+                )),
             Divider(),
             ListTile(
               title: Text('WebViewWithExtension'),

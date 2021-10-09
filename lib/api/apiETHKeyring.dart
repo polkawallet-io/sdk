@@ -102,18 +102,6 @@ class ApiETHKeyring {
     return KeyPairETHData.fromJson(res);
   }
 
-  /// get signer of a signature. so we can verify the signer.
-  Future<dynamic> verifySignature(
-      {required String message, required String signature}) async {
-    final res =
-        await service!.verifySignature(message: message, signature: signature);
-
-    if (res['error'] != null) {
-      throw Exception(res['error']);
-    }
-    return res;
-  }
-
   /// Add account to local storage.
   Future<KeyPairETHData> addAccount(
     KeyringETH keyring, {
@@ -202,6 +190,7 @@ class ApiETHKeyring {
     return res;
   }
 
+  /// get signer of a signature. so we can verify the signer.
   Future<dynamic> signatureVerify(String message, signature) async {
     final res =
         await service!.verifySignature(message: message, signature: signature);
