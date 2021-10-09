@@ -27,6 +27,7 @@ class WalletSDK {
     KeyringETH keyringETH, {
     WebViewRunner? webView,
     String? jsCode,
+    String? jsCodeEth,
     required PluginType pluginType,
   }) async {
     final c = Completer();
@@ -36,6 +37,7 @@ class WalletSDK {
       // keyring,
       webViewParam: webView,
       jsCode: jsCode,
+      jsCodeEth: jsCodeEth,
       pluginType: pluginType,
       onInitiated: () {
         // inject keyPairs after webView launched
