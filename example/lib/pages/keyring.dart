@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
-import 'package:polkawallet_sdk/storage/types/AddressIconDataMnemonic.dart';
+import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 class KeyringPage extends StatefulWidget {
