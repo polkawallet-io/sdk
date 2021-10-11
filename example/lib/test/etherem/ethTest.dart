@@ -1,6 +1,6 @@
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/storage/keyringETH.dart';
-import 'package:polkawallet_sdk_example/pages/test/Etherem/apiEthKeyringTest.dart';
+import 'package:polkawallet_sdk_example/test/Etherem/apiEthKeyringTest.dart';
 
 class EthTest {
   static Future<void> runEthTest(
