@@ -24,13 +24,13 @@
     "build-dev": "webpack --mode development"
   },
   "resolutions": {
-    "@polkadot/api": "^6.0.5"
+    "@polkadot/api": "^6.3.1"
   },
   "dependencies": {
     "@metamask/jazzicon": "^2.0.0",
-    "@polkadot/api": "^6.0.5",
+    "@polkadot/api": "^6.3.1",
     "@polkadot/extension-dapp": "^0.40.3",
-    "@polkadot/ui-shared": "0.85.4",
+    "@polkadot/ui-shared": "0.85.5",
     "@walletconnect/client": "2.0.0-alpha.26",
     "bn.js": "^5.1.2",
     "oo7-substrate": "^0.8.0",

@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
+import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
-import 'package:polkawallet_sdk/storage/types/GenerateMnemonicData.dart';
 
 class KeyringPage extends StatefulWidget {
   KeyringPage(this.sdk, this.keyring, this.showResult);
@@ -50,7 +50,7 @@ class _KeyringPageState extends State<KeyringPage> {
     setState(() {
       _submitting = true;
     });
-    final GenerateMnemonicData seed =
+    final AddressIconDataWithMnemonic seed =
         await widget.sdk.api.keyring.generateMnemonic(_ss58);
     widget.showResult(context, 'generateMnemonic', seed.mnemonic);
     setState(() {
