@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/api/types/verifyResult.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
@@ -23,7 +22,7 @@ class ApiKeyring {
   Future<GenerateMnemonicData> generateMnemonic(int ss58,
       {CryptoType cryptoType = CryptoType.sr25519,
       String derivePath = '',
-      String? key}) async {
+      String key = ''}) async {
     final mnemonicData = await service!.generateMnemonic(ss58,
         cryptoType: cryptoType, derivePath: derivePath, key: key);
     return mnemonicData;

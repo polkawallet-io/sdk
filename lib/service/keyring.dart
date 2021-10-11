@@ -53,7 +53,7 @@ class ServiceKeyring {
   Future<GenerateMnemonicData> generateMnemonic(int ss58,
       {CryptoType cryptoType = CryptoType.sr25519,
       String derivePath = '',
-      String? key}) async {
+      String key = ''}) async {
     final String crypto = cryptoType.toString().split('.')[1];
     final isAvatarSupport = (await serviceRoot.webView!.evalJavascript(
             'keyring.addressFromMnemonic ? {}:null',
