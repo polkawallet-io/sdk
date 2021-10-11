@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:polkawallet_sdk/api/api.dart';
+import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/api/types/verifyResult.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
-import 'package:polkawallet_sdk/storage/types/GenerateMnemonicData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
 
@@ -19,7 +19,7 @@ class ApiKeyring {
   final ServiceKeyring? service;
 
   /// Generate a set of new mnemonic.
-  Future<GenerateMnemonicData> generateMnemonic(int ss58,
+  Future<AddressIconDataWithMnemonic> generateMnemonic(int ss58,
       {CryptoType cryptoType = CryptoType.sr25519,
       String derivePath = '',
       String key = ''}) async {
@@ -29,31 +29,34 @@ class ApiKeyring {
   }
 
   /// get address and avatar from mnemonic.
-  Future<GenerateMnemonicData> addressFromMnemonic(int ss58,
+  Future<AddressIconData> addressFromMnemonic(int ss58,
       {CryptoType cryptoType = CryptoType.sr25519,
       String derivePath = '',
       required String mnemonic}) async {
-    final mnemonicData = await service!.addressFromMnemonic(ss58,
+    final addressInfo = await service!.addressFromMnemonic(ss58,
         cryptoType: cryptoType, derivePath: derivePath, mnemonic: mnemonic);
-    return mnemonicData;
+    return addressInfo;
   }
 
   /// get address and avatar from rawSeed.
-  Future<GenerateMnemonicData> addressFromRawSeed(int ss58,
+  Future<AddressIconData> addressFromRawSeed(int ss58,
       {CryptoType cryptoType = CryptoType.sr25519,
       String derivePath = '',
       required String rawSeed}) async {
-    final mnemonicData = await service!.addressFromRawSeed(ss58,
+    final addressInfo = await service!.addressFromRawSeed(ss58,
         cryptoType: cryptoType, derivePath: derivePath, rawSeed: rawSeed);
-    return mnemonicData;
+    return addressInfo;
   }
 
   /// get address and avatar from KeyStore.
-  Future<dynamic> addressFromKeyStore(int ss58,
-      {String derivePath = '', required Map keyStore}) async {
-    final mnemonicData =
+  Future<AddressIconData> addressFromKeyStore(int ss58,
+      {required Map keyStore}) async {
+    final addressInfo =
         await service!.addressFromKeyStore(ss58, keyStore: keyStore);
-    return mnemonicData;
+    return AddressIconData.fromJson({
+      'address': addressInfo[0][0],
+      'svg': addressInfo[0][1],
+    });
   }
 
   /// Import account from mnemonic/rawSeed/keystore.
