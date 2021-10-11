@@ -11,7 +11,8 @@ AddressIconDataWithMnemonic _$AddressIconDataWithMnemonicFromJson(
   return AddressIconDataWithMnemonic()
     ..mnemonic = json['mnemonic'] as String?
     ..address = json['address'] as String?
-    ..svg = json['svg'] as String?;
+    ..svg = json['svg'] as String?
+    ..path = json['path'] as String?;
 }
 
 Map<String, dynamic> _$AddressIconDataWithMnemonicToJson(
@@ -20,6 +21,7 @@ Map<String, dynamic> _$AddressIconDataWithMnemonicToJson(
       'mnemonic': instance.mnemonic,
       'address': instance.address,
       'svg': instance.svg,
+      'path': instance.path,
     };
 
 AddressIconData _$AddressIconDataFromJson(Map<String, dynamic> json) {

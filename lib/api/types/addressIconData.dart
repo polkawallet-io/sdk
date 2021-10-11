@@ -13,6 +13,7 @@ abstract class _AddressIconDataWithMnemonic {
   String? mnemonic;
   String? address;
   String? svg;
+  String? path;
 }
 
 @JsonSerializable()

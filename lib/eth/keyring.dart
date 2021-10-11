@@ -1,6 +1,6 @@
 import 'package:polkawallet_sdk/api/apiETHKeyring.dart';
 import 'package:polkawallet_sdk/service/index.dart';
-import 'package:polkawallet_sdk/storage/types/GenerateMnemonicData.dart';
+import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 
 class ETHServiceKeyring {
   ETHServiceKeyring(this.serviceRoot);
@@ -8,11 +8,11 @@ class ETHServiceKeyring {
   final SubstrateService serviceRoot;
 
   /// Generate a set of new mnemonic.
-  Future<GenerateMnemonicData> generateMnemonic(
+  Future<AddressIconDataWithMnemonic> generateMnemonic(
       {int? index, String? mnemonic}) async {
     final dynamic acc = await serviceRoot.webView!
         .evalJavascript('eth.keyring.gen("$mnemonic",$index)');
-    return GenerateMnemonicData.fromJson(acc);
+    return AddressIconDataWithMnemonic.fromJson(acc);
   }
 
   /// get address and avatar from mnemonic.

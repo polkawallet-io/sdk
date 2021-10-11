@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/consts/settings.dart';
-import 'package:polkawallet_sdk/storage/types/GenerateMnemonicData.dart';
+import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
@@ -26,7 +26,7 @@ class ApiKeyringTest {
 
   static Future<void> _test() async {
     print("generate mnemonic");
-    GenerateMnemonicData generatedata =
+    AddressIconDataWithMnemonic generatedata =
         await sdk.api.keyring.generateMnemonic(network_ss58_map['polkadot']);
     assert(generatedata.mnemonic.split(' ').length == 12);
     assert(generatedata.svg != null);
@@ -48,14 +48,14 @@ class ApiKeyringTest {
     assert(keyring.current.icon != null);
     assert(keyring.current.address != null);
 
-    GenerateMnemonicData generateDataNew = await sdk.api.keyring
+    AddressIconDataWithMnemonic generateDataNew = await sdk.api.keyring
         .generateMnemonic(network_ss58_map['polkadot'],
             key: generatedata.mnemonic);
     assert(generateDataNew.mnemonic == generatedata.mnemonic);
     assert(generateDataNew.svg != null);
 
     print("address from mnemonic");
-    generatedata = await sdk.api.keyring.addressFromMnemonic(
+    AddressIconData addressIconData = await sdk.api.keyring.addressFromMnemonic(
         network_ss58_map['polkadot'],
         mnemonic: generatedata.mnemonic);
     assert(generatedata.svg != null);
@@ -82,7 +82,7 @@ class ApiKeyringTest {
     assert(keyring.current.address != null);
 
     print("address from RawSeed");
-    generatedata = await sdk.api.keyring
+    addressIconData = await sdk.api.keyring
         .addressFromRawSeed(network_ss58_map['polkadot'], rawSeed: "Alice");
     assert(generatedata.svg != null);
 

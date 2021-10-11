@@ -1,6 +1,6 @@
 import 'package:polkawallet_sdk/eth/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyringETH.dart';
-import 'package:polkawallet_sdk/storage/types/GenerateMnemonicData.dart';
+import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairETHData.dart';
 import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
@@ -16,7 +16,7 @@ class ApiETHKeyring {
   final ETHServiceKeyring? service;
 
   /// Generate a set of new mnemonic.
-  Future<GenerateMnemonicData> generateMnemonic(
+  Future<AddressIconDataWithMnemonic> generateMnemonic(
       {int? index, String? mnemonic}) async {
     final mnemonicData = await service!
         .generateMnemonic(index: index ?? 0, mnemonic: mnemonic ?? "");
@@ -24,14 +24,14 @@ class ApiETHKeyring {
   }
 
   /// get address and avatar from mnemonic.
-  Future<GenerateMnemonicData> addressFromMnemonic(
+  Future<AddressIconData> addressFromMnemonic(
       {required String derivePath, required String mnemonic}) async {
     final acc = await service!
         .addressFromMnemonic(derivePath: derivePath, mnemonic: mnemonic);
     if (acc['error'] != null) {
       throw Exception(acc['error']);
     }
-    return GenerateMnemonicData.fromJson(acc);
+    return AddressIconData.fromJson(acc);
   }
 
   /// get address and avatar from privateKey.privateKey: string
@@ -40,7 +40,7 @@ class ApiETHKeyring {
     if (acc['error'] != null) {
       throw Exception(acc['error']);
     }
-    return GenerateMnemonicData.fromJson(acc);
+    return AddressIconData.fromJson(acc);
   }
 
   Future<Map?> importAccount({

@@ -1,5 +1,5 @@
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
-import 'package:polkawallet_sdk/storage/types/GenerateMnemonicData.dart';
+import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/api/apiETHKeyring.dart';
 import 'package:polkawallet_sdk/storage/keyringETH.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairETHData.dart';
@@ -33,7 +33,7 @@ class ApiEthKeyringTest {
 
   static Future<void> _generateMnemonicTest() async {
     print("generate mnemonic");
-    GenerateMnemonicData data =
+    AddressIconDataWithMnemonic data =
         await sdk.api.ethKeyring.generateMnemonic(mnemonic: _testMnemonicETH);
     assert(data.address == _testAddressETH);
 
@@ -44,7 +44,7 @@ class ApiEthKeyringTest {
 
   static Future<void> _addressFromMnemonic() async {
     print("address from mnemonic");
-    GenerateMnemonicData data = await sdk.api.ethKeyring
+    AddressIconData data = await sdk.api.ethKeyring
         .addressFromMnemonic(mnemonic: _testMnemonicETH, derivePath: "");
     assert(data.address == _testAddressETH);
 
@@ -55,7 +55,7 @@ class ApiEthKeyringTest {
 
   static Future<void> _addressFromPrivateKey() async {
     print("address from PrivateKey");
-    GenerateMnemonicData data = await sdk.api.ethKeyring
+    AddressIconData data = await sdk.api.ethKeyring
         .addressFromPrivateKey(privateKey: _testPKeyETH);
     assert(data.address == _testAddressETH);
 
