@@ -23,8 +23,8 @@ class WalletSDK {
   /// param [jsCode] is customized js code of parachain,
   /// the api works without [jsCode] param in Kusama/Polkadot.
   Future<void> init(
-    Keyring keyring,
-    KeyringETH keyringETH, {
+    Keyring keyring, {
+    KeyringETH? keyringETH,
     WebViewRunner? webView,
     String? jsCode,
     String? jsCodeEth,
@@ -32,6 +32,10 @@ class WalletSDK {
   }) async {
     final c = Completer();
 
+    if (keyringETH == null) {
+      keyringETH = KeyringETH();
+      await keyringETH.init();
+    }
     _service = SubstrateService();
     await _service.init(
       // keyring,
@@ -47,7 +51,7 @@ class WalletSDK {
         api.keyring.updatePubKeyIconsMap(keyring);
 
         // and eth initiate addressIconsMap
-        api.ethKeyring.updateAddressIconsMap(keyringETH);
+        api.ethKeyring.updateAddressIconsMap(keyringETH!);
 
         if (!c.isCompleted) {
           c.complete();

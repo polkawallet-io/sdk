@@ -98,14 +98,14 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   /// In this method, the plugin will init [WalletSDK] and start
   /// a webView for running `polkadot-js/api`.
   Future<void> beforeStart(
-    Keyring keyring,
-    KeyringETH keyringETH, {
+    Keyring keyring, {
+    KeyringETH? keyringETH,
     WebViewRunner? webView,
     String? jsCode,
   }) async {
     await sdk.init(
       keyring,
-      keyringETH,
+      keyringETH: keyringETH,
       pluginType: basic.pluginType,
       webView: webView,
       jsCode: jsCode ?? (await loadJSCode()),

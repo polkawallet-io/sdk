@@ -34,7 +34,8 @@ class _MyAppState extends State<MyApp> {
     await keyring.init([0, 2]);
     await keyringETH.init();
 
-    await sdk.init(keyring, keyringETH, pluginType: PluginType.Etherem);
+    await sdk.init(keyring,
+        keyringETH: keyringETH, pluginType: PluginType.Etherem);
     setState(() {
       _sdkReady = true;
     });
