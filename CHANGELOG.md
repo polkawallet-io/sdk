@@ -1,6 +1,11 @@
-## [0.3.3] - 20210927
+## [0.3.4] - 20211012
 
 * bump polkadot-js/api v6.3.1
+* update apiKeyring
+
+## [0.3.3] - 20210927
+
+* bump polkadot-js/api v6.0.5
 * bump aes_ecb_pkcs5_flutter v0.1.2 hosted
 * support flutter 2.5.x
 
