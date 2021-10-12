@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
+import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
-import 'package:polkawallet_sdk/storage/types/GenerateMnemonicData.dart';
 
 class ServiceKeyring {
   ServiceKeyring(this.serviceRoot);
@@ -50,10 +50,10 @@ class ServiceKeyring {
   }
 
   /// Generate a set of new mnemonic.
-  Future<GenerateMnemonicData> generateMnemonic(int ss58,
+  Future<AddressIconDataWithMnemonic> generateMnemonic(int ss58,
       {CryptoType cryptoType = CryptoType.sr25519,
       String derivePath = '',
-      String? key}) async {
+      String key = ''}) async {
     final String crypto = cryptoType.toString().split('.')[1];
     final isAvatarSupport = (await serviceRoot.webView!.evalJavascript(
             'keyring.addressFromMnemonic ? {}:null',
@@ -63,11 +63,11 @@ class ServiceKeyring {
         isAvatarSupport
             ? 'keyring.gen("$key",$ss58,"$crypto","$derivePath")'
             : 'keyring.gen()');
-    return GenerateMnemonicData.fromJson(acc);
+    return AddressIconDataWithMnemonic.fromJson(acc);
   }
 
   /// get address and avatar from mnemonic.
-  Future<GenerateMnemonicData> addressFromMnemonic(int ss58,
+  Future<AddressIconData> addressFromMnemonic(int ss58,
       {CryptoType cryptoType = CryptoType.sr25519,
       String derivePath = '',
       required String mnemonic}) async {
@@ -80,11 +80,11 @@ class ServiceKeyring {
         ? (await serviceRoot.webView!.evalJavascript(
             'keyring.addressFromMnemonic("$mnemonic",$ss58,"$crypto","$derivePath")'))
         : {};
-    return GenerateMnemonicData.fromJson(Map<String, dynamic>.from(acc));
+    return AddressIconData.fromJson(Map<String, dynamic>.from(acc));
   }
 
   /// get address and avatar from rawSeed.
-  Future<GenerateMnemonicData> addressFromRawSeed(int ss58,
+  Future<AddressIconData> addressFromRawSeed(int ss58,
       {CryptoType cryptoType = CryptoType.sr25519,
       String derivePath = '',
       required String rawSeed}) async {
@@ -97,7 +97,7 @@ class ServiceKeyring {
         ? (await serviceRoot.webView!.evalJavascript(
             'keyring.addressFromRawSeed("$rawSeed",$ss58,"$crypto","$derivePath")'))
         : {};
-    return GenerateMnemonicData.fromJson(Map<String, dynamic>.from(acc));
+    return AddressIconData.fromJson(Map<String, dynamic>.from(acc));
   }
 
   /// get address and avatar from KeyStore.
