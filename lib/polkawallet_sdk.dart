@@ -46,7 +46,7 @@ class WalletSDK {
         // and initiate pubKeyIconsMap
         api.keyring.updatePubKeyIconsMap(keyring);
 
-        // and eth initiate pubKeyIconsMap
+        // and eth initiate addressIconsMap
         api.ethKeyring.updateAddressIconsMap(keyringETH);
 
         if (!c.isCompleted) {

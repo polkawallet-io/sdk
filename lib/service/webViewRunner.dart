@@ -18,6 +18,7 @@ class WebViewRunner {
 
   late String _jsCode;
   late String _jsCodeEth;
+  bool _isFirstLoad = true;
   Map<String, Function> _msgHandlers = {};
   Map<String, Completer> _msgCompleters = {};
   int _evalJavascriptUID = 0;
@@ -128,8 +129,17 @@ class WebViewRunner {
 
   Future<void> _startJSCode(ServiceKeyring? keyring) async {
     // inject js file to webView
-    await _web!.webViewController.evaluateJavascript(source: _jsCode);
-    await _web!.webViewController.evaluateJavascript(source: _jsCodeEth);
+    if (_isFirstLoad) {
+      await _web!.webViewController.evaluateJavascript(source: _jsCode);
+      await _web!.webViewController.evaluateJavascript(source: _jsCodeEth);
+      _isFirstLoad = false;
+    } else {
+      if (_pluginType == PluginType.Etherem) {
+        await _web!.webViewController.evaluateJavascript(source: _jsCodeEth);
+      } else {
+        await _web!.webViewController.evaluateJavascript(source: _jsCode);
+      }
+    }
 
     _onLaunched!();
   }

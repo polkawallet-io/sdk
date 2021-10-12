@@ -35,7 +35,8 @@ class ApiETHKeyring {
   }
 
   /// get address and avatar from privateKey.privateKey: string
-  Future<dynamic> addressFromPrivateKey({required String privateKey}) async {
+  Future<AddressIconData> addressFromPrivateKey(
+      {required String privateKey}) async {
     final acc = await service!.addressFromPrivateKey(privateKey: privateKey);
     if (acc['error'] != null) {
       throw Exception(acc['error']);
