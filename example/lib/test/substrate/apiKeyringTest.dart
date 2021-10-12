@@ -64,7 +64,7 @@ class ApiKeyringTest {
     dynamic dynamicData = await sdk.api.keyring.addressFromKeyStore(
         network_ss58_map['polkadot'],
         keyStore: jsonDecode(_testKeystore));
-    assert(dynamicData != null && dynamicData[0] != null);
+    assert(dynamicData != null);
 
     print("import account from keystore");
     acc = await sdk.api.keyring.importAccount(keyring,
