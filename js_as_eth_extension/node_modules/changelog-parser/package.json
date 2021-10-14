@@ -1,0 +1,50 @@
+{
+  "name": "changelog-parser",
+  "description": "Change log parser for node.",
+  "version": "2.8.0",
+  "author": "Nate Goldman <ungoldman@gmail.com>",
+  "bin": {
+    "changelog-parser": "./bin/cli.js"
+  },
+  "bugs": {
+    "url": "https://github.com/hypermodules/changelog-parser/issues"
+  },
+  "contributors": [
+    "Nate Goldman <ungoldman@gmail.com>",
+    "Rachel Nehmer <kneemer@gmail.com>",
+    "Viktor Havrylin <fer0x.feo@gmail.com>",
+    "J R Mykolyn <jrmykolyn@gmail.com>",
+    "Bogdan Plieshka <bogdanplieshka@gmail.com>",
+    "Ciro Nunes <ciroanunes@gmail.com>",
+    "Andy Edwards <jedwards@fastmail.com>"
+  ],
+  "dependencies": {
+    "line-reader": "^0.2.4",
+    "remove-markdown": "^0.2.2"
+  },
+  "devDependencies": {
+    "gh-release": "^3.1.1",
+    "standard": "^10.0.2",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.6.0"
+  },
+  "homepage": "https://github.com/hypermodules/changelog-parser",
+  "keywords": [
+    "CHANGELOG.md",
+    "changelog",
+    "parser",
+    "semantic",
+    "semver",
+    "versioning"
+  ],
+  "license": "ISC",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hypermodules/changelog-parser.git"
+  },
+  "scripts": {
+    "release": "gh-release && npm publish",
+    "test": "standard && node test | tap-spec"
+  }
+}
