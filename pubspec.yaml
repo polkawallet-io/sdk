@@ -44,6 +44,7 @@ flutter:
      - js_api/dist/main.js
      - js_api_eth/dist/main.js
      - js_as_extension/dist/main.js
+     - js_as_eth_extension/dist/main.js
   #   - images/a_dot_ham.jpeg
   #
   # For details regarding assets in packages, see

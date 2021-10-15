@@ -148,11 +148,13 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
       javascriptChannels: <JavascriptChannel>[
         JavascriptChannel(
           name: 'Extension',
-          onMessageReceived: (JavascriptMessage message) {
+          onMessageReceived: (JavascriptMessage message) async {
             print('msg from dapp: ${message.message}');
+            print(
+                'window.web3 && window.ethereum && window.ethereum.isMetaMask===================${await _controller.evaluateJavascript('window.web3 &&window.ethereum && window.ethereum.isMetaMask')}');
             compute(jsonDecode, message.message).then((msg) {
               if (widget.pluginType == PluginType.Etherem) {
-                print('eth msg compute: $msg');
+                if (msg['path'] != 'ethereumRequest') return;
                 _ethMsgHandler(msg);
               } else {
                 if (msg['path'] != 'extensionRequest') return;

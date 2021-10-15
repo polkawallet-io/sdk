@@ -61,6 +61,7 @@ window.walletExtension = {
 };
 
 
-window.ethereum = {
+window.WalletConnect = {
+  isMetaMask: true,
   request: handlers.request,
 }

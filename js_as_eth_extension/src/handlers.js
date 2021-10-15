@@ -1,4 +1,4 @@
-const EXTENSION_MSG_PATH = "extensionRequest";
+const ETHEREUM_MSG_PATH = "ethereumRequest";
 
 const _msgCompleters = {};
 
@@ -6,7 +6,7 @@ const _msgCompleters = {};
 async function requestApp({ id, message, request }) {
   return new Promise((resolve, reject) => {
     _msgCompleters[message] = { resolve, reject };
-    window.send(EXTENSION_MSG_PATH, {
+    window.send(ETHEREUM_MSG_PATH, {
       id,
       msgType: message,
       request,
