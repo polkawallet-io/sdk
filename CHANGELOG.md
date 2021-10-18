@@ -1,3 +1,8 @@
+## [0.3.4] - 20211012
+
+* bump polkadot-js/api v6.3.1
+* update apiKeyring
+
 ## [0.3.3] - 20210927
 
 * bump polkadot-js/api v6.0.5
