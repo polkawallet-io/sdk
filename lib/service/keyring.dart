@@ -107,8 +107,20 @@ class ServiceKeyring {
         .evalJavascript('account.decodeAddress(["$addressOld"])'
             '.then(res => account.encodeAddress(Object.keys(res), [$ss58]))'
             '.then(res => account.genIcons(Object.values(res[$ss58])))');
-    print(acc);
     return acc;
+  }
+
+  /// check mnemonic valid.
+  Future<bool> checkMnemonicValid(String mnemonic) async {
+    final isApiSupport = (await serviceRoot.webView!.evalJavascript(
+            'keyring.checkMnemonicValid ? {}:null',
+            wrapPromise: false)) !=
+        null;
+    final bool res = isApiSupport
+        ? (await serviceRoot.webView!
+            .evalJavascript('keyring.checkMnemonicValid("$mnemonic")'))
+        : true;
+    return res;
   }
 
   /// Import account from mnemonic/rawSeed/keystore.

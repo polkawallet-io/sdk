@@ -33,6 +33,20 @@ async function runKeyringTest() {
   const mnemonic = await keyring.gen(null, 0, "sr25519", "");
   expect(mnemonic.mnemonic.split(" ").length, 12);
   expect(!!mnemonic.svg.match("<svg"), true);
+  const mnemonic1 = await keyring.gen(mnemonic.mnemonic, 0, "sr25519", "//superman");
+  expect(mnemonic1.mnemonic, mnemonic.mnemonic);
+  expect(mnemonic1.address == mnemonic.mnemonic, false);
+  expect(mnemonic1.svg == mnemonic.svg, false);
+  const mnemonic2 = await keyring.gen("null", 0, "sr25519", "");
+  expect(mnemonic2, null);
+
+  console.log("check mnemonic valid");
+  const mnemonicValid = await keyring.checkMnemonicValid(mnemonic.mnemonic);
+  expect(mnemonicValid, true);
+  const mnemonicValid1 = await keyring.checkMnemonicValid("null");
+  expect(mnemonicValid1, false);
+  const mnemonicValid2 = await keyring.checkMnemonicValid(null);
+  expect(mnemonicValid2, false);
 
   console.log("get address from mnemonic/seed");
   const addrWithIcon = await keyring.addressFromMnemonic(mnemonic.mnemonic, 0, "sr25519", "");
@@ -47,6 +61,15 @@ async function runKeyringTest() {
   expect(acc.pubKey.length, 66);
   expect(acc.mnemonic, mnemonic.mnemonic);
   expect(acc.encoding.content[1], sr25519);
+  const acc1 = await keyring.recover("mnemonic", sr25519, mnemonic.mnemonic + "//superman", password);
+  expect(acc1.address == acc.address, false);
+  expect(acc1.pubKey.length, 66);
+  expect(acc1.mnemonic, mnemonic.mnemonic + "//superman");
+  expect(acc1.encoding.content[1], sr25519);
+  const accBad = await keyring.recover("mnemonic", sr25519, mnemonic.mnemonic + " badword", password);
+  expect(accBad.mnemonic, undefined);
+  expect(!!accBad.error, true);
+  expect(!!accBad.error.match("invalid mnemonic"), true);
 
   console.log("import account from raw seed");
   const acc2 = await keyring.recover("rawSeed", sr25519, "Alice", password);

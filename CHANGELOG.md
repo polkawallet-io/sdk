@@ -1,3 +1,8 @@
+## [0.3.5] - 20211018
+
+* bump polkadot-js/api v6.4.1
+* add apiKeyring.checkMnemonicValid()
+
 ## [0.3.4] - 20211012
 
 * bump polkadot-js/api v6.3.1
