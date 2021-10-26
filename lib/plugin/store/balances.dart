@@ -1,11 +1,12 @@
 import 'package:mobx/mobx.dart';
+import 'package:get/get.dart';
 import 'package:polkawallet_sdk/api/types/balanceData.dart';
 
 part 'balances.g.dart';
 
 class BalancesStore = BalancesStoreBase with _$BalancesStore;
 
-abstract class BalancesStoreBase with Store {
+abstract class BalancesStoreBase extends GetxController with Store {
   @observable
   BalanceData? native;
 
@@ -21,6 +22,7 @@ abstract class BalancesStoreBase with Store {
   @action
   void setBalance(BalanceData data) {
     native = data;
+    update();
   }
 
   @action
@@ -45,11 +47,14 @@ abstract class BalancesStoreBase with Store {
 
     tokens = data;
     isTokensFromCache = isFromCache;
+
+    update();
   }
 
   @action
   void setExtraTokens(List<ExtraTokenData> ls) {
     extraTokens = ls;
+    update();
   }
 }
 
