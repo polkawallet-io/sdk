@@ -27,9 +27,9 @@ class WebViewWithExtension extends StatefulWidget {
   final Keyring keyring;
   final Function(String)? onPageFinished;
   final Function? onExtensionReady;
-  final Future<ExtensionSignResult> Function(SignAsExtensionParam)?
+  final Future<ExtensionSignResult?> Function(SignAsExtensionParam)?
       onSignBytesRequest;
-  final Future<ExtensionSignResult> Function(SignAsExtensionParam)?
+  final Future<ExtensionSignResult?> Function(SignAsExtensionParam)?
       onSignExtrinsicRequest;
 
   @override
@@ -39,6 +39,7 @@ class WebViewWithExtension extends StatefulWidget {
 class _WebViewWithExtensionState extends State<WebViewWithExtension> {
   late WebViewController _controller;
   bool _loadingFinished = false;
+  bool _signing = false;
 
   Future<String> _msgHandler(Map msg) async {
     switch (msg['msgType']) {
@@ -58,9 +59,12 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
         return _controller.evaluateJavascript(
             'walletExtension.onAppResponse("${msg['msgType']}", ${jsonEncode(res)})');
       case 'pub(bytes.sign)':
+        if (_signing) break;
+        _signing = true;
         final SignAsExtensionParam param =
             SignAsExtensionParam.fromJson(msg as Map<String, dynamic>);
-        final ExtensionSignResult res = await widget.onSignBytesRequest!(param);
+        final res = await widget.onSignBytesRequest!(param);
+        _signing = false;
         if (res == null || res.signature == null) {
           // cancelled
           return _controller.evaluateJavascript(
@@ -69,10 +73,12 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
         return _controller.evaluateJavascript(
             'walletExtension.onAppResponse("${param.msgType}", ${jsonEncode(res.toJson())})');
       case 'pub(extrinsic.sign)':
+        if (_signing) break;
+        _signing = true;
         final SignAsExtensionParam params =
             SignAsExtensionParam.fromJson(msg as Map<String, dynamic>);
-        final ExtensionSignResult result =
-            await widget.onSignExtrinsicRequest!(params);
+        final result = await widget.onSignExtrinsicRequest!(params);
+        _signing = false;
         if (result == null || result.signature == null) {
           // cancelled
           return _controller.evaluateJavascript(
@@ -84,6 +90,7 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
         print('Unknown message from dapp: ${msg['msgType']}');
         return Future(() => "");
     }
+    return Future(() => "");
   }
 
   @override

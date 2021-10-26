@@ -1,3 +1,8 @@
+## [0.3.6] - 20211025
+
+* bump polkadot-js/api v6.5.1
+* fix webviewWithExtension repeat route issue
+
 ## [0.3.5] - 20211018
 
 * bump polkadot-js/api v6.4.1
