@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -93,6 +94,27 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
     return Future(() => "");
   }
 
+  Future<void> _onFinishLoad(String url) async {
+    if (_loadingFinished) return;
+    setState(() {
+      _loadingFinished = true;
+    });
+
+    if (widget.onPageFinished != null) {
+      widget.onPageFinished!(url);
+    }
+    print('Page loaded: $url');
+
+    print('Inject extension js code...');
+    final jsCode = await rootBundle
+        .loadString('packages/polkawallet_sdk/js_as_extension/dist/main.js');
+    _controller.evaluateJavascript(jsCode);
+    print('js code injected');
+    if (widget.onExtensionReady != null) {
+      widget.onExtensionReady!();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return WebView(
@@ -115,24 +137,14 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
           },
         ),
       ].toSet(),
-      onPageFinished: (String url) async {
-        if (_loadingFinished) return;
-        setState(() {
-          _loadingFinished = true;
-        });
-
-        if (widget.onPageFinished != null) {
-          widget.onPageFinished!(url);
+      onPageStarted: (String url) {
+        if (Platform.isAndroid) {
+          _onFinishLoad(url);
         }
-        print('Page finished loading: $url');
-
-        print('Inject extension js code...');
-        final jsCode = await rootBundle.loadString(
-            'packages/polkawallet_sdk/js_as_extension/dist/main.js');
-        _controller.evaluateJavascript(jsCode);
-        print('js code injected');
-        if (widget.onExtensionReady != null) {
-          widget.onExtensionReady!();
+      },
+      onPageFinished: (String url) {
+        if (Platform.isIOS) {
+          _onFinishLoad(url);
         }
       },
       gestureNavigationEnabled: true,
