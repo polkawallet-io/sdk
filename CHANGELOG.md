@@ -1,3 +1,8 @@
+## [0.3.7] - 20211101
+
+* bump polkadot-js/api v6.5.2
+* fix gov referendum data parsing
+
 ## [0.3.6] - 20211025
 
 * bump polkadot-js/api v6.5.1
