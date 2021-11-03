@@ -157,8 +157,8 @@ class WebViewRunner {
     final script = '$code.then(function(res) {'
         '  console.log(JSON.stringify({ path: "$method", data: res }));'
         '}).catch(function(err) {'
-        '  console.log(JSON.stringify({ path: "log", data: err.message }));'
-        '});$uid;';
+        '  console.log(JSON.stringify({ path: "log", data: {call: "$method", error: err.message} }));'
+        '});';
     _web!.webViewController.evaluateJavascript(source: script);
 
     return c.future;
