@@ -20,6 +20,13 @@ class ServiceStaking {
     return data;
   }
 
+  Future<Map?> queryNominationsCount() async {
+    dynamic data = await serviceRoot.webView!.evalJavascript(
+        'staking.queryNominationsCount(api)',
+        allowRepeat: false);
+    return data;
+  }
+
   Future<List?> queryBonded(List<String> pubKeys) async {
     dynamic res = await serviceRoot.webView!.evalJavascript(
         'account.queryAccountsBonded(api, ${jsonEncode(pubKeys)})');

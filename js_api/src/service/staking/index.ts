@@ -325,6 +325,17 @@ async function queryNominations(api: ApiPromise) {
     return mapped;
   }, {});
 }
+/**
+ * Query nominations count of staking module.
+ */
+async function queryNominationsCount(api: ApiPromise) {
+  const nominations = await queryNominations(api);
+  const res = {};
+  Object.keys(nominations).forEach(k => {
+    res[k] = nominations[k].length;
+  });
+  return res;
+}
 
 
 function _isWaitingDerive (derive: DeriveStakingElected | DeriveStakingWaiting): derive is DeriveStakingWaiting {
@@ -816,6 +827,7 @@ export default {
   loadAccountRewardsData,
   querySortedTargets,
   queryNominations,
+  queryNominationsCount,
   getOwnStashInfo,
   getSlashingSpans,
 };
