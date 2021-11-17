@@ -1,3 +1,18 @@
+## [0.3.7] - 20211101
+
+* bump polkadot-js/api v6.5.2
+* fix gov referendum data parsing
+
+## [0.3.6] - 20211025
+
+* bump polkadot-js/api v6.5.1
+* fix webviewWithExtension repeat route issue
+
+## [0.3.5] - 20211018
+
+* bump polkadot-js/api v6.4.1
+* add apiKeyring.checkMnemonicValid()
+
 ## [0.3.4] - 20211012
 
 * bump polkadot-js/api v6.3.1

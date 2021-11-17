@@ -242,7 +242,7 @@ function sendTx(api: ApiPromise, txInfo: any, paramList: any[], password: string
       if (result.status.isInBlock || result.status.isFinalized) {
         const { success, error } = _extractEvents(api, result);
         if (success) {
-          resolve({ hash: tx.hash.toString(), blockHash: result.status.asInBlock.toHex() });
+          resolve({ hash: tx.hash.toString(), blockHash: (result.status.asInBlock || result.status.asFinalized).toHex() });
         }
         if (error) {
           resolve({ error });
@@ -395,7 +395,7 @@ function addSignatureAndSend(api: ApiPromise, address: string, signed: string) {
         if (result.status.isInBlock || result.status.isFinalized) {
           const { success, error } = _extractEvents(api, result);
           if (success) {
-            resolve({ hash: tx.hash.toString(), blockHash: result.status.asInBlock.toHex() });
+            resolve({ hash: tx.hash.toString(), blockHash: (result.status.asInBlock || result.status.asFinalized).toHex() });
           }
           if (error) {
             resolve({ error });

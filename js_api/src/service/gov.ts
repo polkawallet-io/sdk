@@ -1,15 +1,15 @@
 import { ApiPromise } from "@polkadot/api";
 import { DeriveCollectiveProposal, DeriveReferendumExt, DeriveCouncilVotes } from "@polkadot/api-derive/types";
 import { SubmittableExtrinsic } from "@polkadot/api/types";
-import { GenericCall, getTypeDef, Option, Bytes } from "@polkadot/types";
-import { OpenTip, AccountId, FunctionMetadataLatest } from "@polkadot/types/interfaces";
+import { getTypeDef, Option, Bytes } from "@polkadot/types";
+import { OpenTip, AccountId } from "@polkadot/types/interfaces";
 import { formatBalance, stringToU8a, BN_ZERO, hexToString } from "@polkadot/util";
 import BN from "bn.js";
 
 import { approxChanges } from "../utils/referendumApproxChanges";
 
-function _extractMetaData(value: FunctionMetadataLatest) {
-  const params = GenericCall.filterOrigin(value).map(({ name, type }) => ({
+function _extractMetaData(value: any) {
+  const params = value.meta.args.map(({ name, type }) => ({
     name: name.toString(),
     type: getTypeDef(type.toString()),
   }));
@@ -17,7 +17,8 @@ function _extractMetaData(value: FunctionMetadataLatest) {
     isValid: true,
     value,
   }));
-  const hash = value.hash;
+  const hash = value.hash.toHex();
+
   return { hash, params, values };
 }
 
@@ -33,15 +34,15 @@ function _transfromProposalMeta(proposal: any): {} {
     }
   }
   const json = proposal.toHuman();
+  let args: string[] = Object.values(json.args);
   if (json.method == "setCode") {
-    const args = json.args;
-    json.args = [args[0].slice(0, 16) + "..." + args[0].slice(args[0].length - 16)];
+    args = [json.args.code.substring(0, 64)];
   }
   return {
     callIndex: proposal.toJSON().callIndex,
     method: json.method,
     section: json.section,
-    args: json.args,
+    args,
     meta: {
       ...meta.toJSON(),
       documentation: doc,
@@ -59,16 +60,12 @@ async function fetchReferendums(api: ApiPromise, address: string) {
     let proposalMeta: any = {};
     let parsedMeta: any = {};
     if (image && image.proposal) {
-      proposalMeta = _extractMetaData(image.proposal.registry.findMetaCall(image.proposal.callIndex).meta);
+      proposalMeta = _extractMetaData(image.proposal);
       parsedMeta = _transfromProposalMeta(image.proposal);
-      image.proposal = image.proposal.toHuman() as any;
-      if (image.proposal?.method == "setCode") {
-        const args = image.proposal.args;
-        image.proposal = {
-          ...image.proposal,
-          args: [(args[0].toString().slice(0, 16) + "..." + args[0].toString().slice(args[0].toString().length - 16)) as any],
-        } as any;
-      }
+      image.proposal = {
+        ...image.proposal.toHuman(),
+        args: parsedMeta.args,
+      } as any;
     }
 
     const changes = approxChanges(status.threshold, sqrtElectorate, {

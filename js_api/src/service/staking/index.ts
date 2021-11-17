@@ -147,11 +147,10 @@ function _getRewards(stashIds: string[], available: any) {
   };
 }
 
-function _groupByValidator(allRewards: Record<string, DeriveStakerReward[]>, stakerPayoutsAfter: BN) {
+function _groupByValidator(allRewards: Record<string, DeriveStakerReward[]>) {
   return Object.entries(allRewards)
     .reduce((grouped, [stashId, rewards]) => {
       rewards
-        .filter(({ era }) => era.gte(stakerPayoutsAfter))
         .forEach((reward) => {
           Object.entries(reward.validators).forEach(
             ([validatorId, { value }]) => {
@@ -211,7 +210,7 @@ function _extractStashes(allRewards: Record<string, DeriveStakerReward[]>) {
     .filter(({ available }) => !available.isZero())
     .sort((a, b) => b.available.cmp(a.available));
 }
-function _getAvailable(allRewards: Record<string, DeriveStakerReward[]>, stakerPayoutsAfter: BN) {
+function _getAvailable(allRewards: Record<string, DeriveStakerReward[]>) {
   if (allRewards) {
     const stashes = _extractStashes(allRewards);
     const stashTotal = stashes.length
@@ -221,7 +220,7 @@ function _getAvailable(allRewards: Record<string, DeriveStakerReward[]>, stakerP
     return {
       stashTotal,
       stashes,
-      validators: _groupByValidator(allRewards, stakerPayoutsAfter),
+      validators: _groupByValidator(allRewards),
     };
   }
 
@@ -242,10 +241,7 @@ async function loadAccountRewardsData(api: ApiPromise, stashId: string, maxEras:
   );
   // return stakerRewards;
   const { allRewards } = _getRewards([stashId], stakerRewards);
-  const stakerPayoutsAfter = isFunction(api.tx.staking.payoutStakers)
-    ? new BN(0)
-    : new BN("1000000000");
-  const res = _getAvailable(allRewards, stakerPayoutsAfter);
+  const res = _getAvailable(allRewards);
 
   return { available: res.stashTotal, validators: res.validators };
 }
@@ -324,6 +320,17 @@ async function queryNominations(api: ApiPromise) {
 
     return mapped;
   }, {});
+}
+/**
+ * Query nominations count of staking module.
+ */
+async function queryNominationsCount(api: ApiPromise) {
+  const nominations = await queryNominations(api);
+  const res = {};
+  Object.keys(nominations).forEach(k => {
+    res[k] = nominations[k].length;
+  });
+  return res;
 }
 
 
@@ -816,6 +823,7 @@ export default {
   loadAccountRewardsData,
   querySortedTargets,
   queryNominations,
+  queryNominationsCount,
   getOwnStashInfo,
   getSlashingSpans,
 };
