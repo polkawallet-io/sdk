@@ -1966,7 +1966,7 @@
     "@polkadot/util-crypto" "^7.9.2"
     rxjs "^7.4.0"
 
-"@polkadot/api@6.9.2", "@polkadot/api@^6.9.1":
+"@polkadot/api@6.9.2", "@polkadot/api@^6.9.2":
   version "6.9.2"
   resolved "https://registry.yarnpkg.com/@polkadot/api/-/api-6.9.2.tgz#0cd394b3e7cb14db25465f4e131c038d69ba021c"
   integrity sha512-VlKW2Y0zcJhH0Y9/vNRkYIokMaXr/QQ9fZdHKP6z6slhTOfPQYr09msuBSXNyj0X1VGXR6pAXyjsu/gnMIpPrg==
@@ -2068,12 +2068,12 @@
     "@polkadot/util-crypto" "^7.9.2"
     rxjs "^7.4.0"
 
-"@polkadot/ui-shared@0.86.2":
-  version "0.86.2"
-  resolved "https://registry.yarnpkg.com/@polkadot/ui-shared/-/ui-shared-0.86.2.tgz#0701df7af0fc0f975a44cf3defec9a4a764fa900"
-  integrity sha512-JSY5r34UbocJxrOgO3rr1ge7yM5gJEr2pcZDPJszugX++kDozmifH020zyK92P8kpoGV58r9k5fIkBQ/9vszvg==
+"@polkadot/ui-shared@0.86.7":
+  version "0.86.7"
+  resolved "https://registry.yarnpkg.com/@polkadot/ui-shared/-/ui-shared-0.86.7.tgz#9dd657dfe854f5e08be91f31b41f243f8321185c"
+  integrity sha512-CpcFDuuBbXufSGHY5g+w9UWeajfmtc3DWsv2Q0hzQuV0VCYtHXq+HgfhrWIKGUVn5KKOhl8SiFmz5BKILQJRoA==
   dependencies:
-    "@babel/runtime" "^7.15.4"
+    "@babel/runtime" "^7.16.3"
     color "^3.2.1"
 
 "@polkadot/util-crypto@7.9.2", "@polkadot/util-crypto@^7.9.2":
