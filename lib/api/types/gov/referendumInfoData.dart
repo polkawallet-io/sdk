@@ -19,6 +19,23 @@ class ReferendumInfo extends _ReferendumInfo {
     info.userVoted = info.detail!['userVoted'];
     return info;
   }
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'index': this.index,
+        'imageHash': this.imageHash,
+        'status': this.status,
+        'image': this.image,
+        'detail': this.detail,
+        'isPassing': this.isPassing,
+        'voteCountAye': this.voteCountAye,
+        'voteCountNay': this.voteCountNay,
+        'votedTotal': this.votedTotal,
+        'votedAye': this.votedAye,
+        'votedNay': this.votedNay,
+        'changeAye': this.changeAye,
+        'changeNay': this.changeNay,
+        'userVoted': this.userVoted,
+      };
 }
 
 abstract class _ReferendumInfo {

@@ -26,24 +26,24 @@ export async function subscribeMessage(method: any, params: any[], msgChannel: s
 export async function getNetworkConst(api: ApiPromise) {
   return {
     auctions: {
-      endingPeriod: api.consts.auctions.endingPeriod,
+      endingPeriod: api.consts.auctions!=undefined?api.consts.auctions.endingPeriod:null,
     },
     babe: {
-      expectedBlockTime: api.consts.babe.expectedBlockTime,
+      expectedBlockTime: api.consts.babe!=undefined?api.consts.babe.expectedBlockTime:null,
     },
     balances: {
       existentialDeposit: api.consts.balances.existentialDeposit,
     },
     staking: {
-      maxNominations: api.consts.staking.maxNominations,
+      maxNominations: api.consts.staking!=undefined?api.consts.staking.maxNominations:null,
     },
     timestamp: {
       minimumPeriod: api.consts.timestamp.minimumPeriod,
     },
     treasury: {
-      proposalBondMinimum: api.consts.treasury.proposalBondMinimum,
-      proposalBond: api.consts.treasury.proposalBond,
-      spendPeriod: api.consts.treasury.spendPeriod,
+      proposalBondMinimum: api.consts.treasury!=undefined?api.consts.treasury.proposalBondMinimum:null,
+      proposalBond: api.consts.treasury!=undefined?api.consts.treasury.proposalBond:null,
+      spendPeriod: api.consts.treasury!=undefined?api.consts.treasury.spendPeriod:null,
     },
   };
 }
