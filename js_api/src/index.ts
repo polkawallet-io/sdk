@@ -1,4 +1,6 @@
 import { WsProvider, ApiPromise } from "@polkadot/api";
+import { KUSAMA_GENESIS, POLKADOT_GENESIS, STATEMINE_GENESIS } from "./constants/networkSpect";
+import localMetadata from "./constants/networkMetadata";
 import { subscribeMessage, getNetworkConst, getNetworkProperties } from "./service/setting";
 import keyring from "./service/keyring";
 import account from "./service/account";
@@ -15,7 +17,6 @@ function send(path: string, data: any) {
 }
 send("log", "main js loaded");
 (<any>window).send = send;
-
 /**
  * connect to a specific node.
  *
@@ -27,6 +28,11 @@ async function connect(nodes: string[]) {
     try {
       const res = await ApiPromise.create({
         provider: wsProvider,
+        metadata: {
+          [`${KUSAMA_GENESIS}-9122`]: localMetadata["kusama"],
+          [`${POLKADOT_GENESIS}-9122`]: localMetadata["polkadot"],
+          [`${STATEMINE_GENESIS}-504`]: localMetadata["statemine"],
+        },
       });
       (<any>window).api = res;
       const url = nodes[(<any>res)._options.provider.__private_16_endpointIndex];

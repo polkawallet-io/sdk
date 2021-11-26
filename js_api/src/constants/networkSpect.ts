@@ -118,3 +118,5 @@ function getGenesis(name: string): string {
 }
 export const KUSAMA_GENESIS = getGenesis("kusama");
 export const POLKADOT_GENESIS = getGenesis("polkadot");
+export const STATEMINE_GENESIS = "0x48239ef607d7928874027a43a67689209727dfb3d3dc5e5b03a39bdc2eda771a";
+export const STATEMINT_GENESIS = "";
