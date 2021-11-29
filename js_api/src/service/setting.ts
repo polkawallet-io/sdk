@@ -24,7 +24,28 @@ export async function subscribeMessage(method: any, params: any[], msgChannel: s
  * get consts of network.
  */
 export async function getNetworkConst(api: ApiPromise) {
-  return api.consts;
+  return {
+    auctions: {
+      endingPeriod: api.consts.auctions?.endingPeriod,
+    },
+    babe: {
+      expectedBlockTime: api.consts.babe?.expectedBlockTime,
+    },
+    balances: {
+      existentialDeposit: api.consts.balances?.existentialDeposit,
+    },
+    staking: {
+      maxNominations: api.consts.staking?.maxNominations,
+    },
+    timestamp: {
+      minimumPeriod: api.consts.timestamp?.minimumPeriod,
+    },
+    treasury: {
+      proposalBondMinimum: api.consts.treasury?.proposalBondMinimum,
+      proposalBond: api.consts.treasury?.proposalBond,
+      spendPeriod: api.consts.treasury?.spendPeriod,
+    },
+  };
 }
 
 /**

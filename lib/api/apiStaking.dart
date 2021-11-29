@@ -21,6 +21,11 @@ class ApiStaking {
     return res;
   }
 
+  Future<Map?> queryNominationsCount() async {
+    final res = await service.queryNominationsCount();
+    return res;
+  }
+
   /// query staking stash-controller relationship of a list of pubKeys,
   /// return list of [pubKey, controllerAddress, stashAddress].
   Future<Map<String?, AccountBondedInfo>> queryBonded(

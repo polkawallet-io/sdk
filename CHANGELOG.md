@@ -1,3 +1,8 @@
+## [0.3.8] - 20211126
+
+* bump polkadot-js/api v6.9.2
+* use local metadata while connecting
+
 ## [0.3.7] - 20211101
 
 * bump polkadot-js/api v6.5.2

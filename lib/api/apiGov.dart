@@ -95,4 +95,9 @@ class ApiGov {
     }
     return [];
   }
+
+  Future<List?> getDemocracyLocks(String address) async {
+    final List? res = await service.queryDemocracyLocks(address);
+    return res;
+  }
 }

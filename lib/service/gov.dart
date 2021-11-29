@@ -86,4 +86,10 @@ class ServiceGov {
         await serviceRoot.webView!.evalJavascript('gov.getTreasuryTips(api)');
     return data;
   }
+
+  Future<List?> queryDemocracyLocks(String address) async {
+    final dynamic data = await serviceRoot.webView!
+        .evalJavascript('api.derive.democracy.locks("$address")');
+    return data;
+  }
 }

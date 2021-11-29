@@ -51,10 +51,6 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
       '${balance_cache_key}_${basic.name}_$pubKey';
 
   Future<void> updateNetworkState() async {
-    // final state = await Future.wait([
-    //   sdk.api.service.setting.queryNetworkConst(),
-    //   sdk.api.service.setting.queryNetworkProps(),
-    // ]);
     final state = await sdk.api.service.setting.queryNetwork();
     if (state != null) {
       _cache.write(_getNetworkCacheKey(net_const_cache_key), state["const"]);

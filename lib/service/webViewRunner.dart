@@ -102,9 +102,9 @@ class WebViewRunner {
 
   Future<void> _startLocalServer() async {
     final cert = await rootBundle
-        .load("packages/polkawallet_sdk/lib/ssl/certificate.pem");
+        .load("packages/polkawallet_sdk/lib/ssl/certificate.text");
     final keys =
-        await rootBundle.load("packages/polkawallet_sdk/lib/ssl/keys.pem");
+        await rootBundle.load("packages/polkawallet_sdk/lib/ssl/keys.text");
     final security = new SecurityContext()
       ..useCertificateChainBytes(cert.buffer.asInt8List())
       ..usePrivateKeyBytes(keys.buffer.asInt8List());
@@ -157,8 +157,8 @@ class WebViewRunner {
     final script = '$code.then(function(res) {'
         '  console.log(JSON.stringify({ path: "$method", data: res }));'
         '}).catch(function(err) {'
-        '  console.log(JSON.stringify({ path: "log", data: err.message }));'
-        '});$uid;';
+        '  console.log(JSON.stringify({ path: "log", data: {call: "$method", error: err.message} }));'
+        '});';
     _web!.webViewController.evaluateJavascript(source: script);
 
     return c.future;
