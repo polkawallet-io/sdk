@@ -7,7 +7,6 @@ import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/api/types/networkStateData.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
-import 'package:polkawallet_sdk/plugin/types/aggregatedAssetsData.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/service/webViewRunner.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
@@ -32,9 +31,9 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
 
   final recoveryEnabled = false;
 
-  List<AggregatedAssetsData> getAggregatedAssets(
+  Widget getAggregatedAssetsWidget(
           {String priceCurrency = 'USD', bool hideBalance = false}) =>
-      [];
+      Container();
 
   /// Plugin should retrieve [networkState] & [networkConst] while start
   NetworkStateData get networkState {
