@@ -28,8 +28,8 @@ abstract class BalancesStoreBase with Store {
     final data = ls;
     if (!isFromCache) {
       tokens.toList().forEach((old) {
-        final newDataIndex =
-            ls.indexWhere((token) => token.symbol == old.symbol);
+        final newDataIndex = ls.indexWhere(
+            (token) => token.symbol == old.symbol || token.symbol == old.id);
         if (newDataIndex < 0) {
           data.add(old);
         }
@@ -59,11 +59,17 @@ class ExtraTokenData {
   final List<TokenBalanceData>? tokens;
 }
 
+/// none-native token data
+/// 1. [id] foreign asset id (Acala tokens module).
+/// 2. [name] <kUSD> for Karura USD.
+/// 3. [symbol] <KUSD> for Karura USD.
+/// 4. [fullName] <Karura US Dollar> for Karura USD.
 class TokenBalanceData {
   TokenBalanceData({
     this.id,
     this.name,
     this.symbol,
+    this.fullName,
     this.decimals,
     this.amount,
     this.locked,
@@ -75,6 +81,7 @@ class TokenBalanceData {
   final String? id;
   final String? name;
   final String? symbol;
+  final String? fullName;
   final int? decimals;
   String? amount;
   final String? locked;
