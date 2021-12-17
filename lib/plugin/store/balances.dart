@@ -64,11 +64,14 @@ class ExtraTokenData {
 /// 2. [name] <kUSD> for Karura USD.
 /// 3. [symbol] <KUSD> for Karura USD.
 /// 4. [fullName] <Karura US Dollar> for Karura USD.
+/// 5. [type] <Token | DexShare | ForeignAsset> for Karura tokens.
 class TokenBalanceData {
   TokenBalanceData({
     this.id,
     this.name,
     this.symbol,
+    this.type = 'Token',
+    this.minBalance,
     this.fullName,
     this.decimals,
     this.amount,
@@ -81,6 +84,8 @@ class TokenBalanceData {
   final String? id;
   final String? name;
   final String? symbol;
+  final String type;
+  final String? minBalance;
   final String? fullName;
   final int? decimals;
   String? amount;
