@@ -34,6 +34,7 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   Widget? getAggregatedAssetsWidget(
           {String priceCurrency = 'USD',
           bool hideBalance = false,
+          double rate = 1.0,
           @required Function? onSwitchBack,
           @required Function? onSwitchHideBalance}) =>
       null;
