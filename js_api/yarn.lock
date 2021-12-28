@@ -2010,9 +2010,9 @@
     "@polkadot/util-crypto" "^8.2.2"
     rxjs "^7.4.0"
 
-"@polkadot/api@7.1.1", "@polkadot/api@^7.0.3-15":
+"@polkadot/api@7.1.1", "@polkadot/api@^7.1.1":
   version "7.1.1"
-  resolved "https://registry.npmmirror.com/@polkadot/api/download/@polkadot/api-7.1.1.tgz#14ccd655c72b3266674fe9a9b7550216b5195170"
+  resolved "https://registry.yarnpkg.com/@polkadot/api/-/api-7.1.1.tgz#14ccd655c72b3266674fe9a9b7550216b5195170"
   integrity sha512-cb5nXBieUdN1cC6qz0t+cSOeLpvHcYx3OPebEmeTBehkiXGNcbSQUvxt30ohnZmT32seGcwgVyXSsSVMTYm7Lg==
   dependencies:
     "@babel/runtime" "^7.16.5"

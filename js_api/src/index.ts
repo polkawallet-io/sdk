@@ -17,12 +17,19 @@ function send(path: string, data: any) {
 }
 send("log", "main js loaded");
 (<any>window).send = send;
+
+async function connectAll(nodes: string[]) {
+  return Promise.race(nodes.map(node => connect([node])));
+}
+
 /**
  * connect to a specific node.
  *
  * @param {string} nodeEndpoint
  */
 async function connect(nodes: string[]) {
+  (<any>window).api = undefined;
+  
   return new Promise(async (resolve, reject) => {
     const wsProvider = new WsProvider(nodes);
     try {
@@ -34,10 +41,17 @@ async function connect(nodes: string[]) {
           [`${STATEMINE_GENESIS}-504`]: localMetadata["statemine"],
         },
       });
-      (<any>window).api = res;
-      const url = nodes[(<any>res)._options.provider.__private_16_endpointIndex];
-      send("log", `${url} wss connected success`);
-      resolve(url);
+      if (!(<any>window).api) {
+        (<any>window).api = res;
+        const url = nodes[(<any>res)._options.provider.__private_16_endpointIndex];
+        send("log", `${url} wss connected success`);
+        resolve(url);
+      } else {
+        res.disconnect();
+        const url = nodes[(<any>res)._options.provider.__private_16_endpointIndex];
+        send("log", `${url} wss success and disconnected`);
+        resolve(url);
+      }
     } catch (err) {
       send("log", `connect failed`);
       wsProvider.disconnect();
@@ -54,6 +68,7 @@ const test = async () => {
 const settings = {
   test,
   connect,
+  connectAll,
   subscribeMessage,
   getNetworkConst,
   getNetworkProperties,
