@@ -23,6 +23,8 @@ class WebViewRunner {
   bool _webViewLoaded = false;
   Timer? _webViewReloadTimer;
 
+  Timer? _webViewDropsTimer;
+
   Future<void> launch(
     ServiceKeyring? keyring,
     Keyring keyringStorage,
@@ -83,15 +85,29 @@ class WebViewRunner {
       _web!.webViewController.loadUrl(
           urlRequest: URLRequest(url: Uri.parse("https://localhost:8080/")));
     } else {
-      _tryReload();
+      _webViewReloadTimer = Timer.periodic(Duration(seconds: 3), (timer) {
+        _tryReload();
+      });
+    }
+
+    if (_webViewDropsTimer == null) {
+      _webViewDropsTimer = Timer.periodic(Duration(seconds: 5), (timer) async {
+        if (_webViewLoaded) {
+          final res = await evalJavascript('api.derive.chain.bestNumber()');
+          if (res == null || res.toString().isEmpty) {
+            _webViewLoaded = false;
+            _webViewReloadTimer = Timer.periodic(Duration(seconds: 3), (timer) {
+              _tryReload();
+            });
+          }
+        }
+      });
     }
   }
 
   void _tryReload() {
     if (!_webViewLoaded) {
       _web?.webViewController.reload();
-
-      _webViewReloadTimer = Timer(Duration(seconds: 3), _tryReload);
     }
   }
 
