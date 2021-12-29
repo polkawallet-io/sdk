@@ -165,8 +165,15 @@ class WebViewRunner {
   }
 
   Future<NetworkParams?> connectNode(List<NetworkParams> nodes) async {
-    final dynamic res = await evalJavascript(
-        'settings.connect(${jsonEncode(nodes.map((e) => e.endpoint).toList())})');
+    final isAvatarSupport = (await evalJavascript(
+            'settings.connectAll ? {}:null',
+            wrapPromise: false)) !=
+        null;
+    final dynamic res = await (isAvatarSupport
+        ? evalJavascript(
+            'settings.connectAll(${jsonEncode(nodes.map((e) => e.endpoint).toList())})')
+        : evalJavascript(
+            'settings.connect(${jsonEncode(nodes.map((e) => e.endpoint).toList())})'));
     if (res != null) {
       final index = nodes.indexWhere((e) => e.endpoint!.trim() == res.trim());
       return nodes[index > -1 ? index : 0];
