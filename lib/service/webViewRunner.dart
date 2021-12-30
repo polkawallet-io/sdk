@@ -23,8 +23,6 @@ class WebViewRunner {
   bool _webViewLoaded = false;
   Timer? _webViewReloadTimer;
 
-  Timer? _webViewDropsTimer;
-
   Future<void> launch(
     ServiceKeyring? keyring,
     Keyring keyringStorage,
@@ -87,20 +85,6 @@ class WebViewRunner {
     } else {
       _webViewReloadTimer = Timer.periodic(Duration(seconds: 3), (timer) {
         _tryReload();
-      });
-    }
-
-    if (_webViewDropsTimer == null) {
-      _webViewDropsTimer = Timer.periodic(Duration(seconds: 5), (timer) async {
-        if (_webViewLoaded) {
-          final res = await evalJavascript('api.derive.chain.bestNumber()');
-          if (res == null || res.toString().isEmpty) {
-            _webViewLoaded = false;
-            _webViewReloadTimer = Timer.periodic(Duration(seconds: 3), (timer) {
-              _tryReload();
-            });
-          }
-        }
       });
     }
   }
