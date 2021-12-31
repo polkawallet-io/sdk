@@ -55,20 +55,22 @@ class WebViewRunner {
           print("CONSOLE MESSAGE: " + message.message);
           if (message.messageLevel != ConsoleMessageLevel.LOG) return;
 
-          compute(jsonDecode, message.message).then((msg) {
-            final String? path = msg['path'];
-            if (_msgCompleters[path!] != null) {
-              Completer handler = _msgCompleters[path]!;
-              handler.complete(msg['data']);
-              if (path.contains('uid=')) {
-                _msgCompleters.remove(path);
-              }
+          var msg = jsonDecode(message.message);
+
+          // compute(jsonDecode, message.message).then((msg) {
+          final String? path = msg['path'];
+          if (_msgCompleters[path!] != null) {
+            Completer handler = _msgCompleters[path]!;
+            handler.complete(msg['data']);
+            if (path.contains('uid=')) {
+              _msgCompleters.remove(path);
             }
-            if (_msgHandlers[path] != null) {
-              Function handler = _msgHandlers[path]!;
-              handler(msg['data']);
-            }
-          });
+          }
+          if (_msgHandlers[path] != null) {
+            Function handler = _msgHandlers[path]!;
+            handler(msg['data']);
+          }
+          // });
         },
         onLoadStop: (controller, url) async {
           print('webview loaded');
