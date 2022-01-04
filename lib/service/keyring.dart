@@ -22,19 +22,33 @@ class ServiceKeyring {
   }
 
   Future<Map?> injectKeyPairsToWebView(Keyring keyring) async {
+    final resMap = Map<String, Map>();
     if (keyring.store.list.length > 0) {
       final String pairs = jsonEncode(keyring.store.list);
       final ss58 = keyring.store.ss58List;
       final res = Map<String, Map>.from(await serviceRoot.webView!
           .evalJavascript('keyring.initKeys($pairs, ${jsonEncode(ss58)})'));
 
-      final contacts = await getPubKeyAddressMap(keyring.store.contacts, ss58);
-      res.forEach((key, value) {
-        res[key]!.addAll(contacts![key]);
-      });
+      resMap.addAll(res);
+    }
 
-      keyring.store.updatePubKeyAddressMap(res);
-      return res;
+    if (keyring.store.contacts.length > 0) {
+      final ss58 = keyring.store.ss58List;
+      final contacts = await getPubKeyAddressMap(keyring.store.contacts, ss58);
+      if (resMap.length > 0) {
+        resMap.forEach((key, value) {
+          resMap[key]!.addAll(contacts![key]);
+        });
+      } else {
+        contacts!.forEach((key, value) {
+          resMap[key] = value;
+        });
+      }
+    }
+
+    if (resMap.length > 0) {
+      keyring.store.updatePubKeyAddressMap(resMap);
+      return resMap;
     }
     return null;
   }
