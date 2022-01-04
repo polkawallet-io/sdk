@@ -49,7 +49,7 @@ function _extractRewards(
       avgCount++;
     }
 
-    labels.push(era.toHuman());
+    labels.push(era.toString());
     rewardSet.push(reward);
     avgSet.push((avgCount ? Math.ceil((total * 100) / avgCount) : 0) / 100);
     slashSet.push(slash);
@@ -70,7 +70,7 @@ function _extractPoints(points: any[]) {
 
   points.forEach(({ era, points }) => {
     total += points.toNumber();
-    labels.push(era.toHuman());
+    labels.push(era.toString());
 
     if (points.gtn(0)) {
       avgCount++;
@@ -104,7 +104,7 @@ function _extractStake(exposures: any[]) {
     }
 
     avgSet.push((avgCount ? Math.ceil((total * 100) / avgCount) : 0) / 100);
-    labels.push(era.toHuman());
+    labels.push(era.toString());
     cliSet.push(cli);
     expSet.push(exp);
   });

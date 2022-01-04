@@ -49,12 +49,6 @@ class SubScanApi {
   final String moduleRecovery = 'Recovery';
 
   static String getSnEndpoint(String network) {
-    if (network.contains('polkadot')) {
-      network = 'polkadot';
-    }
-    if (network.contains('acala')) {
-      network = 'acala-testnet';
-    }
     return 'https://$network.api.subscan.io/api/scan';
   }
 

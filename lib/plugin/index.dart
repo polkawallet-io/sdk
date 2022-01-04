@@ -31,6 +31,14 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
 
   final recoveryEnabled = false;
 
+  Widget? getAggregatedAssetsWidget(
+          {String priceCurrency = 'USD',
+          bool hideBalance = false,
+          double rate = 1.0,
+          @required Function? onSwitchBack,
+          @required Function? onSwitchHideBalance}) =>
+      null;
+
   /// Plugin should retrieve [networkState] & [networkConst] while start
   NetworkStateData get networkState {
     try {

@@ -28,8 +28,15 @@ abstract class BalancesStoreBase with Store {
     final data = ls;
     if (!isFromCache) {
       tokens.toList().forEach((old) {
-        final newDataIndex =
-            ls.indexWhere((token) => token.symbol == old.symbol);
+        final newDataIndex = ls.indexWhere((token) {
+          if (old.tokenNameId == null) {
+            // check by token.symbol with old data cache
+            return token.symbol == old.symbol || token.symbol == old.id;
+          } else {
+            // or check by tokenNameId with new data
+            return token.tokenNameId == old.tokenNameId;
+          }
+        });
         if (newDataIndex < 0) {
           data.add(old);
         }
@@ -59,11 +66,24 @@ class ExtraTokenData {
   final List<TokenBalanceData>? tokens;
 }
 
+/// none-native token data
+/// 1. [id] foreign asset id (Acala tokens module).
+/// 2. [name] <kUSD> for Karura USD.
+/// 3. [symbol] <KUSD> for Karura USD.
+/// 4. [fullName] <Karura US Dollar> for Karura USD.
+/// 5. [type] <Token | DexShare | ForeignAsset> for Karura tokens.
+/// 6. [tokenNameId] acala.js formatted tokenNameId, <fa://0> for {ForeignAsset: 0}.
+/// 6. [currencyId] acala currencyId type, {ForeignAsset: 0} for <fa://0>.
 class TokenBalanceData {
   TokenBalanceData({
     this.id,
     this.name,
+    this.tokenNameId,
     this.symbol,
+    this.type = 'Token',
+    this.currencyId,
+    this.minBalance,
+    this.fullName,
     this.decimals,
     this.amount,
     this.locked,
@@ -74,7 +94,12 @@ class TokenBalanceData {
 
   final String? id;
   final String? name;
+  final String? tokenNameId;
   final String? symbol;
+  final String type;
+  final Map? currencyId;
+  final String? minBalance;
+  final String? fullName;
   final int? decimals;
   String? amount;
   final String? locked;

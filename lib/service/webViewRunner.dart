@@ -55,20 +55,22 @@ class WebViewRunner {
           print("CONSOLE MESSAGE: " + message.message);
           if (message.messageLevel != ConsoleMessageLevel.LOG) return;
 
-          compute(jsonDecode, message.message).then((msg) {
-            final String? path = msg['path'];
-            if (_msgCompleters[path!] != null) {
-              Completer handler = _msgCompleters[path]!;
-              handler.complete(msg['data']);
-              if (path.contains('uid=')) {
-                _msgCompleters.remove(path);
-              }
+          var msg = jsonDecode(message.message);
+
+          // compute(jsonDecode, message.message).then((msg) {
+          final String? path = msg['path'];
+          if (_msgCompleters[path!] != null) {
+            Completer handler = _msgCompleters[path]!;
+            handler.complete(msg['data']);
+            if (path.contains('uid=')) {
+              _msgCompleters.remove(path);
             }
-            if (_msgHandlers[path] != null) {
-              Function handler = _msgHandlers[path]!;
-              handler(msg['data']);
-            }
-          });
+          }
+          if (_msgHandlers[path] != null) {
+            Function handler = _msgHandlers[path]!;
+            handler(msg['data']);
+          }
+          // });
         },
         onLoadStop: (controller, url) async {
           print('webview loaded');
@@ -83,15 +85,15 @@ class WebViewRunner {
       _web!.webViewController.loadUrl(
           urlRequest: URLRequest(url: Uri.parse("https://localhost:8080/")));
     } else {
-      _tryReload();
+      _webViewReloadTimer = Timer.periodic(Duration(seconds: 3), (timer) {
+        _tryReload();
+      });
     }
   }
 
   void _tryReload() {
     if (!_webViewLoaded) {
       _web?.webViewController.reload();
-
-      _webViewReloadTimer = Timer(Duration(seconds: 3), _tryReload);
     }
   }
 
@@ -165,8 +167,15 @@ class WebViewRunner {
   }
 
   Future<NetworkParams?> connectNode(List<NetworkParams> nodes) async {
-    final dynamic res = await evalJavascript(
-        'settings.connect(${jsonEncode(nodes.map((e) => e.endpoint).toList())})');
+    final isAvatarSupport = (await evalJavascript(
+            'settings.connectAll ? {}:null',
+            wrapPromise: false)) !=
+        null;
+    final dynamic res = await (isAvatarSupport
+        ? evalJavascript(
+            'settings.connectAll(${jsonEncode(nodes.map((e) => e.endpoint).toList())})')
+        : evalJavascript(
+            'settings.connect(${jsonEncode(nodes.map((e) => e.endpoint).toList())})'));
     if (res != null) {
       final index = nodes.indexWhere((e) => e.endpoint!.trim() == res.trim());
       return nodes[index > -1 ? index : 0];
