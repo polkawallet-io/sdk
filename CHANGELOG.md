@@ -1,3 +1,11 @@
+## [0.4.0] - 20220104
+
+* bump polkadot-js/api v7.1.1
+* speed up connection with connectAll()
+* add heart beat & reconnect
+* add TokenBalanceData.type
+* add aggregatedAssetsWidget support
+
 ## [0.3.8] - 20211126
 
 * bump polkadot-js/api v6.9.2
