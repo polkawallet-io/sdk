@@ -15,8 +15,8 @@ class ServiceUOS {
   final SubstrateService serviceRoot;
 
   /// parse data of QR code.
-  /// @return: signer pubKey [String]
-  Future<String> parseQrCode(List keyPairs, String data) async {
+  /// @return: { signer: <pubKey>, genesisHash: <genesisHash> } [Map]
+  Future<Map<String, dynamic>> parseQrCode(List keyPairs, String data) async {
     final res = await serviceRoot.webView!
         .evalJavascript('keyring.parseQrCode("$data")');
     if (res['error'] != null) {
@@ -30,7 +30,10 @@ class ServiceUOS {
     if (accIndex < 0) {
       throw Exception('signer: ${res['signer']} not found.');
     }
-    return pubKey;
+    return Map<String, dynamic>.from({
+      ...res,
+      'signer': pubKey,
+    });
   }
 
   /// this function must be called after parseQrCode.

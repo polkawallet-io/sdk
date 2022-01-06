@@ -1,7 +1,6 @@
-import 'dart:convert';
-
 import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
+import 'package:polkawallet_sdk/api/types/uosQrParseResultData.dart';
 import 'package:polkawallet_sdk/service/uos.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 
@@ -18,9 +17,10 @@ class ApiUOS {
   final ServiceUOS service;
 
   /// parse data of QR code.
-  /// @return: signer pubKey [String]
-  Future<String> parseQrCode(Keyring keyring, String data) async {
-    return service.parseQrCode(keyring.store.list.toList(), data);
+  /// @return: [UosQrParseResultData]
+  Future<UosQrParseResultData> parseQrCode(Keyring keyring, String data) async {
+    final res = await service.parseQrCode(keyring.store.list.toList(), data);
+    return UosQrParseResultData.fromJson(res);
   }
 
   /// this function must be called after parseQrCode.
