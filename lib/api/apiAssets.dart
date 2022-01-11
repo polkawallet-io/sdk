@@ -16,7 +16,8 @@ class ApiAssets {
     return res
         .map((e) => TokenBalanceData(
               id: e['id'].toString(),
-              name: e['name'],
+              name: e['symbol'],
+              fullName: e['name'],
               symbol: e['symbol'],
               decimals: int.parse(e['decimals']),
             ))
