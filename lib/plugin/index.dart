@@ -11,6 +11,7 @@ import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/service/webViewRunner.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
+import 'package:polkawallet_sdk/utils/app.dart';
 
 const String sdk_cache_key = 'polka_wallet_sdk_cache';
 const String net_state_cache_key = 'network_state';
@@ -31,6 +32,9 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
 
   final recoveryEnabled = false;
 
+  final appUtils = AppUtils();
+
+  /// The App will display this widget in assets page
   Widget? getAggregatedAssetsWidget(
           {String priceCurrency = 'USD',
           bool hideBalance = false,
