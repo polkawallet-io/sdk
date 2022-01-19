@@ -194,24 +194,8 @@ async function _queryAuctionInfo(api: ApiPromise) {
  * @param {String} pubKey
  */
 async function queryUserContributions(api: ApiPromise, paraId: string, pubKey: string) {
-  const fund = await api.query.crowdloan.funds(paraId) as any;
-  const childKey = _createChildKey(fund.unwrap().trieIndex);
-  const value = await api.rpc.childstate.getStorage(childKey, pubKey);
-  if (value.isSome) {
-    return api.createType('(Balance, Vec<u8>)' as any, value.unwrap()).toJSON()[0].toString();
-  }
-  return '0';
-}
-
-function _createChildKey (trieIndex: TrieIndex): string {
-  return u8aToHex(
-    u8aConcat(
-      ':child_storage:default:',
-      blake2AsU8a(
-        u8aConcat('crowdloan', trieIndex.toU8a())
-      )
-    )
-  );
+  const res = await api.derive.crowdloan.ownContributions(paraId, [pubKey]);
+  return res[pubKey];
 }
 
 export default {
