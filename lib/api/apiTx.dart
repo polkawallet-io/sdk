@@ -16,9 +16,8 @@ class ApiTx {
       {String? rawParam}) async {
     final String param = rawParam != null ? rawParam : jsonEncode(params);
     final Map tx = txInfo.toJson();
-    final res = await (service.estimateFees(tx, param)
-        as FutureOr<Map<dynamic, dynamic>>);
-    return TxFeeEstimateResult.fromJson(res as Map<String, dynamic>);
+    final res = await service.estimateFees(tx, param);
+    return TxFeeEstimateResult.fromJson(res! as Map<String, dynamic>);
   }
 
 //  Future<dynamic> _testSendTx() async {
@@ -34,7 +33,7 @@ class ApiTx {
   /// Send tx, [params] will be ignored if we have [rawParam].
   /// [onStatusChange] is a callback when tx status change.
   /// @return txHash [string] if tx finalized success.
-  Future<Map> signAndSend(
+  Future<Map?> signAndSend(
     TxInfoData txInfo,
     List params,
     String password, {
@@ -45,13 +44,13 @@ class ApiTx {
     final Map tx = txInfo.toJson();
     print(tx);
     print(param);
-    final res = await (service.signAndSend(
+    final res = await service.signAndSend(
       tx,
       param,
       password,
       onStatusChange ?? (status) => print(status),
-    ) as FutureOr<Map<dynamic, dynamic>>);
-    if (res['error'] != null) {
+    );
+    if (res!['error'] != null) {
       throw Exception(res['error']);
     }
     return res;
