@@ -138,9 +138,9 @@ async function _constructDataFromBytes(bytes: Uint8Array, multipartComplete = fa
           data.data["genesisHash"] = genesisHash;
           const isOversized = rawPayload.length > 256;
           const network = SUBSTRATE_NETWORK_LIST[genesisHash];
-          if (!network) {
-            throw new Error(`Signer does not currently support a chain with genesis hash: ${genesisHash}`);
-          }
+          // if (!network) {
+          //   throw new Error(`Signer does not currently support a chain with genesis hash: ${genesisHash}`);
+          // }
 
           switch (secondByte) {
             case "00": // sign mortal extrinsic
@@ -154,7 +154,7 @@ async function _constructDataFromBytes(bytes: Uint8Array, multipartComplete = fa
               // 	? await blake2b(u8aToHex(payload, -1, false))
               // 	: rawPayload;
               data.data["data"] = rawPayload; // ignore oversized data for now
-              data.data["account"] = encodeAddress(publicKeyAsBytes, network.prefix); // encode to the prefix;
+              data.data["account"] = encodeAddress(publicKeyAsBytes, network?.prefix || 0); // encode to the prefix;
 
               break;
             case "01": // data is a hash
@@ -162,7 +162,7 @@ async function _constructDataFromBytes(bytes: Uint8Array, multipartComplete = fa
               data["oversized"] = false;
               data["isHash"] = true;
               data.data["data"] = hexPayload;
-              data.data["account"] = encodeAddress(publicKeyAsBytes, network.prefix); // default to Kusama
+              data.data["account"] = encodeAddress(publicKeyAsBytes, network?.prefix || 0); // default to Kusama
               break;
           }
         } catch (e) {
@@ -263,7 +263,7 @@ export async function parseQrCode(rawData: string) {
   try {
     const strippedData = _rawDataToU8A(rawData);
     await _setParsedData(strippedData, false);
-    return { signer: signer.unsignedData.data.account };
+    return { signer: signer.unsignedData.data.account, genesisHash: signer.unsignedData.data.genesisHash };
   } catch (err) {
     return { error: err.message };
   }

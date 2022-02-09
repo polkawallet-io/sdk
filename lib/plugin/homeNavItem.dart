@@ -7,6 +7,7 @@ class HomeNavItem {
     required this.icon,
     required this.iconActive,
     required this.content,
+    this.isAdapter = false,
   });
 
   /// Text display in BottomNavBar.
@@ -18,4 +19,6 @@ class HomeNavItem {
 
   /// Page content for this nav item.
   final Widget content;
+
+  final bool isAdapter;
 }
