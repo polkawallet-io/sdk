@@ -1,3 +1,11 @@
+## [0.4.1] - 20220209
+
+* bump polkadot-js/api v7.2.1
+* update offline-signature api
+* update parachains api
+* update assets api for statemine
+* add plugin.appUtils for auto routing
+
 ## [0.4.0] - 20220104
 
 * bump polkadot-js/api v7.1.1
