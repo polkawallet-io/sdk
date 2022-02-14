@@ -29,8 +29,14 @@ const config = {
         include: /node_modules/,
         type: "javascript/auto",
       },
+      {
+        test: /\.js$/,
+        enforce: "pre",
+        use: ["source-map-loader"],
+      },
     ],
   },
+  devtool: "source-map",
 };
 
 module.exports = config;
