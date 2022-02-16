@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
@@ -329,22 +327,31 @@ class _KeyringPageState extends State<KeyringPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      RaisedButton(
+                      ElevatedButton(
                         child: Text('Polkadot: 0'),
-                        color:
-                            _ss58 == 0 ? Theme.of(context).primaryColor : null,
+                        style: ElevatedButton.styleFrom(
+                          primary: _ss58 == 0
+                              ? Theme.of(context).primaryColor
+                              : null,
+                        ),
                         onPressed: () => _setSS58(0),
                       ),
-                      RaisedButton(
+                      ElevatedButton(
                         child: Text('Kusama: 2'),
-                        color:
-                            _ss58 == 2 ? Theme.of(context).primaryColor : null,
+                        style: ElevatedButton.styleFrom(
+                          primary: _ss58 == 2
+                              ? Theme.of(context).primaryColor
+                              : null,
+                        ),
                         onPressed: () => _setSS58(2),
                       ),
-                      RaisedButton(
+                      ElevatedButton(
                         child: Text('Substrate: 42'),
-                        color:
-                            _ss58 == 42 ? Theme.of(context).primaryColor : null,
+                        style: ElevatedButton.styleFrom(
+                          primary: _ss58 == 42
+                              ? Theme.of(context).primaryColor
+                              : null,
+                        ),
                         onPressed: () => _setSS58(42),
                       )
                     ],

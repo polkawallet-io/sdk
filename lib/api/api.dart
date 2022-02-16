@@ -96,13 +96,13 @@ class PolkawalletApi {
 
   /// subscribe message.
   Future<void> subscribeMessage(
-    String JSCall,
+    String jsCall,
     List params,
     String channel,
     Function callback,
   ) async {
     service.webView!.subscribeMessage(
-      'settings.subscribeMessage($JSCall, ${jsonEncode(params)}, "$channel")',
+      'settings.subscribeMessage($jsCall, ${jsonEncode(params)}, "$channel")',
       channel,
       callback,
     );
