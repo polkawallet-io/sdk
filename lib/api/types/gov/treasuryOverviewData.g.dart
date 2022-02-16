@@ -46,14 +46,6 @@ SpendProposalData _$SpendProposalDataFromJson(Map<String, dynamic> json) {
             json['proposal'] as Map<String, dynamic>);
 }
 
-Map<String, dynamic> _$SpendProposalDataToJson(SpendProposalData instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'isApproval': instance.isApproval,
-      'council': instance.council,
-      'proposal': instance.proposal,
-    };
-
 CouncilMotionData _$CouncilMotionDataFromJson(Map<String, dynamic> json) {
   return CouncilMotionData()
     ..hash = json['hash'] as String?
@@ -66,13 +58,6 @@ CouncilMotionData _$CouncilMotionDataFromJson(Map<String, dynamic> json) {
             json['votes'] as Map<String, dynamic>);
 }
 
-Map<String, dynamic> _$CouncilMotionDataToJson(CouncilMotionData instance) =>
-    <String, dynamic>{
-      'hash': instance.hash,
-      'proposal': instance.proposal,
-      'votes': instance.votes,
-    };
-
 CouncilProposalData _$CouncilProposalDataFromJson(Map<String, dynamic> json) {
   return CouncilProposalData()
     ..callIndex = json['callIndex'] as String?
@@ -84,16 +69,6 @@ CouncilProposalData _$CouncilProposalDataFromJson(Map<String, dynamic> json) {
         : ProposalMetaData.fromJson(json['meta'] as Map<String, dynamic>);
 }
 
-Map<String, dynamic> _$CouncilProposalDataToJson(
-        CouncilProposalData instance) =>
-    <String, dynamic>{
-      'callIndex': instance.callIndex,
-      'method': instance.method,
-      'section': instance.section,
-      'args': instance.args,
-      'meta': instance.meta,
-    };
-
 ProposalMetaData _$ProposalMetaDataFromJson(Map<String, dynamic> json) {
   return ProposalMetaData()
     ..name = json['name'] as String?
@@ -103,25 +78,11 @@ ProposalMetaData _$ProposalMetaDataFromJson(Map<String, dynamic> json) {
         .toList();
 }
 
-Map<String, dynamic> _$ProposalMetaDataToJson(ProposalMetaData instance) =>
-    <String, dynamic>{
-      'name': instance.name,
-      'documentation': instance.documentation,
-      'args': instance.args,
-    };
-
 ProposalArgsItemData _$ProposalArgsItemDataFromJson(Map<String, dynamic> json) {
   return ProposalArgsItemData()
     ..name = json['name'] as String?
     ..type = json['type'] as String?;
 }
-
-Map<String, dynamic> _$ProposalArgsItemDataToJson(
-        ProposalArgsItemData instance) =>
-    <String, dynamic>{
-      'name': instance.name,
-      'type': instance.type,
-    };
 
 CouncilProposalVotesData _$CouncilProposalVotesDataFromJson(
     Map<String, dynamic> json) {
@@ -133,16 +94,6 @@ CouncilProposalVotesData _$CouncilProposalVotesDataFromJson(
     ..end = json['end'];
 }
 
-Map<String, dynamic> _$CouncilProposalVotesDataToJson(
-        CouncilProposalVotesData instance) =>
-    <String, dynamic>{
-      'index': instance.index,
-      'threshold': instance.threshold,
-      'ayes': instance.ayes,
-      'nays': instance.nays,
-      'end': instance.end,
-    };
-
 SpendProposalDetailData _$SpendProposalDetailDataFromJson(
     Map<String, dynamic> json) {
   return SpendProposalDetailData()
@@ -151,12 +102,3 @@ SpendProposalDetailData _$SpendProposalDetailDataFromJson(
     ..value = json['value']
     ..bond = json['bond'];
 }
-
-Map<String, dynamic> _$SpendProposalDetailDataToJson(
-        SpendProposalDetailData instance) =>
-    <String, dynamic>{
-      'proposer': instance.proposer,
-      'beneficiary': instance.beneficiary,
-      'value': instance.value,
-      'bond': instance.bond,
-    };

@@ -145,7 +145,7 @@ class SubScanApi {
     });
     Response res =
         await post(Uri.parse(url), headers: post_headers, body: body);
-    if (res.body != null) {
+    if (res.body.isNotEmpty) {
       final obj = await compute(jsonDecode, res.body);
       if (params.sendPort != null) {
         params.sendPort!.send(obj['data']);
@@ -174,7 +174,7 @@ class SubScanApi {
     String body = jsonEncode(params);
     Response res =
         await post(Uri.parse(url), headers: post_headers, body: body);
-    if (res.body != null) {
+    if (res.body.isNotEmpty) {
       final obj = await compute(jsonDecode, res.body);
       if (para.sendPort != null) {
         para.sendPort!.send(obj['data']);
@@ -197,7 +197,7 @@ class SubScanApi {
     String body = jsonEncode(params);
     Response res =
         await post(Uri.parse(url), headers: post_headers, body: body);
-    if (res.body != null) {
+    if (res.body.isNotEmpty) {
       final obj = await compute(jsonDecode, res.body);
       if (para.sendPort != null) {
         para.sendPort!.send(obj['data']);
