@@ -26,13 +26,15 @@ class ApiAssets {
 
   Future<List<AssetsBalanceData>> queryAssetsBalances(
       List<String> ids, String address) async {
-    final res = await (service.queryAssetsBalances(ids, address)
-        as FutureOr<List<dynamic>>);
+    final res = await service.queryAssetsBalances(ids, address);
+
     return res
         .asMap()
         .map((k, v) {
-          v['id'] = ids[k];
-          return MapEntry(k, AssetsBalanceData.fromJson(v));
+          final e = v ?? {};
+          e['id'] = ids[k];
+          return MapEntry(k,
+              v != null ? AssetsBalanceData.fromJson(e) : AssetsBalanceData());
         })
         .values
         .toList();
