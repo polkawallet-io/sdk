@@ -8,6 +8,7 @@ class HomeNavItem {
     required this.iconActive,
     required this.content,
     this.isAdapter = false,
+    this.onTap,
   });
 
   /// Text display in BottomNavBar.
@@ -21,4 +22,6 @@ class HomeNavItem {
   final Widget content;
 
   final bool isAdapter;
+
+  Function()? onTap;
 }
