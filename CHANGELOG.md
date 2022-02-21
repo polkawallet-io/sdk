@@ -1,3 +1,8 @@
+## [0.4.2] - 20220221
+
+* bump polkadot-js/api v7.9.1
+* bump typescript v4.5.5
+
 ## [0.4.1] - 20220209
 
 * bump polkadot-js/api v7.2.1

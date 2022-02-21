@@ -2,7 +2,7 @@
 
 Wrap `@polkadot-js/api` to provide APIs for polkawallet/sdk.
 
-@polkadot-js/api: ^7.7.1
+@polkadot-js/api: ^7.9.1
 
 ## build & test
 
