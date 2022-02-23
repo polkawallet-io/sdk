@@ -47,10 +47,8 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
   Future<String> _msgHandler(Map msg) async {
     switch (msg['msgType']) {
       case 'pub(accounts.list)':
+      case 'pub(accounts.subscribe)':
         final List<KeyPairData> ls = widget.keyring.keyPairs;
-        ls.forEach((element) {
-          print(element.encoding);
-        });
         ls.retainWhere((e) => e.encoding!['content'][1] == 'sr25519');
         final List res = ls.map((e) {
           return {
