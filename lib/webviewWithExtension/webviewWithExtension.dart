@@ -19,6 +19,7 @@ class WebViewWithExtension extends StatefulWidget {
     this.keyring, {
     this.onPageFinished,
     this.onExtensionReady,
+    this.onWebViewCreated,
     this.onSignBytesRequest,
     this.onSignExtrinsicRequest,
   });
@@ -28,6 +29,7 @@ class WebViewWithExtension extends StatefulWidget {
   final Keyring keyring;
   final Function(String)? onPageFinished;
   final Function? onExtensionReady;
+  final Function(WebViewController)? onWebViewCreated;
   final Future<ExtensionSignResult?> Function(SignAsExtensionParam)?
       onSignBytesRequest;
   final Future<ExtensionSignResult?> Function(SignAsExtensionParam)?
@@ -57,7 +59,7 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
             'genesisHash': '',
           };
         }).toList();
-        return _controller.evaluateJavascript(
+        return _controller.runJavascriptReturningResult(
             'walletExtension.onAppResponse("${msg['msgType']}", ${jsonEncode(res)})');
       case 'pub(bytes.sign)':
         if (_signing) break;
@@ -68,10 +70,10 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
         _signing = false;
         if (res == null || res.signature == null) {
           // cancelled
-          return _controller.evaluateJavascript(
+          return _controller.runJavascriptReturningResult(
               'walletExtension.onAppResponse("${param.msgType}", null, new Error("Rejected"))');
         }
-        return _controller.evaluateJavascript(
+        return _controller.runJavascriptReturningResult(
             'walletExtension.onAppResponse("${param.msgType}", ${jsonEncode(res.toJson())})');
       case 'pub(extrinsic.sign)':
         if (_signing) break;
@@ -82,10 +84,10 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
         _signing = false;
         if (result == null || result.signature == null) {
           // cancelled
-          return _controller.evaluateJavascript(
+          return _controller.runJavascriptReturningResult(
               'walletExtension.onAppResponse("${params.msgType}", null, new Error("Rejected"))');
         }
-        return _controller.evaluateJavascript(
+        return _controller.runJavascriptReturningResult(
             'walletExtension.onAppResponse("${params.msgType}", ${jsonEncode(result.toJson())})');
       default:
         print('Unknown message from dapp: ${msg['msgType']}');
@@ -108,7 +110,7 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
     print('Inject extension js code...');
     final jsCode = await rootBundle
         .loadString('packages/polkawallet_sdk/js_as_extension/dist/main.js');
-    _controller.evaluateJavascript(jsCode);
+    _controller.runJavascriptReturningResult(jsCode);
     print('js code injected');
     if (widget.onExtensionReady != null) {
       widget.onExtensionReady!();
@@ -121,6 +123,9 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
       initialUrl: widget.initialUrl,
       javascriptMode: JavascriptMode.unrestricted,
       onWebViewCreated: (WebViewController webViewController) {
+        if (widget.onWebViewCreated != null) {
+          widget.onWebViewCreated!(webViewController);
+        }
         setState(() {
           _controller = webViewController;
         });

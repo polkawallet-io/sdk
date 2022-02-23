@@ -2,6 +2,7 @@
 
 * bump polkadot-js/api v7.9.1
 * bump typescript v4.5.5
+* bump webview_flutter: ^3.0.0
 
 ## [0.4.1] - 20220209
 
