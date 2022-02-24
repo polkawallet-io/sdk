@@ -36,6 +36,7 @@ export async function getNetworkConst(api: ApiPromise) {
     },
     staking: {
       maxNominations: api.consts.staking?.maxNominations,
+      maxNominatorRewardedPerValidator: api.consts.staking?.maxNominatorRewardedPerValidator,
     },
     timestamp: {
       minimumPeriod: api.consts.timestamp?.minimumPeriod,
