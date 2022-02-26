@@ -43,6 +43,12 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
           @required Function? onSwitchHideBalance}) =>
       null;
 
+  /// The App will display this widget in native token detail page
+  /// @param[transferType] = 0 | 1 | 2, (0 = all, 1 = in, 2 = out)
+  Widget? getNativeTokenTransfers(
+          {required String address, int transferType = 0}) =>
+      null;
+
   /// Plugin should retrieve [networkState] & [networkConst] while start
   NetworkStateData get networkState {
     try {
