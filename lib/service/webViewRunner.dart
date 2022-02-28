@@ -20,7 +20,7 @@ class WebViewRunner {
   int _evalJavascriptUID = 0;
 
   bool webViewLoaded = false;
-  bool jsCodeStarted = false;
+  int jsCodeStarted = -1;
   Timer? _webViewReloadTimer;
 
   Future<void> launch(
@@ -35,7 +35,7 @@ class WebViewRunner {
     _evalJavascriptUID = 0;
     _onLaunched = onLaunched;
     webViewLoaded = false;
-    jsCodeStarted = false;
+    jsCodeStarted = -1;
 
     _jsCode = jsCode ??
         await rootBundle
@@ -56,8 +56,12 @@ class WebViewRunner {
           print("CONSOLE MESSAGE: " + message.message);
           if (message.messageLevel != ConsoleMessageLevel.LOG) return;
 
-          if (!jsCodeStarted && message.message.contains('js loaded')) {
-            jsCodeStarted = true;
+          if (jsCodeStarted < 0) {
+            if (message.message.contains('js loaded')) {
+              jsCodeStarted = 1;
+            } else {
+              jsCodeStarted = 0;
+            }
           }
 
           try {
