@@ -9,7 +9,7 @@ const config = {
     filename: "main.js",
   },
   resolve: {
-    extensions: [".ts", ".js", ".mjs", ".json"],
+    extensions: [".ts", ".js", ".mjs", ".cjs", ".json"],
     fallback: { crypto: require.resolve("crypto-browserify"), stream: require.resolve("stream-browserify") },
   },
   plugins: [
@@ -30,13 +30,17 @@ const config = {
         type: "javascript/auto",
       },
       {
+        test: /\.cjs$/,
+        include: path.resolve(__dirname, "node_modules/@polkadot/"),
+        use: "babel-loader",
+      },
+      {
         test: /\.js$/,
-        enforce: "pre",
-        use: ["source-map-loader"],
+        include: path.resolve(__dirname, "node_modules/@polkadot/"),
+        use: "babel-loader",
       },
     ],
   },
-  devtool: "source-map",
 };
 
 module.exports = config;

@@ -1,6 +1,8 @@
 import { ApiPromise } from "@polkadot/api";
 import { SubstrateNetworkKeys } from "../constants/networkSpect";
 
+const MAX_NOMINATIONS = 16;
+
 /**
  * subscribe messages of network state.
  *
@@ -35,7 +37,7 @@ export async function getNetworkConst(api: ApiPromise) {
       existentialDeposit: api.consts.balances?.existentialDeposit,
     },
     staking: {
-      maxNominations: api.consts.staking?.maxNominations,
+      maxNominations: api.consts.staking?.maxNominations || MAX_NOMINATIONS,
       maxNominatorRewardedPerValidator: api.consts.staking?.maxNominatorRewardedPerValidator,
     },
     timestamp: {
