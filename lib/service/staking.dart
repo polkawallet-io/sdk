@@ -33,7 +33,7 @@ class ServiceStaking {
     return res;
   }
 
-  Future<Map?> queryOwnStashInfo(String accountId) async {
+  Future<Map> queryOwnStashInfo(String accountId) async {
     dynamic data = await serviceRoot.webView!
         .evalJavascript('staking.getOwnStashInfo(api, "$accountId")');
     return data;

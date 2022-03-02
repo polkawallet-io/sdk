@@ -126,8 +126,8 @@ class ApiKeyring {
   /// Add a contact.
   Future<KeyPairData> addContact(Keyring keyring, Map acc) async {
     final pubKey = await (service!.serviceRoot.account
-        .decodeAddress([acc['address']]) as FutureOr<Map<dynamic, dynamic>>);
-    acc['pubKey'] = pubKey.keys.toList()[0];
+        .decodeAddress([acc['address']]));
+    acc['pubKey'] = pubKey!.keys.toList()[0];
 
     // save keystore to storage
     await keyring.store.addContact(acc);

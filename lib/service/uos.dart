@@ -23,9 +23,9 @@ class ServiceUOS {
       throw Exception(res['error']);
     }
 
-    final pubKeyAddressMap = await (serviceRoot.account
-        .decodeAddress([res['signer']]) as FutureOr<Map<dynamic, dynamic>>);
-    final pubKey = pubKeyAddressMap.keys.toList()[0];
+    final pubKeyAddressMap =
+        await (serviceRoot.account.decodeAddress([res['signer']]));
+    final pubKey = pubKeyAddressMap!.keys.toList()[0];
     final accIndex = keyPairs.indexWhere((e) => e['pubKey'] == pubKey);
     if (accIndex < 0) {
       throw Exception('signer: ${res['signer']} not found.');
