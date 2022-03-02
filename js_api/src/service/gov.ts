@@ -139,6 +139,8 @@ async function fetchProposals(api: ApiPromise) {
  */
 async function fetchExternal(api: ApiPromise) {
   const external = await api.derive.democracy.nextExternal();
+  if (!external) return null;
+
   external.image.proposal = _transfromProposalMeta(external.image.proposal) as any;
   return external;
 }

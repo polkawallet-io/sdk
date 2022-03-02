@@ -45,7 +45,7 @@ class ServiceGov {
     return data;
   }
 
-  Future<Map> queryNextExternal() async {
+  Future<Map?> queryNextExternal() async {
     final data =
         await serviceRoot.webView!.evalJavascript('gov.fetchExternal(api)');
     return data;
