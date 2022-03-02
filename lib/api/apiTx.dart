@@ -50,8 +50,8 @@ class ApiTx {
       param,
       password,
       onStatusChange ?? (status) => print(status),
-    ) as FutureOr<Map<dynamic, dynamic>>);
-    if (res['error'] != null) {
+    ));
+    if (res!['error'] != null) {
       throw Exception(res['error']);
     }
     return res;
