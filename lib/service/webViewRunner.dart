@@ -54,8 +54,6 @@ class WebViewRunner {
         },
         onConsoleMessage: (controller, message) {
           print("CONSOLE MESSAGE: " + message.message);
-          if (message.messageLevel != ConsoleMessageLevel.LOG) return;
-
           if (jsCodeStarted < 0) {
             if (message.message.contains('js loaded')) {
               jsCodeStarted = 1;
@@ -63,6 +61,7 @@ class WebViewRunner {
               jsCodeStarted = 0;
             }
           }
+          if (message.messageLevel != ConsoleMessageLevel.LOG) return;
 
           try {
             var msg = jsonDecode(message.message);
