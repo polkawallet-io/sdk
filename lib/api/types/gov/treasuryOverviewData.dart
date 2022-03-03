@@ -10,6 +10,7 @@ class TreasuryOverviewData extends _TreasuryOverviewData {
 
 abstract class _TreasuryOverviewData {
   String? balance;
+  String? spendable;
   String? proposalCount;
   List<SpendProposalData>? proposals;
   List<SpendProposalData>? approvals;

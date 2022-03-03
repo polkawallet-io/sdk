@@ -9,6 +9,7 @@ part of 'treasuryOverviewData.dart';
 TreasuryOverviewData _$TreasuryOverviewDataFromJson(Map<String, dynamic> json) {
   return TreasuryOverviewData()
     ..balance = json['balance'] as String?
+    ..spendable = json['spendable'] as String?
     ..proposalCount = json['proposalCount'] as String?
     ..proposals = (json['proposals'] as List<dynamic>?)
         ?.map((e) => SpendProposalData.fromJson(e as Map<String, dynamic>))
@@ -22,6 +23,7 @@ Map<String, dynamic> _$TreasuryOverviewDataToJson(
         TreasuryOverviewData instance) =>
     <String, dynamic>{
       'balance': instance.balance,
+      'spendable': instance.spendable,
       'proposalCount': instance.proposalCount,
       'proposals': instance.proposals,
       'approvals': instance.approvals,
