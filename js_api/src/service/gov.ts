@@ -3,7 +3,7 @@ import { DeriveCollectiveProposal, DeriveReferendumExt, DeriveCouncilVotes } fro
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { getTypeDef, Option, Bytes } from "@polkadot/types";
 import { OpenTip, AccountId } from "@polkadot/types/interfaces";
-import { formatBalance, stringToU8a, BN_ZERO, hexToString } from "@polkadot/util";
+import { formatBalance, stringToU8a, BN_ZERO, hexToString, BN_MILLION } from "@polkadot/util";
 import BN from "bn.js";
 
 import { approxChanges } from "../utils/referendumApproxChanges";
@@ -178,10 +178,16 @@ async function getTreasuryOverview(api: ApiPromise) {
     new BN(0)
   );
   const pendingProposals = proposals.approvals.reduce((total, { proposal: { value } }) => total.iadd(value), new BN(0));
+  const burn =
+    balance.freeBalance.gt(BN_ZERO) && !(api.consts.treasury.burn as any).isZero()
+      ? (api.consts.treasury.burn as any).mul(balance.freeBalance).div(BN_MILLION)
+      : BN_ZERO;
   const res: any = {
     ...proposals,
   };
   res["balance"] = balance.freeBalance.toString();
+  res["burn"] = burn.toString();
+  res["approved"] = pendingProposals.toString();
   res["spendable"] = balance.freeBalance
     .sub(pendingBounties)
     .sub(pendingProposals)

@@ -10,6 +10,8 @@ TreasuryOverviewData _$TreasuryOverviewDataFromJson(Map<String, dynamic> json) {
   return TreasuryOverviewData()
     ..balance = json['balance'] as String?
     ..spendable = json['spendable'] as String?
+    ..burn = json['burn'] as String?
+    ..approved = json['approved'] as String?
     ..proposalCount = json['proposalCount'] as String?
     ..proposals = (json['proposals'] as List<dynamic>?)
         ?.map((e) => SpendProposalData.fromJson(e as Map<String, dynamic>))
@@ -24,6 +26,8 @@ Map<String, dynamic> _$TreasuryOverviewDataToJson(
     <String, dynamic>{
       'balance': instance.balance,
       'spendable': instance.spendable,
+      'burn': instance.burn,
+      'approved': instance.approved,
       'proposalCount': instance.proposalCount,
       'proposals': instance.proposals,
       'approvals': instance.approvals,
