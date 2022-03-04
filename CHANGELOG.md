@@ -1,3 +1,8 @@
+## [0.4.3] - 20220304
+
+* bump polkadot-js/api v7.10.1
+* fix javascript polyfill issue
+
 ## [0.4.2] - 20220221
 
 * bump polkadot-js/api v7.9.1
