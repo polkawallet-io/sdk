@@ -563,12 +563,14 @@ async function querySortedTargets(api: ApiPromise) {
   api.derive.staking.waitingInfo({withPrefs: true}),
   api.derive.session.info(),
   api.query.staking.minNominatorBond(),
+  api.query.staking.counterForNominators(),
+  api.derive.session.indexes().then(({ activeEra }) => activeEra.gt(BN_ZERO) ? activeEra.sub(BN_ONE) : undefined).then(lastEra => api.query.staking.erasValidatorReward([lastEra])),
  ]);
  
  const partial = data[1] && data[2] && data[3] && data[4]
- ? _extractTargetsInfo(api, data[2], data[3], data[1], _transfromEra(data[4]), data[0])
+ ? _extractTargetsInfo(api, data[2], data[3], data[1] as any, _transfromEra(data[4]), data[0] as any)
  : {};
- return { inflation: { inflation: 0, stakedReturn: 0 }, medianComm: 0, ...partial, minNominatorBond: data[5] };
+ return { inflation: { inflation: 0, stakedReturn: 0 }, medianComm: 0, ...partial, minNominatorBond: data[5], counterForNominators: data[6], lastReward: data[7] };
 }
 
 async function _getOwnStash(api: ApiPromise, accountId: string): Promise<[string, boolean]> {
@@ -578,11 +580,11 @@ async function _getOwnStash(api: ApiPromise, accountId: string): Promise<[string
     api.query.staking.bonded(accountId),
     api.query.staking.ledger(accountId),
   ]);
-  if (ownStash[0].isSome) {
+  if ((ownStash[0] as any).isSome) {
     isOwnStash = true;
   }
-  if (ownStash[1].isSome) {
-    stashId = ownStash[1].unwrap().stash.toString();
+  if ((ownStash[1] as any).isSome) {
+    stashId = (ownStash[1] as any).unwrap().stash.toString();
     if (accountId != stashId) {
       isOwnStash = false;
     }

@@ -19,7 +19,7 @@ send("log", "main js loaded");
 (<any>window).send = send;
 
 async function connectAll(nodes: string[]) {
-  return Promise.race(nodes.map(node => connect([node])));
+  return Promise.race(nodes.map((node) => connect([node])));
 }
 
 /**
@@ -29,7 +29,7 @@ async function connectAll(nodes: string[]) {
  */
 async function connect(nodes: string[]) {
   (<any>window).api = undefined;
-  
+
   return new Promise(async (resolve, reject) => {
     const wsProvider = new WsProvider(nodes);
     try {
@@ -39,16 +39,16 @@ async function connect(nodes: string[]) {
           [`${KUSAMA_GENESIS}-9122`]: localMetadata["kusama"],
           [`${POLKADOT_GENESIS}-9122`]: localMetadata["polkadot"],
           [`${STATEMINE_GENESIS}-504`]: localMetadata["statemine"],
-        },
+        } as any,
       });
       if (!(<any>window).api) {
         (<any>window).api = res;
-        const url = nodes[(<any>res)._options.provider.__private_16_endpointIndex];
+        const url = nodes[(<any>res)._options.provider.__private_27_endpointIndex];
         send("log", `${url} wss connected success`);
         resolve(url);
       } else {
         res.disconnect();
-        const url = nodes[(<any>res)._options.provider.__private_16_endpointIndex];
+        const url = nodes[(<any>res)._options.provider.__private_27_endpointIndex];
         send("log", `${url} wss success and disconnected`);
         resolve(url);
       }

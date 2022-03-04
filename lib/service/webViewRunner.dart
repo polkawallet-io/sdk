@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:jaguar/jaguar.dart';
@@ -20,7 +19,8 @@ class WebViewRunner {
   Map<String, Completer> _msgCompleters = {};
   int _evalJavascriptUID = 0;
 
-  bool _webViewLoaded = false;
+  bool webViewLoaded = false;
+  int jsCodeStarted = -1;
   Timer? _webViewReloadTimer;
 
   Future<void> launch(
@@ -34,7 +34,8 @@ class WebViewRunner {
     _msgCompleters = {};
     _evalJavascriptUID = 0;
     _onLaunched = onLaunched;
-    _webViewLoaded = false;
+    webViewLoaded = false;
+    jsCodeStarted = -1;
 
     _jsCode = jsCode ??
         await rootBundle
@@ -53,28 +54,37 @@ class WebViewRunner {
         },
         onConsoleMessage: (controller, message) {
           print("CONSOLE MESSAGE: " + message.message);
-          if (message.messageLevel != ConsoleMessageLevel.LOG) return;
-
-          var msg = jsonDecode(message.message);
-
-          // compute(jsonDecode, message.message).then((msg) {
-          final String? path = msg['path'];
-          if (_msgCompleters[path!] != null) {
-            Completer handler = _msgCompleters[path]!;
-            handler.complete(msg['data']);
-            if (path.contains('uid=')) {
-              _msgCompleters.remove(path);
+          if (jsCodeStarted < 0) {
+            if (message.message.contains('js loaded')) {
+              jsCodeStarted = 1;
+            } else {
+              jsCodeStarted = 0;
             }
           }
-          if (_msgHandlers[path] != null) {
-            Function handler = _msgHandlers[path]!;
-            handler(msg['data']);
+          if (message.messageLevel != ConsoleMessageLevel.LOG) return;
+
+          try {
+            var msg = jsonDecode(message.message);
+
+            final String? path = msg['path'];
+            if (_msgCompleters[path!] != null) {
+              Completer handler = _msgCompleters[path]!;
+              handler.complete(msg['data']);
+              if (path.contains('uid=')) {
+                _msgCompleters.remove(path);
+              }
+            }
+            if (_msgHandlers[path] != null) {
+              Function handler = _msgHandlers[path]!;
+              handler(msg['data']);
+            }
+          } catch (_) {
+            // ignore
           }
-          // });
         },
         onLoadStop: (controller, url) async {
           print('webview loaded');
-          if (_webViewLoaded) return;
+          if (webViewLoaded) return;
 
           _handleReloaded();
           await _startJSCode(keyring, keyringStorage);
@@ -92,14 +102,14 @@ class WebViewRunner {
   }
 
   void _tryReload() {
-    if (!_webViewLoaded) {
+    if (!webViewLoaded) {
       _web?.webViewController.reload();
     }
   }
 
   void _handleReloaded() {
     _webViewReloadTimer?.cancel();
-    _webViewLoaded = true;
+    webViewLoaded = true;
   }
 
   Future<void> _startLocalServer() async {

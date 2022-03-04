@@ -43,8 +43,18 @@ async function handleMsg(data) {
       response = await requestApp(data);
       // then send result back to dapp page
       return _postResponse({ id: data.id, response });
-    case "pub(accounts.subscribe)":
+    case "pub(metadata.list)":
+      // we dont need this function, so return false
+      return _postResponse({ id: data.id, response: false });
+    case "pub(metadata.provide)":
       // we dont need this function, so return true
+      return _postResponse({ id: data.id, response: true });
+    case "pub(accounts.subscribe)":
+      // // get accounts from host app
+      requestApp(data).then((subscription) => {
+        // then send result back to dapp page
+        _postResponse({ id: data.id, subscription });
+      });
       return _postResponse({ id: data.id, response: true });
     case "pub(bytes.sign)":
     case "pub(extrinsic.sign)":

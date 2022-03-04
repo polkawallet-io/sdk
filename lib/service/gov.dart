@@ -45,6 +45,12 @@ class ServiceGov {
     return data;
   }
 
+  Future<Map?> queryNextExternal() async {
+    final data =
+        await serviceRoot.webView!.evalJavascript('gov.fetchExternal(api)');
+    return data;
+  }
+
   Future<Map?> queryTreasuryProposal(String id) async {
     final dynamic data = await serviceRoot.webView!
         .evalJavascript('api.query.treasury.proposals($id)');

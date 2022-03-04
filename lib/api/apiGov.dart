@@ -47,6 +47,13 @@ class ApiGov {
         .toList();
   }
 
+  Future<ProposalInfoData?> queryNextExternal() async {
+    final Map? data = await service.queryNextExternal();
+    return data == null
+        ? null
+        : ProposalInfoData.fromJson(Map<String, dynamic>.from(data));
+  }
+
   Future<Map?> queryTreasuryProposal(String id) async {
     final Map? data = await service.queryTreasuryProposal(id);
     return data;
