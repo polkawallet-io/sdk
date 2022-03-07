@@ -142,7 +142,7 @@ async function fetchExternal(api: ApiPromise) {
   if (!external) return null;
 
   external.image.proposal = _transfromProposalMeta(external.image.proposal) as any;
-  return external;
+  return { ...external, balance: external.image.balance, proposer: external.image.proposer };
 }
 
 /**
