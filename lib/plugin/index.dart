@@ -115,12 +115,12 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
     Keyring keyring, {
     WebViewRunner? webView,
     String? jsCode,
+    Function? socketDisconnectedAction,
   }) async {
-    await sdk.init(
-      keyring,
-      webView: webView,
-      jsCode: jsCode ?? (await loadJSCode()),
-    );
+    await sdk.init(keyring,
+        webView: webView,
+        jsCode: jsCode ?? (await loadJSCode()),
+        socketDisconnectedAction: socketDisconnectedAction);
     await onWillStart(keyring);
   }
 
