@@ -188,6 +188,23 @@ async function _queryAuctionInfo(api: ApiPromise) {
 }
 
 /**
+ * query parachain module overview.
+ */
+async function queryParasOverview(api: ApiPromise) {
+  const [paras, bestNumber] = await Promise.all([api.query.paras.parachains(), api.derive.chain.bestNumber()]);
+
+  const length = api.consts.slots.leasePeriod as BlockNumber;
+  const startNumber = bestNumber.sub((api.consts.slots.leaseOffset as BlockNumber) || BN_ZERO);
+
+  return {
+    parasCount: (paras as any).length,
+    currentLease: startNumber.div(length).toNumber(),
+    leaseLength: length.toNumber(),
+    leaseProgress: startNumber.mod(length).toNumber(),
+  };
+}
+
+/**
  * query crowd loan contributions of an account.
  *
  * @param {String} paraId
@@ -200,5 +217,6 @@ async function queryUserContributions(api: ApiPromise, paraId: string, pubKey: s
 
 export default {
   queryAuctionWithWinners,
+  queryParasOverview,
   queryUserContributions
 };
