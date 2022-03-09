@@ -82,6 +82,7 @@ class TokenBalanceData {
     this.symbol,
     this.type = 'Token',
     this.currencyId,
+    this.src,
     this.minBalance,
     this.fullName,
     this.decimals,
@@ -98,6 +99,7 @@ class TokenBalanceData {
   final String? symbol;
   final String type;
   final Map? currencyId;
+  final Map? src;
   final String? minBalance;
   final String? fullName;
   final int? decimals;
