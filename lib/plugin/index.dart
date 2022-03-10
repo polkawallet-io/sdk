@@ -26,6 +26,10 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   /// for display in Assets page of Polkawallet App.
   final balances = BalancesStore();
 
+  /// Plugin should provide a list of defaultTokens
+  /// for users of Polkawallet App.
+  List<String> get defaultTokens => [];
+
   /// Plugin should provide a list of noneNativeToken
   /// for users of Polkawallet App.
   List<TokenBalanceData> get noneNativeTokensAll => [];
