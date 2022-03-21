@@ -26,6 +26,10 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   /// for display in Assets page of Polkawallet App.
   final balances = BalancesStore();
 
+  /// Plugin should provide a list of defaultTokens
+  /// for users of Polkawallet App.
+  List<String> get defaultTokens => [];
+
   /// Plugin should provide a list of noneNativeToken
   /// for users of Polkawallet App.
   List<TokenBalanceData> get noneNativeTokensAll => [];
@@ -115,12 +119,12 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
     Keyring keyring, {
     WebViewRunner? webView,
     String? jsCode,
+    Function? socketDisconnectedAction,
   }) async {
-    await sdk.init(
-      keyring,
-      webView: webView,
-      jsCode: jsCode ?? (await loadJSCode()),
-    );
+    await sdk.init(keyring,
+        webView: webView,
+        jsCode: jsCode ?? (await loadJSCode()),
+        socketDisconnectedAction: socketDisconnectedAction);
     await onWillStart(keyring);
   }
 

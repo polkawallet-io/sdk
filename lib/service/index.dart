@@ -41,6 +41,7 @@ class SubstrateService {
     WebViewRunner? webViewParam,
     Function? onInitiated,
     String? jsCode,
+    Function? socketDisconnectedAction,
   }) async {
     keyring = ServiceKeyring(this);
     setting = ServiceSetting(this);
@@ -56,6 +57,7 @@ class SubstrateService {
     walletConnect = ServiceWalletConnect(this);
 
     _web = webViewParam ?? WebViewRunner();
-    await _web!.launch(keyring, keyringStorage, onInitiated, jsCode: jsCode);
+    await _web!.launch(keyring, keyringStorage, onInitiated,
+        jsCode: jsCode, socketDisconnectedAction: socketDisconnectedAction);
   }
 }

@@ -24,6 +24,7 @@ class WalletSDK {
     Keyring keyring, {
     WebViewRunner? webView,
     String? jsCode,
+    Function? socketDisconnectedAction,
   }) async {
     final c = Completer();
 
@@ -31,6 +32,7 @@ class WalletSDK {
       keyring,
       webViewParam: webView,
       jsCode: jsCode,
+      socketDisconnectedAction: socketDisconnectedAction,
       onInitiated: () {
         // inject keyPairs after webView launched
         _service.keyring.injectKeyPairsToWebView(keyring);

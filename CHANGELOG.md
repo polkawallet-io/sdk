@@ -1,3 +1,8 @@
+## [0.4.4] - 20220321
+
+* add new property TokenBalanceData.src.
+* add new property plugin.defaultTokens.
+
 ## [0.4.3] - 20220304
 
 * bump polkadot-js/api v7.10.1
