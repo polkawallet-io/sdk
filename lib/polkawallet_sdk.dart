@@ -1,7 +1,9 @@
 library polkawallet_sdk;
 
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:http/http.dart';
 import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 import 'package:polkawallet_sdk/service/webViewRunner.dart';
@@ -11,6 +13,10 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 /// with the substrate-based block-chain network.
 class WalletSDK {
   late PolkawalletApi api;
+
+  List<String> _blackList = [];
+
+  get blackList => _blackList;
 
   final _service = SubstrateService();
 
@@ -40,6 +46,8 @@ class WalletSDK {
         // and initiate pubKeyIconsMap
         api.keyring.updatePubKeyIconsMap(keyring);
 
+        _updateBlackList();
+
         if (!c.isCompleted) {
           c.complete();
         }
@@ -48,5 +56,25 @@ class WalletSDK {
 
     api = PolkawalletApi(_service);
     return c.future;
+  }
+
+  Future<void> _updateBlackList() async {
+    try {
+      Response res =
+          await get(Uri.parse('https://polkadot.js.org/phishing/address.json'));
+      if (res.body.isNotEmpty) {
+        final data = jsonDecode(res.body) as Map;
+        final List<String> list = [];
+        data.values.forEach((e) {
+          list.addAll(List<String>.from(e));
+        });
+        final pubKeys = await api.account.decodeAddress(list);
+        if (pubKeys != null) {
+          _blackList = List<String>.from(pubKeys.keys.toList());
+        }
+      }
+    } catch (err) {
+      print(err);
+    }
   }
 }
