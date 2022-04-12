@@ -8,9 +8,9 @@ class ServiceTx {
 
   final SubstrateService serviceRoot;
 
-  Future<Map?> estimateFees(Map txInfo, String params) async {
+  Future<Map?> estimateFees(Map txInfo, String params, {String? jsApi}) async {
     dynamic res = await serviceRoot.webView!.evalJavascript(
-      'keyring.txFeeEstimate(api, ${jsonEncode(txInfo)}, $params)',
+      'keyring.txFeeEstimate(${jsApi ?? 'api'}, ${jsonEncode(txInfo)}, $params)',
     );
     return res;
   }
