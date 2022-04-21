@@ -1,3 +1,7 @@
+## [0.4.5] - 20220421
+
+* bump polkadot-js/api v8.1.1
+
 ## [0.4.4] - 20220321
 
 * add new property TokenBalanceData.src.
