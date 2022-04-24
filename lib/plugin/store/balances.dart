@@ -68,23 +68,23 @@ class ExtraTokenData {
 /// 6. [tokenNameId] acala.js formatted tokenNameId, <fa://0> for {ForeignAsset: 0}.
 /// 6. [currencyId] acala currencyId type, {ForeignAsset: 0} for <fa://0>.
 class TokenBalanceData {
-  TokenBalanceData({
-    this.id,
-    this.name,
-    this.tokenNameId,
-    this.symbol,
-    this.type = 'Token',
-    this.currencyId,
-    this.src,
-    this.minBalance,
-    this.fullName,
-    this.decimals,
-    this.amount,
-    this.locked,
-    this.reserved,
-    this.detailPageRoute,
-    this.price,
-  });
+  TokenBalanceData(
+      {this.id,
+      this.name,
+      this.tokenNameId,
+      this.symbol,
+      this.type = 'Token',
+      this.currencyId,
+      this.src,
+      this.minBalance,
+      this.fullName,
+      this.decimals,
+      this.amount,
+      this.locked,
+      this.reserved,
+      this.detailPageRoute,
+      this.price,
+      this.isCacheChange = false});
 
   final String? id;
   final String? name;
@@ -102,4 +102,5 @@ class TokenBalanceData {
 
   String? detailPageRoute;
   final double? price;
+  bool isCacheChange;
 }
