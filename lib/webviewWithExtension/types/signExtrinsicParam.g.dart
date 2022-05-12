@@ -86,3 +86,15 @@ Map<String, dynamic> _$ExtensionSignResultToJson(
       'id': instance.id,
       'signature': instance.signature,
     };
+
+DAppConnectParam _$DAppConnectParamFromJson(Map<String, dynamic> json) {
+  return DAppConnectParam()
+    ..id = json['id'] as String?
+    ..url = json['url'] as String?;
+}
+
+Map<String, dynamic> _$DAppConnectParamToJson(DAppConnectParam instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'url': instance.url,
+    };

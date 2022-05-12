@@ -22,6 +22,7 @@ class WebViewWithExtension extends StatefulWidget {
     this.onWebViewCreated,
     this.onSignBytesRequest,
     this.onSignExtrinsicRequest,
+    this.onConnectRequest,
   });
 
   final String initialUrl;
@@ -34,6 +35,7 @@ class WebViewWithExtension extends StatefulWidget {
       onSignBytesRequest;
   final Future<ExtensionSignResult?> Function(SignAsExtensionParam)?
       onSignExtrinsicRequest;
+  final Future<bool?> Function(DAppConnectParam)? onConnectRequest;
 
   @override
   _WebViewWithExtensionState createState() => _WebViewWithExtensionState();
@@ -57,8 +59,21 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
             'genesisHash': '',
           };
         }).toList();
-        return _controller.runJavascriptReturningResult(
-            'walletExtension.onAppResponse("${msg['msgType']}", ${jsonEncode(res)})');
+        if (widget.onConnectRequest == null) {
+          return _controller.runJavascriptReturningResult(
+              'walletExtension.onAppResponse("${msg['msgType']}", ${jsonEncode(res)})');
+        }
+
+        if (_signing) break;
+        _signing = true;
+        final accept = await widget.onConnectRequest!(
+            DAppConnectParam.fromJson({'id': msg['id'], 'url': msg['url']}));
+        _signing = false;
+        return (accept ?? false)
+            ? _controller.runJavascriptReturningResult(
+                'walletExtension.onAppResponse("${msg['msgType']}", ${jsonEncode(res)})')
+            : _controller.runJavascriptReturningResult(
+                'walletExtension.onAppResponse("${msg['msgType']}", null, new Error("Rejected"))');
       case 'pub(bytes.sign)':
         if (_signing) break;
         _signing = true;

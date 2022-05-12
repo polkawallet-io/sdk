@@ -63,3 +63,15 @@ abstract class _ExtensionSignResult {
   String? id;
   String? signature;
 }
+
+@JsonSerializable()
+class DAppConnectParam extends _DAppConnectParam {
+  static DAppConnectParam fromJson(Map<String, dynamic> json) =>
+      _$DAppConnectParamFromJson(json);
+  Map<String, dynamic> toJson() => _$DAppConnectParamToJson(this);
+}
+
+abstract class _DAppConnectParam {
+  String? id;
+  String? url;
+}
