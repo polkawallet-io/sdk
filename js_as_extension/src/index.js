@@ -1,4 +1,3 @@
-import "@babel/polyfill";
 import { enable, handleResponse } from "@polkadot/extension-base/page";
 import { injectExtension } from "@polkadot/extension-inject";
 import { web3Accounts, web3Enable } from "@polkadot/extension-dapp";
