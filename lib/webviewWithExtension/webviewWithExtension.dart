@@ -23,6 +23,7 @@ class WebViewWithExtension extends StatefulWidget {
     this.onSignBytesRequest,
     this.onSignExtrinsicRequest,
     this.onConnectRequest,
+    this.checkAuth,
   });
 
   final String initialUrl;
@@ -36,6 +37,7 @@ class WebViewWithExtension extends StatefulWidget {
   final Future<ExtensionSignResult?> Function(SignAsExtensionParam)?
       onSignExtrinsicRequest;
   final Future<bool?> Function(DAppConnectParam)? onConnectRequest;
+  final bool Function(String)? checkAuth;
 
   @override
   _WebViewWithExtensionState createState() => _WebViewWithExtensionState();
@@ -47,6 +49,14 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
   bool _signing = false;
 
   Future<String> _msgHandler(Map msg) async {
+    final uri = Uri.parse(msg['url']);
+    if (msg['msgType'] != 'pub(authorize.tab)' &&
+        widget.checkAuth != null &&
+        !widget.checkAuth!(uri.host)) {
+      return _controller.runJavascriptReturningResult(
+          'walletExtension.onAppResponse("${msg['msgType']}", null, new Error("Rejected"))');
+    }
+
     switch (msg['msgType']) {
       case 'pub(authorize.tab)':
         if (widget.onConnectRequest == null) {
