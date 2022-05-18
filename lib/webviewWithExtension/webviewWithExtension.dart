@@ -48,6 +48,18 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
 
   Future<String> _msgHandler(Map msg) async {
     switch (msg['msgType']) {
+      case 'pub(authorize.tab)':
+        if (widget.onConnectRequest == null) {
+          return _controller.runJavascriptReturningResult(
+              'walletExtension.onAppResponse("${msg['msgType']}", true)');
+        }
+        if (_signing) break;
+        _signing = true;
+        final accept = await widget.onConnectRequest!(
+            DAppConnectParam.fromJson({'id': msg['id'], 'url': msg['url']}));
+        _signing = false;
+        return _controller.runJavascriptReturningResult(
+            'walletExtension.onAppResponse("${msg['msgType']}", ${accept ?? false})');
       case 'pub(accounts.list)':
       case 'pub(accounts.subscribe)':
         final List<KeyPairData> ls = widget.keyring.keyPairs;
@@ -59,21 +71,8 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
             'genesisHash': '',
           };
         }).toList();
-        if (widget.onConnectRequest == null) {
-          return _controller.runJavascriptReturningResult(
-              'walletExtension.onAppResponse("${msg['msgType']}", ${jsonEncode(res)})');
-        }
-
-        if (_signing) break;
-        _signing = true;
-        final accept = await widget.onConnectRequest!(
-            DAppConnectParam.fromJson({'id': msg['id'], 'url': msg['url']}));
-        _signing = false;
-        return (accept ?? false)
-            ? _controller.runJavascriptReturningResult(
-                'walletExtension.onAppResponse("${msg['msgType']}", ${jsonEncode(res)})')
-            : _controller.runJavascriptReturningResult(
-                'walletExtension.onAppResponse("${msg['msgType']}", null, new Error("Rejected"))');
+        return _controller.runJavascriptReturningResult(
+            'walletExtension.onAppResponse("${msg['msgType']}", ${jsonEncode(res)})');
       case 'pub(bytes.sign)':
         if (_signing) break;
         _signing = true;

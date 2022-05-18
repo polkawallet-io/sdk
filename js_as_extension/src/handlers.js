@@ -36,8 +36,10 @@ async function handleMsg(data) {
   let response;
   switch (data.message) {
     case "pub(authorize.tab)":
+      // get auth result from host app
+      response = await requestApp(data);
       // always approve extension auth
-      return _postResponse({ id: data.id, response: true });
+      return _postResponse({ id: data.id, response });
     case "pub(accounts.list)":
       // get accounts from host app
       response = await requestApp(data);
