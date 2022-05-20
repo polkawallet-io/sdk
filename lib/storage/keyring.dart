@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:aes_ecb_pkcs5_flutter/aes_ecb_pkcs5_flutter.dart';
+import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/storage/localStorage.dart';
@@ -246,7 +246,7 @@ class KeyringPrivateStore {
   Future<void> encryptSeedAndSave(
       String? pubKey, seed, seedType, password) async {
     final String key = Encrypt.passwordToEncryptKey(password);
-    final String encrypted = await FlutterAesEcbPkcs5.encryptString(seed, key);
+    final String? encrypted = await FlutterAesEcbPkcs5.encryptString(seed, key);
 
     // read old data from storage-old
     final Map stored = await (_storageOld.getSeeds(seedType));
@@ -266,9 +266,8 @@ class KeyringPrivateStore {
   }
 
   Future<void> updateEncryptedSeed(String? pubKey, passOld, passNew) async {
-    final seed = await (getDecryptedSeed(pubKey, passOld)
-        as FutureOr<Map<String, dynamic>>);
-    encryptSeedAndSave(pubKey, seed['seed'], seed['type'], passNew);
+    final seed = await (getDecryptedSeed(pubKey, passOld));
+    encryptSeedAndSave(pubKey, seed!['seed'], seed['type'], passNew);
   }
 
   Future<Map<String, dynamic>?> getDecryptedSeed(
@@ -276,7 +275,9 @@ class KeyringPrivateStore {
     final key = Encrypt.passwordToEncryptKey(password);
     final mnemonic = _storage.encryptedMnemonics.val[pubKey];
     if (mnemonic != null) {
-      final res = {'type': KeyType.mnemonic.toString().split('.')[1]};
+      final Map<String, dynamic> res = {
+        'type': KeyType.mnemonic.toString().split('.')[1]
+      };
       try {
         res['seed'] = await FlutterAesEcbPkcs5.decryptString(mnemonic, key);
       } catch (err) {
@@ -286,7 +287,9 @@ class KeyringPrivateStore {
     }
     final rawSeed = _storage.encryptedRawSeeds.val[pubKey];
     if (rawSeed != null) {
-      final res = {'type': KeyType.rawSeed.toString().split('.')[1]};
+      final Map<String, dynamic> res = {
+        'type': KeyType.rawSeed.toString().split('.')[1]
+      };
       try {
         res['seed'] = await FlutterAesEcbPkcs5.decryptString(rawSeed, key);
       } catch (err) {
