@@ -1,3 +1,7 @@
+## [0.4.6] - 20220526
+
+* add dapp auth
+
 ## [0.4.5] - 20220421
 
 * bump polkadot-js/api v8.1.1
