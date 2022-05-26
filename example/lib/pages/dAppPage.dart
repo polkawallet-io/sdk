@@ -41,13 +41,17 @@ class _DAppPageState extends State<DAppPage> {
                   _loading = false;
                 });
               },
-              onSignBytesRequest: (req) {
+              onSignBytesRequest: (req) async {
                 print(req);
                 return null;
               },
-              onSignExtrinsicRequest: (req) {
+              onSignExtrinsicRequest: (req) async {
                 print(req);
                 return null;
+              },
+              onConnectRequest: (req) async {
+                print(req);
+                return true;
               },
             ),
             _loading ? Center(child: CupertinoActivityIndicator()) : Container()
