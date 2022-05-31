@@ -187,29 +187,18 @@ function _extractEvents(api: ApiPromise, result: SubmittableResult) {
   }
 
   let success = false;
-  let error: DispatchError["type"] = "";
+  let error: string;
   result.events
     .filter((event) => !!event.event)
     .map(({ event: { data, method, section } }) => {
       if (section === "system" && method === "ExtrinsicFailed") {
         const [dispatchError] = (data as unknown) as ITuple<[DispatchError]>;
-        let message = dispatchError.type;
+        error = _getDispatchError(dispatchError);
 
-        if (dispatchError.isModule) {
-          try {
-            const mod = dispatchError.asModule;
-            const err = api.registry.findMetaError(new Uint8Array([mod.index.toNumber(), mod.error.toNumber()]));
-
-            message = `${err.section}.${err.name}`;
-          } catch (error) {
-            // swallow error
-          }
-        }
         (<any>window).send("txUpdateEvent", {
           title: `${section}.${method}`,
-          message,
+          message: error,
         });
-        error = message;
       } else {
         (<any>window).send("txUpdateEvent", {
           title: `${section}.${method}`,
@@ -221,6 +210,25 @@ function _extractEvents(api: ApiPromise, result: SubmittableResult) {
       }
     });
   return { success, error };
+}
+
+export function _getDispatchError(dispatchError: DispatchError): string {
+  let message: string = dispatchError.type;
+
+  if (dispatchError.isModule) {
+    try {
+      const mod = dispatchError.asModule;
+      const error = dispatchError.registry.findMetaError(mod);
+
+      message = `${error.section}.${error.name}`;
+    } catch (error) {
+      // swallow
+    }
+  } else if (dispatchError.isToken) {
+    message = `${dispatchError.type}.${dispatchError.asToken.type}`;
+  }
+
+  return message;
 }
 
 /**
