@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_sdk/storage/keyringEVM.dart';
 import 'package:polkawallet_sdk_example/pages/account.dart';
 import 'package:polkawallet_sdk_example/pages/dAppPage.dart';
+import 'package:polkawallet_sdk_example/pages/evm.dart';
 import 'package:polkawallet_sdk_example/pages/keyring.dart';
 import 'package:polkawallet_sdk_example/pages/setting.dart';
 import 'package:polkawallet_sdk_example/pages/tx.dart';
@@ -23,11 +25,13 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final WalletSDK sdk = WalletSDK();
   final Keyring keyring = Keyring();
+  final KeyringEVM keyringEVM = KeyringEVM();
 
   bool _sdkReady = false;
 
   Future<void> _initApi() async {
     await keyring.init([0, 2]);
+    await keyringEVM.init();
 
     await sdk.init(keyring);
     setState(() {
@@ -77,6 +81,7 @@ class _MyAppState extends State<MyApp> {
         AccountPage.route: (_) => AccountPage(sdk, _showResult),
         TxPage.route: (_) => TxPage(sdk, keyring, _showResult),
         StakingPage.route: (_) => StakingPage(sdk, keyring, _showResult),
+        EVMPage.route: (_) => EVMPage(sdk, keyringEVM, _showResult),
       },
     );
   }
@@ -215,6 +220,14 @@ class _MyHomePageState extends State<MyHomePage> {
               onTap: () {
                 if (!widget.sdkReady) return;
                 Navigator.of(context).pushNamed(StakingPage.route);
+              },
+            ),
+            Divider(),
+            ListTile(
+              title: Text('evm'),
+              subtitle: Text('evm keyring'),
+              onTap: () {
+                Navigator.of(context).pushNamed(EVMPage.route);
               },
             ),
           ],

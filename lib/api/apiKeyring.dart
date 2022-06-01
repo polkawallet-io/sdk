@@ -64,7 +64,7 @@ class ApiKeyring {
     return service!.checkMnemonicValid(mnemonic);
   }
 
-  /// Import account from mnemonic/rawSeed/keystore.
+  /// Import account from mnemonic/rawSeed/keystore and we get a JSON object.
   /// param [cryptoType] can be `sr25519`(default) or `ed25519`.
   /// throw error if import failed.
   /// return null if keystore password check failed.
