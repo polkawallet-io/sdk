@@ -5,7 +5,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart';
 import 'package:polkawallet_sdk/api/api.dart';
-import 'package:polkawallet_sdk/ethers/apiEthers.dart';
+import 'package:polkawallet_sdk/evm/apiKeyringEVM.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 import 'package:polkawallet_sdk/service/webViewRunner.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
@@ -14,7 +14,7 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 /// with the substrate-based block-chain network.
 class WalletSDK {
   late PolkawalletApi api;
-  late ApiEthers ethers;
+  late ApiKeyringEVM evm;
 
   List<String> _blackList = [];
 
@@ -57,7 +57,7 @@ class WalletSDK {
     );
 
     api = PolkawalletApi(_service);
-    ethers = ApiEthers(_service);
+    evm = ApiKeyringEVM(_service);
     return c.future;
   }
 

@@ -6,7 +6,6 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyringEVM.dart';
 import 'package:polkawallet_sdk_example/pages/account.dart';
 import 'package:polkawallet_sdk_example/pages/dAppPage.dart';
-import 'package:polkawallet_sdk_example/pages/ethWithJS.dart';
 import 'package:polkawallet_sdk_example/pages/evm.dart';
 import 'package:polkawallet_sdk_example/pages/keyring.dart';
 import 'package:polkawallet_sdk_example/pages/setting.dart';
@@ -83,7 +82,6 @@ class _MyAppState extends State<MyApp> {
         TxPage.route: (_) => TxPage(sdk, keyring, _showResult),
         StakingPage.route: (_) => StakingPage(sdk, keyring, _showResult),
         EVMPage.route: (_) => EVMPage(sdk, keyringEVM, _showResult),
-        EthWithJSPage.route: (_) => EthWithJSPage(sdk, keyringEVM, _showResult),
       },
     );
   }
@@ -226,18 +224,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Divider(),
             ListTile(
-              title: Text('ethers'),
-              subtitle: Text('ethers keyring'),
+              title: Text('evm'),
+              subtitle: Text('evm keyring'),
               onTap: () {
                 Navigator.of(context).pushNamed(EVMPage.route);
-              },
-            ),
-            Divider(),
-            ListTile(
-              title: Text('sdk.eth'),
-              subtitle: Text('eth js keyring'),
-              onTap: () {
-                Navigator.of(context).pushNamed(EthWithJSPage.route);
               },
             ),
           ],
