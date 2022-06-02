@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/service/account.dart';
 import 'package:polkawallet_sdk/service/assets.dart';
+import 'package:polkawallet_sdk/service/eth/index.dart';
 import 'package:polkawallet_sdk/service/gov.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
 import 'package:polkawallet_sdk/service/parachain.dart';
@@ -31,6 +32,7 @@ class SubstrateService {
   late ServiceRecovery recovery;
 
   late ServiceWalletConnect walletConnect;
+  late ServiceEth eth;
 
   WebViewRunner? _web;
 
@@ -55,6 +57,7 @@ class SubstrateService {
     recovery = ServiceRecovery(this);
 
     walletConnect = ServiceWalletConnect(this);
+    eth = ServiceEth(this);
 
     _web = webViewParam ?? WebViewRunner();
     await _web!.launch(keyring, keyringStorage, onInitiated,

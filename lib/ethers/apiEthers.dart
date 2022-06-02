@@ -12,10 +12,11 @@ import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:web3dart/web3dart.dart';
 
 enum EVMKeyType { mnemonic, privateKey, keystore }
+const crypt_n = 1 << 14;
 
 /// KeyringEVM API manages EVM keyPairs
-class ApiKeyringEVM {
-  ApiKeyringEVM(this.service);
+class ApiEthers {
+  ApiEthers(this.service);
 
   final SubstrateService? service;
 
@@ -45,14 +46,6 @@ class ApiKeyringEVM {
     return AddressIconData.fromJson({'address': wallet.address, 'svg': 'xxx'});
   }
 
-  // /// get address and avatar from KeyStore.
-  // Future<AddressIconData> addressFromKeyStore(Map keyStore) async {
-  //   final wallet = Wallet.fromJson(
-  //     jsonEncode(keyStore),
-  //   );
-  //   return AddressIconData.fromJson({'address': wallet.address, 'svg': 'xxx'});
-  // }
-
   /// check mnemonic valid.
   Future<bool> checkMnemonicValid(String mnemonic) async {
     return bip39.validateMnemonic(mnemonic);
@@ -62,8 +55,7 @@ class ApiKeyringEVM {
   /// param [cryptoType] can be `sr25519`(default) or `ed25519`.
   /// throw error if import failed.
   /// return null if keystore password check failed.
-  Future<Map<String, dynamic>> importAccount(
-    KeyringEVM keyring, {
+  Future<Map<String, dynamic>> importAccount({
     required EVMKeyType keyType,
     required String key,
     required String name,
@@ -75,11 +67,13 @@ class ApiKeyringEVM {
       case EVMKeyType.mnemonic:
         final wallet = ethers.Wallet.fromMnemonic(key);
         final credential = EthPrivateKey.fromHex(wallet.privateKey!);
-        web3Wallet = Wallet.createNew(credential, password, Random.secure());
+        web3Wallet = Wallet.createNew(credential, password, Random.secure(),
+            scryptN: crypt_n);
         break;
       case EVMKeyType.privateKey:
         final credential = EthPrivateKey.fromHex(key);
-        web3Wallet = Wallet.createNew(credential, password, Random.secure());
+        web3Wallet = Wallet.createNew(credential, password, Random.secure(),
+            scryptN: crypt_n);
         break;
       case EVMKeyType.keystore:
         web3Wallet = Wallet.fromJson(key, password);
@@ -88,7 +82,7 @@ class ApiKeyringEVM {
     final type = keyType.toString().split('.')[1];
     return {
       ...walletJson,
-      'address': web3Wallet.privateKey.address.hex,
+      'address': web3Wallet.privateKey.address.hexEip55,
       'name': name,
       type: key,
     };
@@ -162,9 +156,9 @@ class ApiKeyringEVM {
 
   /// Decrypt and get the backup of seed.
   Future<SeedBackupData?> getDecryptedSeed(
-      KeyringEVM keyring, EthWalletData acc, password) async {
+      KeyringEVM keyring, String password) async {
     final Map? data =
-        await keyring.store.getDecryptedSeed(acc.address, password);
+        await keyring.store.getDecryptedSeed(keyring.current.address, password);
     if (data == null) {
       return null;
     }
@@ -203,8 +197,9 @@ class ApiKeyringEVM {
       return null;
     }
     final wallet = Wallet.fromJson(jsonEncode(acc.toJson()), passOld);
-    final walletNew =
-        Wallet.createNew(wallet.privateKey, passNew, Random.secure());
+    final walletNew = Wallet.createNew(
+        wallet.privateKey, passNew, Random.secure(),
+        scryptN: crypt_n);
 
     final walletJson = jsonDecode(walletNew.toJson());
     final accNew = EthWalletData()

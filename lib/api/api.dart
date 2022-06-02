@@ -11,6 +11,7 @@ import 'package:polkawallet_sdk/api/apiStaking.dart';
 import 'package:polkawallet_sdk/api/apiTx.dart';
 import 'package:polkawallet_sdk/api/apiUOS.dart';
 import 'package:polkawallet_sdk/api/apiWalletConnect.dart';
+import 'package:polkawallet_sdk/api/eth/index.dart';
 import 'package:polkawallet_sdk/api/subscan.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/service/index.dart';
@@ -40,6 +41,7 @@ class PolkawalletApi {
     recovery = ApiRecovery(this, service.recovery);
 
     walletConnect = ApiWalletConnect(this, service.walletConnect);
+    eth = ApiEth(this, service.eth);
   }
 
   final SubstrateService service;
@@ -59,6 +61,7 @@ class PolkawalletApi {
   late ApiRecovery recovery;
 
   late ApiWalletConnect walletConnect;
+  late ApiEth eth;
 
   final SubScanApi subScan = SubScanApi();
 
