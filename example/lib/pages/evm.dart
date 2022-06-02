@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/types/addressIconData.dart';
-import 'package:polkawallet_sdk/evm/apiKeyringEVM.dart';
+import 'package:polkawallet_sdk/ethers/apiEthers.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/storage/keyringEVM.dart';
 import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
@@ -40,7 +40,7 @@ class _EVMPageState extends State<EVMPage> {
       _submitting = true;
     });
     final AddressIconDataWithMnemonic seed =
-        await widget.sdk.evm.generateMnemonic();
+        await widget.sdk.ethers.generateMnemonic();
     widget.showResult(context, 'generateMnemonic', seed.mnemonic);
     setState(() {
       _submitting = false;
@@ -69,9 +69,9 @@ class _EVMPageState extends State<EVMPage> {
     setState(() {
       _submitting = true;
     });
-    final seed = await widget.sdk.evm
-        .getDecryptedSeed(widget.keyring, _testAcc, _testPass);
-//        await widget.sdk.evm.getDecryptedSeed(widget.keyring, _testAcc, 'a654321');
+    final seed =
+        await widget.sdk.ethers.getDecryptedSeed(widget.keyring, _testPass);
+//        await widget.sdk.evm.getDecryptedSeed(widget.keyring, 'a654321');
     widget.showResult(
       context,
       'getDecryptedSeeds',
@@ -93,8 +93,7 @@ class _EVMPageState extends State<EVMPage> {
     setState(() {
       _submitting = true;
     });
-    final json = await widget.sdk.evm.importAccount(
-      widget.keyring,
+    final json = await widget.sdk.ethers.importAccount(
       keyType: EVMKeyType.mnemonic,
       key:
           'wing know chapter eight shed lens mandate lake twenty useless bless glory',
@@ -102,7 +101,7 @@ class _EVMPageState extends State<EVMPage> {
       password: _testPass,
     );
     print(json);
-    final acc = await widget.sdk.evm.addAccount(
+    final acc = await widget.sdk.ethers.addAccount(
       widget.keyring,
       keyType: EVMKeyType.mnemonic,
       acc: json,
@@ -123,15 +122,14 @@ class _EVMPageState extends State<EVMPage> {
     setState(() {
       _submitting = true;
     });
-    final json = await widget.sdk.evm.importAccount(
-      widget.keyring,
+    final json = await widget.sdk.ethers.importAccount(
       keyType: EVMKeyType.privateKey,
       key: '0x2defc5ff7c700eb3a39a702e9b38534e8ea3419b93b1836dc6ccc891ce359290',
       name: 'testName02',
       password: _testPass,
     );
     print(json);
-    final acc = await widget.sdk.evm.addAccount(
+    final acc = await widget.sdk.ethers.addAccount(
       widget.keyring,
       keyType: EVMKeyType.privateKey,
       acc: json,
@@ -152,14 +150,13 @@ class _EVMPageState extends State<EVMPage> {
     setState(() {
       _submitting = true;
     });
-    final json = await widget.sdk.evm.importAccount(
-      widget.keyring,
+    final json = await widget.sdk.ethers.importAccount(
       keyType: EVMKeyType.keystore,
       key: _testJson,
       name: 'testName03',
       password: _testPass,
     );
-    final acc = await widget.sdk.evm.addAccount(
+    final acc = await widget.sdk.ethers.addAccount(
       widget.keyring,
       keyType: EVMKeyType.keystore,
       acc: json,
@@ -188,7 +185,7 @@ class _EVMPageState extends State<EVMPage> {
     setState(() {
       _submitting = true;
     });
-    await widget.sdk.evm.deleteAccount(widget.keyring, _testAcc);
+    await widget.sdk.ethers.deleteAccount(widget.keyring, _testAcc);
     widget.showResult(
       context,
       'deleteAccount',
@@ -211,7 +208,8 @@ class _EVMPageState extends State<EVMPage> {
     setState(() {
       _submitting = true;
     });
-    final bool passed = await widget.sdk.evm.checkPassword(_testAcc, _testPass);
+    final bool passed =
+        await widget.sdk.ethers.checkPassword(_testAcc, _testPass);
     // await widget.sdk.evm.checkPassword(_testAcc, 'a654321');
     widget.showResult(
       context,
@@ -235,7 +233,7 @@ class _EVMPageState extends State<EVMPage> {
     setState(() {
       _submitting = true;
     });
-    final res = await widget.sdk.evm
+    final res = await widget.sdk.ethers
         // .changePassword(widget.keyring, _testPass, 'a654321');
         .changePassword(widget.keyring, 'a654321', _testPass);
     widget.showResult(
@@ -261,7 +259,7 @@ class _EVMPageState extends State<EVMPage> {
     setState(() {
       _submitting = true;
     });
-    final res = await widget.sdk.evm.changeName(widget.keyring, 'newName');
+    final res = await widget.sdk.ethers.changeName(widget.keyring, 'newName');
     widget.showResult(
       context,
       'changeName',
