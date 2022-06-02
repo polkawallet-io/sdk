@@ -15,6 +15,7 @@ class WebViewRunner {
   Function? _onLaunched;
 
   late String _jsCode;
+  late String _jsCodeEth;
   Map<String, Function> _msgHandlers = {};
   Map<String, Completer> _msgCompleters = {};
   int _evalJavascriptUID = 0;
@@ -42,6 +43,9 @@ class WebViewRunner {
         await rootBundle
             .loadString('packages/polkawallet_sdk/js_api/dist/main.js');
     print('js file loaded');
+    _jsCodeEth = await rootBundle
+        .loadString('packages/polkawallet_sdk/js_api_eth/dist/main.js');
+    print('js eth file loaded');
 
     if (_web == null) {
       await _startLocalServer();
@@ -136,6 +140,7 @@ class WebViewRunner {
       ServiceKeyring? keyring, Keyring keyringStorage) async {
     // inject js file to webView
     await _web!.webViewController.evaluateJavascript(source: _jsCode);
+    await _web!.webViewController.evaluateJavascript(source: _jsCodeEth!);
 
     _onLaunched!();
   }
