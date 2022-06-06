@@ -30,6 +30,7 @@
 .pub-cache/
 .pub/
 /build/
+example/build/
 
 # Web related
 lib/generated_plugin_registrant.dart
@@ -46,3 +47,4 @@ app.*.map.json
 js_api/node_modules/
 js_api/dist/main.js.LICENSE.txt
 js_as_extension/node_modules/
+js_api_eth/node_modules/
