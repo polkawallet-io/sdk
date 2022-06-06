@@ -30,6 +30,7 @@
   "dependencies": {
     "@polkadot/api": "^8.5.1",
     "@polkadot/extension-dapp": "^0.43.2",
+    "@polkadot/rpc-provider": "^8.7.1",
     "@polkadot/ui-shared": "^2.2.1",
     "@walletconnect/client": "2.0.0-alpha.26",
     "bn.js": "^5.1.2",

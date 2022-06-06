@@ -1,4 +1,5 @@
 import { WsProvider, ApiPromise } from "@polkadot/api";
+import { ScProvider } from "@polkadot/rpc-provider/substrate-connect";
 import { KUSAMA_GENESIS, POLKADOT_GENESIS, STATEMINE_GENESIS } from "./constants/networkSpect";
 import localMetadata from "./constants/networkMetadata";
 import { subscribeMessage, getNetworkConst, getNetworkProperties } from "./service/setting";
@@ -17,6 +18,38 @@ function send(path: string, data: any) {
 }
 send("log", "main js loaded");
 (<any>window).send = send;
+
+/**
+ * connect to one a specific chain with an embeded light node
+ *
+ * @param {string} json raw chain spec
+ */
+ async function connectLightNode(chainSpec: string[]) {
+  (<any>window).api = undefined;
+
+  return new Promise<void>(async (resolve, reject) => {
+    const provider = new ScProvider(chainSpec);
+    await provider.connect();
+    try {
+      const res = await ApiPromise.create({
+        provider,
+      });
+      if (!(<any>window).api) {
+        (<any>window).api = res;
+        send("log", `connected success to local light node`);
+        resolve();
+      } else {
+        res.disconnect();
+        send("log", `connection to local light node was success and disconnected`);
+        resolve();
+      }
+    } catch (err) {
+      send("log", `connect failed`);
+      provider.disconnect();
+      resolve();
+    }
+  });
+ }
 
 async function connectAll(nodes: string[]) {
   return Promise.race(nodes.map((node) => connect([node])));
