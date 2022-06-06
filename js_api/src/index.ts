@@ -43,12 +43,12 @@ async function connect(nodes: string[]) {
       });
       if (!(<any>window).api) {
         (<any>window).api = res;
-        const url = nodes[(<any>res)._options.provider.__private_29_endpointIndex];
+        const url = nodes[(<any>res)._options.provider.__private_23_endpointIndex];
         send("log", `${url} wss connected success`);
         resolve(url);
       } else {
         res.disconnect();
-        const url = nodes[(<any>res)._options.provider.__private_29_endpointIndex];
+        const url = nodes[(<any>res)._options.provider.__private_23_endpointIndex];
         send("log", `${url} wss success and disconnected`);
         resolve(url);
       }
