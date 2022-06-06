@@ -1,3 +1,8 @@
+## [0.4.7] - 20220606
+
+* bump polkadot-js/api v8.5.1
+* update tx error message parsing
+
 ## [0.4.6] - 20220526
 
 * add dapp auth
