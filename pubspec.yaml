@@ -16,7 +16,7 @@ dependencies:
   shared_preferences: ^2.0.7
   get_storage: ^2.0.3
   json_annotation: ^4.0.1
-  aes_ecb_pkcs5_flutter: ^0.1.2
+  flutter_aes_ecb_pkcs5: ^0.1.2
   convert: ^3.0.1
   mobx: ^2.0.7
   jaguar: ^3.0.12
