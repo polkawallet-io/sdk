@@ -30,6 +30,7 @@ class _EthWithJSPageState extends State<EthWithJSPage> {
   "address": "0x4b248f45dfbea07de1bbd69180f6695b78250caf"
   }''';
   final String _testPass = 'a123456';
+  final _testMsg = 'hello message for signing';
 
   EthWalletData _testAcc;
 
@@ -271,6 +272,54 @@ class _EthWithJSPageState extends State<EthWithJSPage> {
     });
   }
 
+  Future<void> _signMessage() async {
+    if (_testAcc == null) {
+      widget.showResult(
+        context,
+        'signMessage',
+        'should import keyPair to init test account.',
+      );
+      return;
+    }
+    setState(() {
+      _submitting = true;
+    });
+    final res = await widget.sdk.api.eth.keyring
+        .signMessage(_testPass, _testMsg, _testAcc);
+    widget.showResult(
+      context,
+      'signMessage',
+      res == null ? 'null' : JsonEncoder.withIndent('  ').convert(res.toJson()),
+    );
+    setState(() {
+      _submitting = false;
+    });
+  }
+
+  Future<void> _signatureVerify() async {
+    if (_testAcc == null) {
+      widget.showResult(
+        context,
+        'signMessage',
+        'should import keyPair to init test account.',
+      );
+      return;
+    }
+    setState(() {
+      _submitting = true;
+    });
+    final res = await widget.sdk.api.eth.keyring.signatureVerify(_testMsg,
+        '0xded97a9a203f794a042bb71107523d685258a27f9df00634d782ba0bdb70be3808bff9ac1ef9bbfff474ef69fc2b613b6ae7b1956a83e2286136f8814993e8491c');
+    widget.showResult(
+      context,
+      'signatureVerify',
+      res == null ? 'null' : JsonEncoder.withIndent('  ').convert(res),
+    );
+    setState(() {
+      _submitting = false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -329,7 +378,7 @@ class _EthWithJSPageState extends State<EthWithJSPage> {
             ListTile(
               title: Text('getAccountList'),
               subtitle: Text('''
-sdk.api.keyring.accountList'''),
+sdk.api.eth.keyring.accountList'''),
               trailing: SubmitButton(
                 submitting: _submitting,
                 call: _getAccountList,
@@ -348,7 +397,7 @@ sdk.api.keyring.accountList'''),
             ListTile(
               title: Text('importFromMnemonic'),
               subtitle: Text('''
-sdk.api.keyring.importAccount(
+sdk.api.eth.keyring.importAccount(
     keyType: KeyType.mnemonic,
     key: 'wing know chapter eight shed lens mandate lake twenty useless bless glory',
     name: 'testName01',
@@ -363,7 +412,7 @@ sdk.api.keyring.importAccount(
             ListTile(
               title: Text('importFromPrivateKey'),
               subtitle: Text('''
-sdk.api.keyring.importAccount(
+sdk.api.eth.keyring.importAccount(
     keyType: KeyType.privateKey,
     key: 'Alice',
     name: 'testName02',
@@ -378,7 +427,7 @@ sdk.api.keyring.importAccount(
             ListTile(
               title: Text('importFromKeystore'),
               subtitle: Text('''
-sdk.api.keyring.importAccount(
+sdk.api.eth.keyring.importAccount(
     keyType: KeyType.keystore,
     key: '{xxx...xxx}',
     name: 'testName03',
@@ -393,7 +442,7 @@ sdk.api.keyring.importAccount(
             ListTile(
               title: Text('getDecryptedSeed'),
               subtitle: Text('''
-sdk.api.keyring.getDecryptedSeed(
+sdk.api.eth.keyring.getDecryptedSeed(
     '${_testAcc?.toString()}',
     'a123456',
 )'''),
@@ -406,7 +455,7 @@ sdk.api.keyring.getDecryptedSeed(
             ListTile(
               title: Text('deleteAccount'),
               subtitle: Text('''
-sdk.api.keyring.deleteAccount'''),
+sdk.api.eth.keyring.deleteAccount'''),
               trailing: SubmitButton(
                 submitting: _submitting,
                 call: _deleteAccount,
@@ -416,7 +465,7 @@ sdk.api.keyring.deleteAccount'''),
             ListTile(
               title: Text('checkPassword'),
               subtitle: Text('''
-sdk.api.keyring.checkPassword(
+sdk.api.eth.keyring.checkPassword(
     '${_testAcc?.toString()}',
     'a123456',
 )'''),
@@ -429,7 +478,7 @@ sdk.api.keyring.checkPassword(
             ListTile(
               title: Text('changePassword'),
               subtitle: Text('''
-sdk.api.keyring.changePassword(
+sdk.api.eth.keyring.changePassword(
     '${_testAcc?.toString()}',
     'a123456',
     'a654321',
@@ -443,13 +492,40 @@ sdk.api.keyring.changePassword(
             ListTile(
               title: Text('changeName'),
               subtitle: Text('''
-sdk.api.keyring.changeName(
+sdk.api.eth.keyring.changeName(
     '${_testAcc?.toString()}',
     'newName',
 )'''),
               trailing: SubmitButton(
                 submitting: _submitting,
                 call: _changeName,
+              ),
+            ),
+            Divider(),
+            ListTile(
+              title: Text('signMessage'),
+              subtitle: Text('''
+sdk.api.eth.keyring.signMessage(
+    '$_testPass',
+    '$_testMsg',
+    '${_testAcc?.toString()}'
+)'''),
+              trailing: SubmitButton(
+                submitting: _submitting,
+                call: _signMessage,
+              ),
+            ),
+            Divider(),
+            ListTile(
+              title: Text('signatureVerify'),
+              subtitle: Text('''
+sdk.api.eth.keyring.signatureVerify(
+    '$_testMsg',
+    'test signature',
+)'''),
+              trailing: SubmitButton(
+                submitting: _submitting,
+                call: _signatureVerify,
               ),
             ),
             Divider(),

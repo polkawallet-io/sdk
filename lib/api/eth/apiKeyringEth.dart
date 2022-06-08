@@ -162,12 +162,17 @@ class ApiKeyringEth {
   Future<ExtensionSignResult?> signMessage(
     String password,
     String message,
-    String keystore,
+    EthWalletData account,
   ) async {
     final signature = await service.signMessage(
-        keystore: keystore, message: message, pass: password);
+        keystore: jsonEncode(account.toJson()),
+        message: message,
+        pass: password);
     if (signature == null) {
       return null;
+    }
+    if (signature['error'] != null) {
+      throw Exception(signature['error']);
     }
     final ExtensionSignResult res = ExtensionSignResult();
     res.signature = signature['signature'];
@@ -175,11 +180,11 @@ class ApiKeyringEth {
   }
 
   /// get signer of a signature. so we can verify the signer.
-  Future<dynamic> signatureVerify(String message, signature) async {
+  Future<Map> signatureVerify(String message, String signature) async {
     final res =
         await service.verifySignature(message: message, signature: signature);
-    if (res == null) {
-      return null;
+    if (res['error'] != null) {
+      throw Exception(res['error']);
     }
     return res;
   }

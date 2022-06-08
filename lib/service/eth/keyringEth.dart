@@ -88,7 +88,7 @@ class ServiceKeyringEth {
   }
 
   /// get signer of a signature. so we can verify the signer.
-  Future<dynamic> verifySignature(
+  Future<Map> verifySignature(
       {required String message, required String signature}) async {
     final res = await serviceRoot.webView!.evalJavascript(
         'eth.keyring.verifySignature("$message", "$signature")');

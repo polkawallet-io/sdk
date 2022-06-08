@@ -1,6 +1,12 @@
 import { ethers } from "ethers";
 import { verifyMessage } from "@ethersproject/wallet";
 import Jazzicon from "@metamask/jazzicon";
+import { erc20Abi, getProvider } from "./settings";
+
+interface GasOptions {
+  maxFeePerGas: string;
+  maxPriorityFeePerGas: string;
+}
 
 /**
  * Generate a set of new mnemonic.
@@ -150,4 +156,92 @@ async function verifySignature(message: string, signature: string) {
   }
 }
 
-export default { gen, addressFromMnemonic, addressFromPrivateKey, recover, checkPassword, changePassword, signMessage, verifySignature };
+// async function estimateTransferGas(token: string, amount: number, to: string) {
+//   try {
+//     if (token === "ETH") {
+//       const gas = await getProvider().estimateGas({
+//         to,
+//         value: ethers.utils.parseEther(amount.toString()),
+//       });
+//       return gas.toString();
+//     } else {
+//       const contract = new ethers.Contract(token, erc20Abi, getProvider());
+//       const decimals = await contract.decimals();
+//       const gas = await contract.estimateGas.transfer(to, ethers.utils.parseUnits(amount.toString(), decimals));
+//       return gas.toString();
+//     }
+//   } catch (err) {
+//     return { success: false, error: err.message };
+//   }
+// }
+
+async function transfer(token: string, amount: number, to: string, keystore: object, pass: string, gasOptions: GasOptions) {
+  try {
+    const keyPair = await ethers.Wallet.fromEncryptedJson(JSON.stringify(keystore), pass);
+    if (keyPair.address) {
+      const signer = keyPair.connect(getProvider());
+      const options = {
+        maxFeePerGas: ethers.utils.parseUnits(gasOptions.maxFeePerGas, 9),
+        maxPriorityFeePerGas: ethers.utils.parseUnits(gasOptions.maxPriorityFeePerGas, 9),
+      };
+      let res: ethers.providers.TransactionResponse;
+      if (token === "ETH") {
+        res = await signer.sendTransaction({
+          to,
+          value: ethers.utils.parseEther(amount.toString()),
+          gasLimit: ethers.utils.parseUnits("21", 3),
+          ...options,
+        });
+      } else {
+        const contract = new ethers.Contract(token, erc20Abi, signer);
+        const decimals = await contract.decimals();
+        res = await contract.transfer(to, ethers.utils.parseUnits(amount.toString(), decimals), {
+          ...options,
+          gasLimit: ethers.utils.parseUnits("200", 3),
+        });
+      }
+      return {
+        pubKey: keyPair.publicKey,
+        address: keyPair.address,
+        hash: res.hash,
+      };
+    }
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}
+
+async function signAndSendTx(tx: ethers.providers.TransactionRequest, keystore: object, pass: string, gasOptions: GasOptions) {
+  try {
+    const keyPair = await ethers.Wallet.fromEncryptedJson(JSON.stringify(keystore), pass);
+    if (keyPair.address) {
+      const signer = keyPair.connect(getProvider());
+      const res = await signer.sendTransaction({
+        ...tx,
+        maxFeePerGas: ethers.utils.parseUnits(gasOptions.maxFeePerGas, 9),
+        maxPriorityFeePerGas: ethers.utils.parseUnits(gasOptions.maxPriorityFeePerGas, 9),
+      });
+      return {
+        pubKey: keyPair.publicKey,
+        address: keyPair.address,
+        hash: res.hash,
+      };
+    }
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}
+
+export default {
+  gen,
+  addressFromMnemonic,
+  addressFromPrivateKey,
+  recover,
+  checkPassword,
+  changePassword,
+  signMessage,
+  verifySignature,
+  // estimateTransferGas,
+  transfer,
+  signAndSendTx,
+};
