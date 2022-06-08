@@ -96,7 +96,7 @@ class WebViewRunner {
 
       await _web!.run();
       _web!.webViewController.loadUrl(
-          urlRequest: URLRequest(url: Uri.parse("https://localhost:8080/")));
+          urlRequest: URLRequest(url: Uri.parse("https://localhost:6234/")));
     } else {
       _webViewReloadTimer = Timer.periodic(Duration(seconds: 3), (timer) {
         _tryReload();
