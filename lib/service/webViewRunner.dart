@@ -180,11 +180,11 @@ class WebViewRunner {
   }
 
   Future<NetworkParams?> connectLightNode(String chainSpec) async {
-    final dynamic res = await (evalJavascript(
-            'settings.connectLightNode(${chainSpec})'));
+    final dynamic res =
+        await (evalJavascript('settings.connectLightNode($chainSpec)'));
     if (res != null) {
-      final index = nodes.indexWhere((e) => e.endpoint!.trim() == res.trim());
-      return nodes[index > -1 ? index : 0];
+      final index = res.indexWhere((e) => e.endpoint!.trim() == res.trim());
+      return res[index > -1 ? index : 0];
     }
     return null;
   }
