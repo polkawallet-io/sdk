@@ -94,6 +94,21 @@ class PolkawalletApi {
     return res;
   }
 
+  /// connect to a list of nodes with smoldot.
+  Future<NetworkParams?> connectLightNode(
+      Keyring keyringStorage, String chainspec) async {
+    _connectedNode = null;
+    final NetworkParams? res =
+        await service.webView!.connectLightNode(chainspec);
+    if (res != null) {
+      _connectedNode = res;
+
+      // update indices of keyPairs after connect
+      keyring.updateIndicesMap(keyringStorage);
+    }
+    return res;
+  }
+
   /// subscribe message.
   Future<void> subscribeMessage(
     String jsCall,
