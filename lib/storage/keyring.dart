@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:aes_ecb_pkcs5_flutter/aes_ecb_pkcs5_flutter.dart';
+import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/storage/localStorage.dart';
@@ -246,7 +246,7 @@ class KeyringPrivateStore {
   Future<void> encryptSeedAndSave(
       String? pubKey, seed, seedType, password) async {
     final String key = Encrypt.passwordToEncryptKey(password);
-    final String encrypted = await FlutterAesEcbPkcs5.encryptString(seed, key);
+    final String? encrypted = await FlutterAesEcbPkcs5.encryptString(seed, key);
 
     // read old data from storage-old
     final Map stored = await (_storageOld.getSeeds(seedType)
@@ -279,7 +279,8 @@ class KeyringPrivateStore {
     if (mnemonic != null) {
       final res = {'type': KeyType.mnemonic.toString().split('.')[1]};
       try {
-        res['seed'] = await FlutterAesEcbPkcs5.decryptString(mnemonic, key);
+        res['seed'] =
+            (await FlutterAesEcbPkcs5.decryptString(mnemonic, key)) ?? "";
       } catch (err) {
         print(err);
       }
@@ -289,7 +290,8 @@ class KeyringPrivateStore {
     if (rawSeed != null) {
       final res = {'type': KeyType.rawSeed.toString().split('.')[1]};
       try {
-        res['seed'] = await FlutterAesEcbPkcs5.decryptString(rawSeed, key);
+        res['seed'] =
+            (await FlutterAesEcbPkcs5.decryptString(rawSeed, key)) ?? "";
       } catch (err) {
         print(err);
       }
