@@ -24,7 +24,7 @@ send("log", "main js loaded");
  *
  * @param {string} json raw chain spec
  */
- async function connectLightNode(chainSpec: string[]) {
+ async function connectLightNode(chainSpec: string) {
   (<any>window).api = undefined;
 
   return new Promise<void>(async (resolve, reject) => {
@@ -102,6 +102,7 @@ const settings = {
   test,
   connect,
   connectAll,
+  connectLightNode,
   subscribeMessage,
   getNetworkConst,
   getNetworkProperties,
