@@ -8,6 +8,14 @@ interface GasOptions {
   maxPriorityFeePerGas: string;
 }
 
+interface WCRequest {
+  request: {
+    method: string;
+    params: any;
+  };
+  chainId: string;
+}
+
 /**
  * Generate a set of new mnemonic.
  * svg code from https://github.com/smart-dev817/uniswap-interface/blob/1cc5ceec4dbe29cad3378eb321fdc88e3eb79304/src/components/Identicon/index.tsx#L15

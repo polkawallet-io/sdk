@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:aes_ecb_pkcs5_flutter/aes_ecb_pkcs5_flutter.dart';
+import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_sdk/ethers/apiEthers.dart';
 import 'package:polkawallet_sdk/storage/localStorage.dart';
@@ -179,7 +179,7 @@ class KeyringEVMPrivateStore {
   Future<void> encryptSeedAndSave(
       String? address, seed, seedType, password) async {
     final String key = Encrypt.passwordToEncryptKey(password);
-    final String encrypted = await FlutterAesEcbPkcs5.encryptString(seed, key);
+    final encrypted = await FlutterAesEcbPkcs5.encryptString(seed, key);
 
     if (seedType == EVMKeyType.mnemonic.toString().split('.')[1]) {
       final mnemonics = Map.from(_storage.encryptedMnemonics.val);
@@ -206,7 +206,9 @@ class KeyringEVMPrivateStore {
     final key = Encrypt.passwordToEncryptKey(password);
     final mnemonic = _storage.encryptedMnemonics.val[address];
     if (mnemonic != null) {
-      final res = {'type': EVMKeyType.mnemonic.toString().split('.')[1]};
+      final Map<String, dynamic> res = {
+        'type': EVMKeyType.mnemonic.toString().split('.')[1]
+      };
       try {
         res['seed'] = await FlutterAesEcbPkcs5.decryptString(mnemonic, key);
       } catch (err) {
@@ -216,7 +218,9 @@ class KeyringEVMPrivateStore {
     }
     final privateKey = _storage.encryptedPrivateKeys.val[address];
     if (privateKey != null) {
-      final res = {'type': EVMKeyType.privateKey.toString().split('.')[1]};
+      final Map<String, dynamic> res = {
+        'type': EVMKeyType.privateKey.toString().split('.')[1]
+      };
       try {
         res['seed'] = await FlutterAesEcbPkcs5.decryptString(privateKey, key);
       } catch (err) {

@@ -6,17 +6,16 @@ part of 'ethWalletData.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-EthWalletData _$EthWalletDataFromJson(Map<String, dynamic> json) {
-  return EthWalletData()
-    ..address = json['address'] as String?
-    ..name = json['name'] as String?
-    ..id = json['id'] as String?
-    ..version = json['version'] as int?
-    ..crypto = json['crypto'] as Map<String, dynamic>?
-    ..memo = json['memo'] as String?
-    ..observation = json['observation'] as bool?
-    ..icon = json['icon'] as String?;
-}
+EthWalletData _$EthWalletDataFromJson(Map<String, dynamic> json) =>
+    EthWalletData()
+      ..address = json['address'] as String?
+      ..name = json['name'] as String?
+      ..id = json['id'] as String?
+      ..version = json['version'] as int?
+      ..crypto = json['crypto'] as Map<String, dynamic>?
+      ..memo = json['memo'] as String?
+      ..observation = json['observation'] as bool?
+      ..icon = json['icon'] as String?;
 
 Map<String, dynamic> _$EthWalletDataToJson(EthWalletData instance) =>
     <String, dynamic>{

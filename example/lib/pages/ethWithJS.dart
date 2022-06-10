@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/ethers/apiEthers.dart';
@@ -32,7 +31,7 @@ class _EthWithJSPageState extends State<EthWithJSPage> {
   final String _testPass = 'a123456';
   final _testMsg = 'hello message for signing';
 
-  EthWalletData _testAcc;
+  EthWalletData? _testAcc;
 
   bool _submitting = false;
 
@@ -42,7 +41,7 @@ class _EthWithJSPageState extends State<EthWithJSPage> {
     });
     final AddressIconDataWithMnemonic seed =
         await widget.sdk.api.eth.keyring.generateMnemonic();
-    widget.showResult(context, 'generateMnemonic', seed.mnemonic);
+    widget.showResult(context, 'generateMnemonic', seed.mnemonic!);
     setState(() {
       _submitting = false;
     });
@@ -79,7 +78,7 @@ class _EthWithJSPageState extends State<EthWithJSPage> {
       seed == null
           ? 'null'
           : JsonEncoder.withIndent('  ').convert({
-              'address': _testAcc.address,
+              'address': _testAcc?.address,
               'type': seed.type,
               'seed': seed.seed,
               'error': seed.error,
@@ -105,7 +104,7 @@ class _EthWithJSPageState extends State<EthWithJSPage> {
     final acc = await widget.sdk.api.eth.keyring.addAccount(
       widget.keyring,
       keyType: EVMKeyType.mnemonic,
-      acc: json,
+      acc: json!,
       password: _testPass,
     );
     widget.showResult(
@@ -133,7 +132,7 @@ class _EthWithJSPageState extends State<EthWithJSPage> {
     final acc = await widget.sdk.api.eth.keyring.addAccount(
       widget.keyring,
       keyType: EVMKeyType.privateKey,
-      acc: json,
+      acc: json!,
       password: _testPass,
     );
     widget.showResult(
@@ -160,7 +159,7 @@ class _EthWithJSPageState extends State<EthWithJSPage> {
     final acc = await widget.sdk.api.eth.keyring.addAccount(
       widget.keyring,
       keyType: EVMKeyType.keystore,
-      acc: json,
+      acc: json!,
       password: _testPass,
     );
     widget.showResult(
@@ -186,7 +185,7 @@ class _EthWithJSPageState extends State<EthWithJSPage> {
     setState(() {
       _submitting = true;
     });
-    await widget.sdk.api.eth.keyring.deleteAccount(widget.keyring, _testAcc);
+    await widget.sdk.api.eth.keyring.deleteAccount(widget.keyring, _testAcc!);
     widget.showResult(
       context,
       'deleteAccount',
@@ -210,7 +209,7 @@ class _EthWithJSPageState extends State<EthWithJSPage> {
       _submitting = true;
     });
     final bool passed =
-        await widget.sdk.api.eth.keyring.checkPassword(_testAcc, _testPass);
+        await widget.sdk.api.eth.keyring.checkPassword(_testAcc!, _testPass);
     // await widget.sdk.evm.checkPassword(_testAcc, 'a654321');
     widget.showResult(
       context,
@@ -285,7 +284,7 @@ class _EthWithJSPageState extends State<EthWithJSPage> {
       _submitting = true;
     });
     final res = await widget.sdk.api.eth.keyring
-        .signMessage(_testPass, _testMsg, _testAcc);
+        .signMessage(_testPass, _testMsg, _testAcc!);
     widget.showResult(
       context,
       'signMessage',

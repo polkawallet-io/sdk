@@ -1,11 +1,10 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
+import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
-import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 class KeyringPage extends StatefulWidget {
@@ -34,16 +33,18 @@ class _KeyringPageState extends State<KeyringPage> {
       }}''';
   final String _testPass = 'a123456';
 
-  KeyPairData _testAcc;
+  KeyPairData? _testAcc;
   int _ss58 = 0;
 
   bool _submitting = false;
 
   void _setSS58(int ss58) {
     final res = widget.keyring.setSS58(ss58);
-    setState(() {
-      _ss58 = res;
-    });
+    if (res != null) {
+      setState(() {
+        _ss58 = res;
+      });
+    }
   }
 
   Future<void> _generateMnemonic() async {
@@ -52,7 +53,7 @@ class _KeyringPageState extends State<KeyringPage> {
     });
     final AddressIconDataWithMnemonic seed =
         await widget.sdk.api.keyring.generateMnemonic(_ss58);
-    widget.showResult(context, 'generateMnemonic', seed.mnemonic);
+    widget.showResult(context, 'generateMnemonic', seed.mnemonic!);
     setState(() {
       _submitting = false;
     });
@@ -89,7 +90,7 @@ class _KeyringPageState extends State<KeyringPage> {
       seed == null
           ? 'null'
           : JsonEncoder.withIndent('  ').convert({
-              'address': _testAcc.address,
+              'address': _testAcc?.address,
               'type': seed.type,
               'seed': seed.seed,
               'error': seed.error,
@@ -115,7 +116,7 @@ class _KeyringPageState extends State<KeyringPage> {
     final acc = await widget.sdk.api.keyring.addAccount(
       widget.keyring,
       keyType: KeyType.mnemonic,
-      acc: json,
+      acc: json!,
       password: _testPass,
     );
     widget.showResult(
@@ -143,7 +144,7 @@ class _KeyringPageState extends State<KeyringPage> {
     final acc = await widget.sdk.api.keyring.addAccount(
       widget.keyring,
       keyType: KeyType.mnemonic,
-      acc: json,
+      acc: json!,
       password: _testPass,
     );
     widget.showResult(
@@ -171,7 +172,7 @@ class _KeyringPageState extends State<KeyringPage> {
     final acc = await widget.sdk.api.keyring.addAccount(
       widget.keyring,
       keyType: KeyType.mnemonic,
-      acc: json,
+      acc: json!,
       password: _testPass,
     );
     widget.showResult(
@@ -197,7 +198,7 @@ class _KeyringPageState extends State<KeyringPage> {
     setState(() {
       _submitting = true;
     });
-    await widget.sdk.api.keyring.deleteAccount(widget.keyring, _testAcc);
+    await widget.sdk.api.keyring.deleteAccount(widget.keyring, _testAcc!);
     widget.showResult(
       context,
       'deleteAccount',
@@ -221,7 +222,7 @@ class _KeyringPageState extends State<KeyringPage> {
       _submitting = true;
     });
     final bool passed =
-        await widget.sdk.api.keyring.checkPassword(_testAcc, _testPass);
+        await widget.sdk.api.keyring.checkPassword(_testAcc!, _testPass);
 //        await widget.sdk.api.keyring.checkPassword(_testAcc, 'a654321');
     widget.showResult(
       context,
@@ -286,7 +287,7 @@ class _KeyringPageState extends State<KeyringPage> {
     setState(() {
       _submitting = true;
     });
-    final String err = await widget.sdk.api.keyring
+    final err = await widget.sdk.api.keyring
         .checkDerivePath('Alice', '///', CryptoType.sr25519);
     widget.showResult(
       context,
@@ -502,7 +503,8 @@ sdk.api.keyring.checkDerivePath(
 }
 
 class SubmitButton extends StatelessWidget {
-  SubmitButton({this.call, this.submitting, this.needConnect = false});
+  SubmitButton(
+      {required this.call, required this.submitting, this.needConnect = false});
   final bool submitting;
   final bool needConnect;
   final Function call;

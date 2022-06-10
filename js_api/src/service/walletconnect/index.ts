@@ -1,19 +1,29 @@
 import { ApiPromise } from "@polkadot/api";
-import WalletConnectClient, { CLIENT_EVENTS } from "@walletconnect/client";
-import { SessionTypes, ClientTypes } from "@walletconnect/types";
+import SignClient from "@walletconnect/sign-client";
+import { SignClientTypes, EngineTypes, SessionTypes } from "@walletconnect/types";
+import { ERROR } from "@walletconnect/utils";
 
 import { Keyring } from "@polkadot/keyring";
 import { hexToU8a, u8aToHex, isHex, stringToU8a } from "@polkadot/util";
 
-let client: WalletConnectClient;
+import { formatJsonRpcResult } from "./jsonRpc";
+
+let client: SignClient;
 
 async function initClient() {
   if (!client) {
-    client = await WalletConnectClient.init({
-      relayProvider: "wss://staging.walletconnect.org",
+    client = await SignClient.init({
+      projectId: "45587a9eca50f3e95b99ef96a0a898f2",
+      relayUrl: "wss://relay.walletconnect.com",
+      metadata: {
+        name: "Polkawallet",
+        description: "Mobile Wallet for Polkadot Eco.",
+        url: "https://polkwallet.io/",
+        icons: ["https://polkawallet.io/images/favicon-icon.png"],
+      },
     });
 
-    client.on(CLIENT_EVENTS.session.proposal, async (proposal: SessionTypes.Proposal) => {
+    client.on("session_proposal", async (proposal: SignClientTypes.EventArguments["session_proposal"]) => {
       //   // user should be prompted to approve the proposed session permissions displaying also dapp metadata
       //   const { proposer, permissions } = proposal;
       //   const { metadata } = proposer;
@@ -22,13 +32,13 @@ async function initClient() {
       (<any>window).send("walletConnectPairing", proposal);
     });
 
-    client.on(CLIENT_EVENTS.session.created, async (session: SessionTypes.Created) => {
-      // session created succesfully
-      (<any>window).send("walletConnectCreated", session);
-    });
+    // client.on(CLIENT_EVENTS.session.created, async (session: SessionTypes.Created) => {
+    //   // session created succesfully
+    //   (<any>window).send("walletConnectCreated", session);
+    // });
 
-    client.on(CLIENT_EVENTS.session.payload, async (payloadEvent: SessionTypes.PayloadEvent) => {
-      (<any>window).send("walletConnectPayload", payloadEvent);
+    client.on("session_request", async (requestEvent: SignClientTypes.EventArguments["session_request"]) => {
+      (<any>window).send("walletConnectPayload", requestEvent);
 
       //   // WalletConnect client can track multiple sessions
       //   // assert the topic from which application requested
@@ -67,45 +77,60 @@ async function connect(uri: string) {
   client.pair({ uri });
   return {};
 }
-async function disconnect(param: SessionTypes.DeleteParams) {
+async function disconnect(param: EngineTypes.DisconnectParams) {
   if (client) {
-    client.session.delete(param);
+    client.disconnect(param);
   }
   return {};
 }
 
-async function approveProposal(proposal: SessionTypes.Proposal, address: string) {
-  const response: SessionTypes.Response = {
-    metadata: {
-      name: "Polkawallet",
-      description: "Mobile wallet for polkadot ecosystem.",
-      url: "#",
-      icons: ["https://polkawallet.io/images/logo.png"],
-    },
-    state: {
-      accounts: [address],
-    },
-  };
-  await client.approve({ proposal, response });
-  return {};
-}
+async function approveProposal(proposal: SignClientTypes.EventArguments["session_proposal"], address: string) {
+  // const response: SessionTypes.Response = {
+  //   metadata: {
+  //     name: "Polkawallet",
+  //     description: "Mobile wallet for polkadot ecosystem.",
+  //     url: "#",
+  //     icons: ["https://polkawallet.io/images/logo.png"],
+  //   },
+  //   state: {
+  //     accounts: [address],
+  //   },
+  // };
 
-async function rejectProposal(proposal: SessionTypes.Proposal) {
-  await client.reject({ proposal });
-  disconnect({
-    topic: proposal.topic,
-    reason: "user rejected pairing",
+  // Get required proposal data
+  const { id, params } = proposal;
+  const { proposer, requiredNamespaces, relays } = params;
+
+  const namespaces: SessionTypes.Namespaces = {};
+  Object.keys(requiredNamespaces).forEach((key) => {
+    const accounts: string[] = [];
+    requiredNamespaces[key].chains.map((chain) => {
+      [address].map((acc) => accounts.push(`${chain}:${acc}`));
+    });
+    namespaces[key] = {
+      accounts,
+      methods: requiredNamespaces[key].methods,
+      events: requiredNamespaces[key].events,
+    };
   });
+
+  const { acknowledged } = await client.approve({ id, relayProtocol: relays[0].protocol, namespaces });
+  await acknowledged();
   return {};
 }
 
-async function payloadRespond(response: any) {
-  await client.respond(response);
+async function rejectProposal(proposal: SignClientTypes.EventArguments["session_proposal"]) {
+  await client.reject({ id: proposal.id, reason: ERROR.JSONRPC_REQUEST_METHOD_REJECTED.format() });
   return {};
 }
 
-async function signPayload(api: ApiPromise, { payload }, password: string) {
-  const { method, params } = payload;
+async function payloadRespond(topic: string, response: any) {
+  await client.respond({ topic, response });
+  return {};
+}
+
+async function signPayload(api: ApiPromise, { id, params: { request } }, password: string) {
+  const { method, params } = request;
   const address = params[0];
   const keyPair = ((window as any).keyring as Keyring).getPair(address);
   try {
@@ -143,20 +168,18 @@ async function signPayload(api: ApiPromise, { payload }, password: string) {
         version: payload.version,
       });
       const signed = txPayload.sign(keyPair);
-      return signed;
+      return formatJsonRpcResult(id, signed);
     }
     if (method == "signBytes") {
       const msg = params[1];
       const isDataHex = isHex(msg);
-      return {
+      return formatJsonRpcResult(id, {
         signature: u8aToHex(keyPair.sign(isDataHex ? hexToU8a(msg) : stringToU8a(msg))),
-      };
+      });
     }
   } catch (err) {
-    (window as any).send({ error: err.message });
+    return { id, jsonrpc: "2.0", error: err.message };
   }
-
-  return {};
 }
 
 export default {

@@ -1,9 +1,8 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/api/types/balanceData.dart';
+import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk_example/pages/keyring.dart';
 
 class AccountPage extends StatefulWidget {
@@ -28,14 +27,14 @@ class _AccountPageState extends State<AccountPage> {
 
   bool _submitting = false;
 
-  BalanceData _balance;
-  String _msgChannel;
+  BalanceData? _balance;
+  String? _msgChannel;
 
   Future<void> _encodeAddress() async {
     setState(() {
       _submitting = true;
     });
-    final Map res = await widget.sdk.api.account.encodeAddress([_testPubKey]);
+    final res = await widget.sdk.api.account.encodeAddress([_testPubKey]);
     widget.showResult(
       context,
       'encodeAddress',
@@ -50,7 +49,7 @@ class _AccountPageState extends State<AccountPage> {
     setState(() {
       _submitting = true;
     });
-    final Map res = await widget.sdk.api.account.decodeAddress([_testAddress]);
+    final res = await widget.sdk.api.account.decodeAddress([_testAddress]);
     widget.showResult(
       context,
       'decodeAddress',
@@ -65,7 +64,7 @@ class _AccountPageState extends State<AccountPage> {
     setState(() {
       _submitting = true;
     });
-    final List res = await widget.sdk.api.account.getPubKeyIcons([_testPubKey]);
+    final res = await widget.sdk.api.account.getPubKeyIcons([_testPubKey]);
     widget.showResult(
         context, 'getPubKeyIcons', JsonEncoder.withIndent('  ').convert(res));
     setState(() {
@@ -77,8 +76,7 @@ class _AccountPageState extends State<AccountPage> {
     setState(() {
       _submitting = true;
     });
-    final List res =
-        await widget.sdk.api.account.getAddressIcons([_testAddress]);
+    final res = await widget.sdk.api.account.getAddressIcons([_testAddress]);
     widget.showResult(
         context, 'getAddressIcons', JsonEncoder.withIndent('  ').convert(res));
     setState(() {
@@ -90,7 +88,7 @@ class _AccountPageState extends State<AccountPage> {
     setState(() {
       _submitting = true;
     });
-    final List res = await widget.sdk.api.account
+    final res = await widget.sdk.api.account
         .queryIndexInfo([_testAddress, _testAddressGav]);
     widget.showResult(
         context, 'queryIndexInfo', JsonEncoder.withIndent('  ').convert(res));
@@ -105,7 +103,7 @@ class _AccountPageState extends State<AccountPage> {
     });
     final res = await widget.sdk.api.account.queryBalance(_testAddress);
     widget.showResult(context, 'queryBalance',
-        JsonEncoder.withIndent('  ').convert(res.toJson()));
+        JsonEncoder.withIndent('  ').convert(res?.toJson()));
     setState(() {
       _submitting = false;
     });
@@ -139,7 +137,7 @@ class _AccountPageState extends State<AccountPage> {
   @override
   void dispose() {
     if (_msgChannel != null) {
-      widget.sdk.api.unsubscribeMessage(_msgChannel);
+      widget.sdk.api.unsubscribeMessage(_msgChannel!);
     }
     super.dispose();
   }

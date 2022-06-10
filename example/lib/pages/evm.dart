@@ -31,7 +31,7 @@ class _EVMPageState extends State<EVMPage> {
   }''';
   final String _testPass = 'a123456';
 
-  EthWalletData _testAcc;
+  EthWalletData? _testAcc;
 
   bool _submitting = false;
 
@@ -41,7 +41,7 @@ class _EVMPageState extends State<EVMPage> {
     });
     final AddressIconDataWithMnemonic seed =
         await widget.sdk.ethers.generateMnemonic();
-    widget.showResult(context, 'generateMnemonic', seed.mnemonic);
+    widget.showResult(context, 'generateMnemonic', seed.mnemonic!);
     setState(() {
       _submitting = false;
     });
@@ -78,7 +78,7 @@ class _EVMPageState extends State<EVMPage> {
       seed == null
           ? 'null'
           : JsonEncoder.withIndent('  ').convert({
-              'address': _testAcc.address,
+              'address': _testAcc?.address,
               'type': seed.type,
               'seed': seed.seed,
               'error': seed.error,
@@ -185,7 +185,7 @@ class _EVMPageState extends State<EVMPage> {
     setState(() {
       _submitting = true;
     });
-    await widget.sdk.ethers.deleteAccount(widget.keyring, _testAcc);
+    await widget.sdk.ethers.deleteAccount(widget.keyring, _testAcc!);
     widget.showResult(
       context,
       'deleteAccount',
@@ -209,7 +209,7 @@ class _EVMPageState extends State<EVMPage> {
       _submitting = true;
     });
     final bool passed =
-        await widget.sdk.ethers.checkPassword(_testAcc, _testPass);
+        await widget.sdk.ethers.checkPassword(_testAcc!, _testPass);
     // await widget.sdk.evm.checkPassword(_testAcc, 'a654321');
     widget.showResult(
       context,

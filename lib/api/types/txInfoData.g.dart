@@ -6,21 +6,19 @@ part of 'txInfoData.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-TxInfoData _$TxInfoDataFromJson(Map<String, dynamic> json) {
-  return TxInfoData(
-    json['module'] as String?,
-    json['call'] as String?,
-    json['sender'] == null
-        ? null
-        : TxSenderData.fromJson(json['sender'] as Map<String, dynamic>),
-    tip: json['tip'] as String?,
-    isUnsigned: json['isUnsigned'] as bool?,
-    proxy: json['proxy'] == null
-        ? null
-        : TxSenderData.fromJson(json['proxy'] as Map<String, dynamic>),
-    txName: json['txName'] as String?,
-  );
-}
+TxInfoData _$TxInfoDataFromJson(Map<String, dynamic> json) => TxInfoData(
+      json['module'] as String?,
+      json['call'] as String?,
+      json['sender'] == null
+          ? null
+          : TxSenderData.fromJson(json['sender'] as Map<String, dynamic>),
+      tip: json['tip'] as String? ?? '0',
+      isUnsigned: json['isUnsigned'] as bool? ?? false,
+      proxy: json['proxy'] == null
+          ? null
+          : TxSenderData.fromJson(json['proxy'] as Map<String, dynamic>),
+      txName: json['txName'] as String?,
+    );
 
 Map<String, dynamic> _$TxInfoDataToJson(TxInfoData instance) =>
     <String, dynamic>{
@@ -33,12 +31,10 @@ Map<String, dynamic> _$TxInfoDataToJson(TxInfoData instance) =>
       'txName': instance.txName,
     };
 
-TxSenderData _$TxSenderDataFromJson(Map<String, dynamic> json) {
-  return TxSenderData(
-    json['address'] as String?,
-    json['pubKey'] as String?,
-  );
-}
+TxSenderData _$TxSenderDataFromJson(Map<String, dynamic> json) => TxSenderData(
+      json['address'] as String?,
+      json['pubKey'] as String?,
+    );
 
 Map<String, dynamic> _$TxSenderDataToJson(TxSenderData instance) =>
     <String, dynamic>{
@@ -46,11 +42,10 @@ Map<String, dynamic> _$TxSenderDataToJson(TxSenderData instance) =>
       'pubKey': instance.pubKey,
     };
 
-TxFeeEstimateResult _$TxFeeEstimateResultFromJson(Map<String, dynamic> json) {
-  return TxFeeEstimateResult()
-    ..weight = json['weight']
-    ..partialFee = json['partialFee'];
-}
+TxFeeEstimateResult _$TxFeeEstimateResultFromJson(Map<String, dynamic> json) =>
+    TxFeeEstimateResult()
+      ..weight = json['weight']
+      ..partialFee = json['partialFee'];
 
 Map<String, dynamic> _$TxFeeEstimateResultToJson(
         TxFeeEstimateResult instance) =>

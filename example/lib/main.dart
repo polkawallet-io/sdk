@@ -152,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: _connecting
                             ? CupertinoActivityIndicator()
                             : Text(_apiConnected
-                                ? 'connected ${widget.sdk.api.connectedNode.name}'
+                                ? 'connected ${widget.sdk.api.connectedNode?.name}'
                                 : 'connect'),
                         onPressed: _apiConnected || _connecting
                             ? null
