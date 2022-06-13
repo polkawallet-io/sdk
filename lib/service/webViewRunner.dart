@@ -1,12 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:jaguar/jaguar.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
-import 'package:polkawallet_sdk/service/jaguar_flutter_asset.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 
@@ -52,8 +49,10 @@ class WebViewRunner {
 
       _web = new HeadlessInAppWebView(
         initialOptions: InAppWebViewGroupOptions(
-          crossPlatform: InAppWebViewOptions(),
+          crossPlatform: InAppWebViewOptions(clearCache: true),
         ),
+        initialUrlRequest: URLRequest(
+            url: Uri.parse("http://localhost:8080/assets/index.html")),
         onWebViewCreated: (controller) {
           print('HeadlessInAppWebView created!');
         },
@@ -92,7 +91,7 @@ class WebViewRunner {
           }
         },
         onLoadStop: (controller, url) async {
-          print('webview loaded');
+          print('webview loaded $url');
           if (webViewLoaded) return;
 
           _handleReloaded();
@@ -102,8 +101,6 @@ class WebViewRunner {
 
       await _web?.dispose();
       await _web?.run();
-      _web!.webViewController.loadUrl(
-          urlRequest: URLRequest(url: Uri.parse("https://localhost:8080/")));
     } else {
       _webViewReloadTimer = Timer.periodic(Duration(seconds: 3), (timer) {
         _tryReload();
@@ -123,24 +120,15 @@ class WebViewRunner {
   }
 
   Future<void> _startLocalServer() async {
-    final cert = await rootBundle
-        .load("packages/polkawallet_sdk/lib/ssl/certificate.text");
-    final keys =
-        await rootBundle.load("packages/polkawallet_sdk/lib/ssl/keys.text");
-    final security = new SecurityContext()
-      ..useCertificateChainBytes(cert.buffer.asInt8List())
-      ..usePrivateKeyBytes(keys.buffer.asInt8List());
-    // Serves the API at localhost:8080 by default
-    final server = Jaguar(securityContext: security);
-    server.addRoute(serveFlutterAssets());
-    await server.serve(logRequests: false);
+    final localhostServer = new InAppLocalhostServer();
+    await localhostServer.start();
   }
 
   Future<void> _startJSCode(
       ServiceKeyring? keyring, Keyring keyringStorage) async {
     // inject js file to webView
     await _web!.webViewController.evaluateJavascript(source: _jsCode);
-    await _web!.webViewController.evaluateJavascript(source: _jsCodeEth!);
+    await _web!.webViewController.evaluateJavascript(source: _jsCodeEth);
 
     _onLaunched!();
   }

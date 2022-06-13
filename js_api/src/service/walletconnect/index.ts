@@ -74,7 +74,11 @@ async function initClient() {
   }
 }
 async function connect(uri: string) {
-  client.pair({ uri });
+  try {
+    await client.pair({ uri });
+  } catch (err) {
+    console.log("log", err);
+  }
   return {};
 }
 async function disconnect(param: EngineTypes.DisconnectParams) {
