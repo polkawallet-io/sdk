@@ -1,3 +1,8 @@
+## [0.4.8] - 20220621
+
+* upgrade flutter 3.0.1
+* upgrade dependencies
+
 ## [0.4.7] - 20220606
 
 * bump polkadot-js/api v8.5.1
