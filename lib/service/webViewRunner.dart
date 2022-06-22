@@ -10,7 +10,6 @@ import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/service/jaguar_flutter_asset.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
-// import 'package:polkawallet_sdk/storage/keyring.dart';
 
 class WebViewRunner {
   HeadlessInAppWebView? _web;
@@ -48,11 +47,11 @@ class WebViewRunner {
             .loadString('packages/polkawallet_sdk/js_api/dist/main.js');
     print('js file loaded');
 
-    /// It may also be necessary to load the ETH head onto the Substrate(NetworkSelectPage)
-    _jsCodeEth = jsCodeEth ??
-        await rootBundle
-            .loadString('packages/polkawallet_sdk/js_api_eth/dist/main.js');
-    print('eth js file loaded');
+    // TODO: always load eth js for evm keyring (while evm online)
+    // _jsCodeEth = jsCodeEth ??
+    //     await rootBundle
+    //         .loadString('packages/polkawallet_sdk/js_api_eth/dist/main.js');
+    // print('eth js file loaded');
 
     if (_web == null) {
       await _startLocalServer();
@@ -129,9 +128,10 @@ class WebViewRunner {
 
   Future<void> _startJSCode(ServiceKeyring? keyring) async {
     // inject js file to webView
+    // TODO: no eth injection before evm online
     if (_isFirstLoad) {
       await _web!.webViewController.evaluateJavascript(source: _jsCode);
-      await _web!.webViewController.evaluateJavascript(source: _jsCodeEth);
+      // await _web!.webViewController.evaluateJavascript(source: _jsCodeEth);
       _isFirstLoad = false;
     } else {
       if (_pluginType == PluginType.Etherem) {
