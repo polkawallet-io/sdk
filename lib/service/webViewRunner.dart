@@ -40,9 +40,10 @@ class WebViewRunner {
         await rootBundle
             .loadString('packages/polkawallet_sdk/js_api/dist/main.js');
     print('js file loaded');
-    _jsCodeEth = await rootBundle
-        .loadString('packages/polkawallet_sdk/js_api_eth/dist/main.js');
-    print('js eth file loaded');
+    // TODO: always load eth js for evm keyring (while evm online)
+    // _jsCodeEth = await rootBundle
+    //     .loadString('packages/polkawallet_sdk/js_api_eth/dist/main.js');
+    // print('js eth file loaded');
 
     if (_web == null) {
       await _startLocalServer();
@@ -127,8 +128,9 @@ class WebViewRunner {
   Future<void> _startJSCode(
       ServiceKeyring? keyring, Keyring keyringStorage) async {
     // inject js file to webView
+    // TODO: no eth injection before evm online
     await _web!.webViewController.evaluateJavascript(source: _jsCode);
-    await _web!.webViewController.evaluateJavascript(source: _jsCodeEth);
+    // await _web!.webViewController.evaluateJavascript(source: _jsCodeEth);
 
     _onLaunched!();
   }
