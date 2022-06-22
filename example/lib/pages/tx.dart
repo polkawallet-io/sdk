@@ -1,9 +1,8 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
+import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk_example/pages/keyring.dart';
 
@@ -31,7 +30,7 @@ class _TxPageState extends State<TxPage> {
   final _testPass = 'a123456';
 
   bool _submitting = false;
-  String _status;
+  String? _status;
 
   Future<void> _estimateTxFee() async {
     setState(() {

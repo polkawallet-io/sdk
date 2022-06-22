@@ -1,9 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
-import 'package:polkawallet_sdk/api/types/networkStateData.dart';
 import 'package:polkawallet_sdk_example/pages/keyring.dart';
 
 class SettingPage extends StatefulWidget {
@@ -21,13 +19,13 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   bool _submitting = false;
 
-  BigInt _bestNumber;
+  BigInt? _bestNumber;
 
   Future<void> _queryNetworkConst() async {
     setState(() {
       _submitting = true;
     });
-    final Map res = await widget.sdk.api.setting.queryNetworkConst();
+    final res = await widget.sdk.api.setting.queryNetworkConst();
     widget.showResult(
       context,
       'queryNetworkConst',
@@ -42,12 +40,11 @@ class _SettingPageState extends State<SettingPage> {
     setState(() {
       _submitting = true;
     });
-    final NetworkStateData res =
-        await widget.sdk.api.setting.queryNetworkProps();
+    final res = await widget.sdk.api.setting.queryNetworkProps();
     widget.showResult(
       context,
       'queryNetworkProps',
-      JsonEncoder.withIndent('  ').convert(res.toJson()),
+      JsonEncoder.withIndent('  ').convert(res?.toJson()),
     );
     setState(() {
       _submitting = false;

@@ -48,9 +48,9 @@ class ServiceWalletConnect {
     return res;
   }
 
-  Future<Map?> payloadRespond(Map response) async {
+  Future<Map?> payloadRespond(String topic, Map response) async {
     final dynamic res = await serviceRoot.webView!.evalJavascript(
-        'walletConnect.payloadRespond(${jsonEncode(response)})');
+        'walletConnect.payloadRespond("$topic", ${jsonEncode(response)})');
     return res;
   }
 }
