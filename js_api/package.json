@@ -20,17 +20,20 @@
   },
   "scripts": {
     "clean": "rm -rf dist/*",
-    "build": "webpack --mode production",
+    "prebuild": "rm -rf ../assets/*.js",
+    "build": "yarn run clean && webpack --mode production",
+    "postbuild": "mv dist/*.js ../assets/",
     "build-dev": "webpack --mode development"
   },
   "resolutions": {
-    "@polkadot/api": "^8.5.1",
+    "@polkadot/api": "8.10.1",
     "bn.js": "4.12.0"
   },
   "dependencies": {
     "@polkadot/api": "^8.5.1",
     "@polkadot/extension-dapp": "^0.43.2",
     "@polkadot/ui-shared": "^2.2.1",
+    "@polkawallet/bridge": "^0.0.1-7",
     "@walletconnect/sign-client": "2.0.0-beta.100",
     "@walletconnect/utils": "2.0.0-beta.100",
     "bn.js": "^5.1.2",

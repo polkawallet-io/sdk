@@ -6,9 +6,11 @@ part of 'verifyResult.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-VerifyResult _$VerifyResultFromJson(Map<String, dynamic> json) => VerifyResult()
-  ..crypto = json['crypto'] as String?
-  ..isValid = json['isValid'] as bool?;
+VerifyResult _$VerifyResultFromJson(Map<String, dynamic> json) {
+  return VerifyResult()
+    ..crypto = json['crypto'] as String?
+    ..isValid = json['isValid'] as bool?;
+}
 
 Map<String, dynamic> _$VerifyResultToJson(VerifyResult instance) =>
     <String, dynamic>{

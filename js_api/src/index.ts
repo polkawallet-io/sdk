@@ -9,6 +9,7 @@ import wc from "./service/walletconnect";
 import gov from "./service/gov";
 import parachain from "./service/parachain";
 import assets from "./service/assets";
+import bridge from "./service/bridge";
 import { genLinks } from "./utils/config/config";
 
 // console.log will send message to MsgChannel to App
@@ -43,12 +44,12 @@ async function connect(nodes: string[]) {
       });
       if (!(<any>window).api) {
         (<any>window).api = res;
-        const url = nodes[(<any>res)._options.provider.__private_23_endpointIndex];
+        const url = nodes[(<any>res)._options.provider.__private_51_endpointIndex];
         send("log", `${url} wss connected success`);
         resolve(url);
       } else {
         res.disconnect();
-        const url = nodes[(<any>res)._options.provider.__private_23_endpointIndex];
+        const url = nodes[(<any>res)._options.provider.__private_51_endpointIndex];
         send("log", `${url} wss success and disconnected`);
         resolve(url);
       }
@@ -83,6 +84,7 @@ const settings = {
 (<any>window).gov = gov;
 (<any>window).parachain = parachain;
 (<any>window).assets = assets;
+(<any>window).bridge = bridge;
 
 // walletConnect supporting is not ready.
 (<any>window).walletConnect = wc;

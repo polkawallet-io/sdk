@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/service/account.dart';
 import 'package:polkawallet_sdk/service/assets.dart';
+import 'package:polkawallet_sdk/service/bridge.dart';
 import 'package:polkawallet_sdk/service/eth/index.dart';
 import 'package:polkawallet_sdk/service/gov.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
@@ -28,6 +29,7 @@ class SubstrateService {
   late ServiceGov gov;
   late ServiceParachain parachain;
   late ServiceAssets assets;
+  late ServiceBridge bridge;
   late ServiceUOS uos;
   late ServiceRecovery recovery;
 
@@ -53,6 +55,7 @@ class SubstrateService {
     gov = ServiceGov(this);
     parachain = ServiceParachain(this);
     assets = ServiceAssets(this);
+    bridge = ServiceBridge(this);
     uos = ServiceUOS(this);
     recovery = ServiceRecovery(this);
 

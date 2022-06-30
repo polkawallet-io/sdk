@@ -6,7 +6,7 @@ const config = {
   output: {
     publicPath: path.resolve(__dirname, ""),
     path: path.resolve(__dirname, "dist"),
-    filename: "main.js",
+    filename: "[name].js",
   },
   resolve: {
     extensions: [".ts", ".js", ".mjs", ".cjs", ".json"],
@@ -40,6 +40,12 @@ const config = {
         use: "babel-loader",
       },
     ],
+  },
+  optimization: {
+    splitChunks: {
+      // include all types of chunks
+      chunks: "all",
+    },
   },
 };
 

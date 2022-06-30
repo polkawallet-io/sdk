@@ -37,12 +37,11 @@ dev_dependencies:
 flutter:
 
   # To add assets to your package, add an assets section, like this:
-   assets:
-     - assets/index.html
-     - js_api/dist/main.js
-     - js_as_extension/dist/main.js
-  #   - images/a_dot_ham.jpeg
-  #
+  assets:
+    - assets/
+    - js_api/dist/
+    - js_as_extension/dist/main.js
+
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages
   #

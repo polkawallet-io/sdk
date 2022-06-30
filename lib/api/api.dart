@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:polkawallet_sdk/api/apiAccount.dart';
 import 'package:polkawallet_sdk/api/apiAssets.dart';
+import 'package:polkawallet_sdk/api/apiBridge.dart';
 import 'package:polkawallet_sdk/api/apiGov.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/api/apiParachain.dart';
@@ -37,6 +38,7 @@ class PolkawalletApi {
     gov = ApiGov(this, service.gov);
     parachain = ApiParachain(this, service.parachain);
     assets = ApiAssets(this, service.assets);
+    bridge = ApiBridge(this, service.bridge);
     uos = ApiUOS(this, service.uos);
     recovery = ApiRecovery(this, service.recovery);
 
@@ -57,6 +59,7 @@ class PolkawalletApi {
   late ApiGov gov;
   late ApiParachain parachain;
   late ApiAssets assets;
+  late ApiBridge bridge;
   late ApiUOS uos;
   late ApiRecovery recovery;
 
