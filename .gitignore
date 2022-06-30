@@ -45,6 +45,6 @@ app.*.map.json
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
 js_api/node_modules/
-js_api/dist/main.js.LICENSE.txt
+js_api/dist/*.js.LICENSE.txt
 js_as_extension/node_modules/
 js_api_eth/node_modules/
