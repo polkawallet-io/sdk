@@ -9,6 +9,7 @@ import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
 
 enum KeyType { mnemonic, rawSeed, keystore }
+
 enum CryptoType { sr25519, ed25519 }
 
 /// Keyring API manages keyPairs for through `polkadot-js/keyring`
@@ -117,7 +118,7 @@ class ApiKeyring {
     await keyring.store.addAccount(acc);
 
     await updatePubKeyIconsMap(keyring, [acc['pubKey']]);
-    updatePubKeyAddressMap(keyring);
+    await updatePubKeyAddressMap(keyring);
     updateIndicesMap(keyring, [acc['address']]);
 
     return KeyPairData.fromJson(acc as Map<String, dynamic>);
