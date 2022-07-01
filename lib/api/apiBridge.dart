@@ -33,12 +33,18 @@ class ApiBridge {
     return res;
   }
 
-  Future<List<String>> connectFromChains() async {
-    return service.connectFromChains();
+  Future<List<String>> connectFromChains(List<String> chains,
+      {Map<String, List<String>>? nodeList}) async {
+    return service.connectFromChains(chains, nodeList: nodeList);
   }
 
   Future<void> disconnectFromChains() async {
     service.disconnectFromChains();
+  }
+
+  Future<BridgeNetworkProperties> getNetworkProperties(String chain) async {
+    final res = await service.getNetworkProperties(chain);
+    return BridgeNetworkProperties.fromJson(Map<String, dynamic>.from(res));
   }
 
   Future<void> subscribeBalances(String chain, String address,

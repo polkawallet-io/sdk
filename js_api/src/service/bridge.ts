@@ -8,19 +8,18 @@ import { subscribeMessage } from "./setting";
 const provider = new ApiProvider();
 
 const availableAdapters: Record<string, BaseCrossChainAdapter> = {
-  kusama: new KusamaAdapter(),
   karura: new KaruraAdapter(),
+  kusama: new KusamaAdapter(),
 };
 const bridge = new Bridge({
   adapters: Object.values(availableAdapters),
 });
 
-async function connectFromChains() {
-  const fromChains = Object.keys(availableAdapters) as RegisteredChainName[];
+async function connectFromChains(chains: RegisteredChainName[], nodeList: Partial<Record<RegisteredChainName, string[]>> | undefined) {
   // connect all adapters
-  const connected = await firstValueFrom(provider.connectFromChain(fromChains));
+  const connected = await firstValueFrom(provider.connectFromChain(chains, nodeList));
 
-  await Promise.all(fromChains.map((chain) => availableAdapters[chain].setApi(provider.getApi(chain))));
+  await Promise.all(chains.map((chain) => availableAdapters[chain].setApi(provider.getApi(chain))));
   return connected;
 }
 
@@ -34,27 +33,19 @@ async function getFromChainsAll() {
 }
 
 async function getRoutes() {
-  return bridge.getRouters().map((e) => ({ from: e.from.id, to: e.to.id, token: e.token }));
+  return bridge.router.getRouters().map((e) => ({ from: e.from.id, to: e.to.id, token: e.token }));
 }
 
 async function getChainsInfo() {
   return chains;
 }
 
-async function getAvailableTokens(from: RegisteredChainName, to: RegisteredChainName) {
-  return bridge.getAvailableTokens({ from, to });
-}
-
-async function getFromChains(token: string, to: RegisteredChainName) {
-  return bridge.getFromChains({ token, to });
-}
-
-async function getToChains(token: string, from: RegisteredChainName) {
-  return bridge.getDestiantionsChains({ token, from });
+async function getNetworkProperties(chain: RegisteredChainName) {
+  return bridge.findAdapter(chain).getNetworkProperties();
 }
 
 async function subscribeBalancesInner(chain: RegisteredChainName, address: string, callback: Function) {
-  const adapter = bridge.findAdapterByName(chain);
+  const adapter = bridge.findAdapter(chain);
   const tokens = {};
   adapter.getRouters().forEach((e) => {
     tokens[e.token] = true;
@@ -90,7 +81,7 @@ async function subscribeBalances(chain: RegisteredChainName, address: string, ms
 }
 
 async function getInputConfig(from: RegisteredChainName, to: RegisteredChainName, token: string, address: string) {
-  const adapter = bridge.findAdapterByName(from);
+  const adapter = bridge.findAdapter(from);
 
   const res = await firstValueFrom(adapter.subscribeInputConfigs({ to, token, address }));
   return {
@@ -101,6 +92,7 @@ async function getInputConfig(from: RegisteredChainName, to: RegisteredChainName
     decimals: res.minInput.getPrecision(),
     minInput: res.minInput.toChainData().toString(),
     maxInput: res.maxInput.toChainData().toString(),
+    destFee: res.destFee,
   };
 }
 
@@ -112,21 +104,24 @@ async function getTxParams(
   amount: string,
   decimals: number
 ) {
-  const adapter = bridge.findAdapterByName(chainFrom);
+  const adapter = bridge.findAdapter(chainFrom);
   return adapter.getBridgeTxParams({ to: chainTo, token, address, amount: FN.fromInner(amount, decimals) });
+}
+
+async function getApi(chainName: RegisteredChainName) {
+  return provider.getApiPromise(chainName);
 }
 
 export default {
   getFromChainsAll,
+  getNetworkProperties,
   getRoutes,
   getChainsInfo,
   connectFromChains,
   disconnectFromChains,
-  getAvailableTokens,
-  getFromChains,
-  getToChains,
   subscribeBalancesInner,
   subscribeBalances,
   getInputConfig,
   getTxParams,
+  getApi,
 };

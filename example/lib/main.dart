@@ -5,7 +5,6 @@ import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyringEVM.dart';
 import 'package:polkawallet_sdk_example/pages/account.dart';
-import 'package:polkawallet_sdk_example/pages/bridge.dart';
 import 'package:polkawallet_sdk_example/pages/dAppPage.dart';
 import 'package:polkawallet_sdk_example/pages/ethWithJS.dart';
 import 'package:polkawallet_sdk_example/pages/evm.dart';
@@ -85,7 +84,6 @@ class _MyAppState extends State<MyApp> {
         StakingPage.route: (_) => StakingPage(sdk, keyring, _showResult),
         EVMPage.route: (_) => EVMPage(sdk, keyringEVM, _showResult),
         EthWithJSPage.route: (_) => EthWithJSPage(sdk, keyringEVM, _showResult),
-        BridgePage.route: (_) => BridgePage(sdk, _showResult),
       },
     );
   }
@@ -243,13 +241,6 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             Divider(),
-            ListTile(
-              title: Text('sdk.bridge'),
-              subtitle: Text('bridge api'),
-              onTap: () {
-                Navigator.of(context).pushNamed(BridgePage.route);
-              },
-            ),
           ],
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.

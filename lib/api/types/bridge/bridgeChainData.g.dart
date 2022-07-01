@@ -39,3 +39,22 @@ Map<String, dynamic> _$BridgeRouteDataToJson(BridgeRouteData instance) =>
       'to': instance.to,
       'token': instance.token,
     };
+
+BridgeNetworkProperties _$BridgeNetworkPropertiesFromJson(
+    Map<String, dynamic> json) {
+  return BridgeNetworkProperties(
+    ss58Format: json['ss58Format'] as int,
+    tokenDecimals:
+        (json['tokenDecimals'] as List<dynamic>).map((e) => e as int).toList(),
+    tokenSymbol:
+        (json['tokenSymbol'] as List<dynamic>).map((e) => e as String).toList(),
+  );
+}
+
+Map<String, dynamic> _$BridgeNetworkPropertiesToJson(
+        BridgeNetworkProperties instance) =>
+    <String, dynamic>{
+      'ss58Format': instance.ss58Format,
+      'tokenDecimals': instance.tokenDecimals,
+      'tokenSymbol': instance.tokenSymbol,
+    };

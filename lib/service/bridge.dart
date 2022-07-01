@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:polkawallet_sdk/service/index.dart';
 
@@ -24,14 +25,21 @@ class ServiceBridge {
     return res;
   }
 
-  Future<List<String>> connectFromChains() async {
-    final res =
-        await serviceRoot.webView!.evalJavascript('bridge.connectFromChains()');
+  Future<List<String>> connectFromChains(List<String> chains,
+      {Map<String, List<String>>? nodeList}) async {
+    final res = await serviceRoot.webView!.evalJavascript(
+        'bridge.connectFromChains(${jsonEncode(chains)}, ${nodeList == null ? 'undefined' : jsonEncode(nodeList)})');
     return List<String>.from(res);
   }
 
   Future<void> disconnectFromChains() async {
     serviceRoot.webView!.evalJavascript('bridge.disconnectFromChains()');
+  }
+
+  Future<Map> getNetworkProperties(String chain) async {
+    final Map res = await serviceRoot.webView!
+        .evalJavascript('bridge.getNetworkProperties("$chain")');
+    return res;
   }
 
   Future<void> subscribeBalances(

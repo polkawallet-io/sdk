@@ -37,3 +37,19 @@ class BridgeRouteData {
       _$BridgeRouteDataFromJson(json);
   Map<String, dynamic> toJson() => _$BridgeRouteDataToJson(this);
 }
+
+@JsonSerializable()
+class BridgeNetworkProperties {
+  int ss58Format;
+  List<int> tokenDecimals;
+  List<String> tokenSymbol;
+  BridgeNetworkProperties({
+    required this.ss58Format,
+    required this.tokenDecimals,
+    required this.tokenSymbol,
+  });
+
+  static BridgeNetworkProperties fromJson(Map<String, dynamic> json) =>
+      _$BridgeNetworkPropertiesFromJson(json);
+  Map<String, dynamic> toJson() => _$BridgeNetworkPropertiesToJson(this);
+}

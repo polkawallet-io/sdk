@@ -36,6 +36,7 @@ BridgeAmountInputConfig _$BridgeAmountInputConfigFromJson(
     address: json['address'] as String,
     minInput: json['minInput'] as String,
     maxInput: json['maxInput'] as String,
+    destFee: json['destFee'] as String,
   );
 }
 
@@ -48,4 +49,5 @@ Map<String, dynamic> _$BridgeAmountInputConfigToJson(
       'address': instance.address,
       'minInput': instance.minInput,
       'maxInput': instance.maxInput,
+      'destFee': instance.destFee,
     };
