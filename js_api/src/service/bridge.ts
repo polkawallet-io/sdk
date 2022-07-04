@@ -114,11 +114,11 @@ async function getApi(chainName: RegisteredChainName) {
 
 export default {
   getFromChainsAll,
-  getNetworkProperties,
   getRoutes,
   getChainsInfo,
   connectFromChains,
   disconnectFromChains,
+  getNetworkProperties,
   subscribeBalancesInner,
   subscribeBalances,
   getInputConfig,
