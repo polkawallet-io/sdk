@@ -57,10 +57,17 @@ class WebViewRunner {
         onConsoleMessage: (controller, message) {
           print("CONSOLE MESSAGE: " + message.message);
           if (jsCodeStarted < 0) {
-            if (message.message.contains('js loaded')) {
-              jsCodeStarted = 1;
-            } else {
-              jsCodeStarted = 0;
+            try {
+              final msg = jsonDecode(message.message);
+              if (msg['path'] == 'log') {
+                if (message.message.contains('js loaded')) {
+                  jsCodeStarted = 1;
+                } else {
+                  jsCodeStarted = 0;
+                }
+              }
+            } catch (err) {
+              // ignore
             }
           }
           if (message.message.contains("WebSocket is not connected") &&
