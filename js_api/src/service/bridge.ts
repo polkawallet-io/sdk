@@ -108,7 +108,7 @@ async function getTxParams(
   return adapter.getBridgeTxParams({ to: chainTo, token, address, amount: FN.fromInner(amount, decimals) });
 }
 
-async function getApi(chainName: RegisteredChainName) {
+function getApi(chainName: RegisteredChainName) {
   return provider.getApiPromise(chainName);
 }
 

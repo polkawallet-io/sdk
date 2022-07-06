@@ -39,6 +39,16 @@ const config = {
         include: path.resolve(__dirname, "node_modules/@polkadot/"),
         use: "babel-loader",
       },
+      {
+        test: /\.js$/,
+        include: path.resolve(__dirname, "node_modules/@acala-network/"),
+        use: "babel-loader",
+      },
+      {
+        test: /\.js$/,
+        include: path.resolve(__dirname, "node_modules/@nuts-finance/"),
+        use: "babel-loader",
+      },
     ],
   },
 };

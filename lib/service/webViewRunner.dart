@@ -39,8 +39,8 @@ class WebViewRunner {
 
     _jsCode = jsCode;
 
-    _jsCodeDefault =
-        await rootBundle.loadString('packages/polkawallet_sdk/assets/main.js');
+    _jsCodeDefault = await rootBundle
+        .loadString('packages/polkawallet_sdk/js_api/dist/main.js');
     print('default js file loaded');
     // TODO: always load eth js for evm keyring (while evm online)
     // _jsCodeEth = await rootBundle

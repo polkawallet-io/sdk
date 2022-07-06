@@ -22,7 +22,6 @@
     "clean": "rm -rf dist/*",
     "prebuild": "rm -rf ../assets/*.js",
     "build": "yarn run clean && webpack --mode production",
-    "postbuild": "mv dist/*.js ../assets/",
     "build-dev": "webpack --mode development"
   },
   "resolutions": {
