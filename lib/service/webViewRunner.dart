@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/service/keyring.dart';
@@ -11,6 +12,7 @@ class WebViewRunner {
   Function? _onLaunched;
 
   String? _jsCode;
+  late String _jsCodeDefault;
   late String _jsCodeEth;
   Map<String, Function> _msgHandlers = {};
   Map<String, Completer> _msgCompleters = {};
@@ -36,6 +38,10 @@ class WebViewRunner {
     jsCodeStarted = -1;
 
     _jsCode = jsCode;
+
+    _jsCodeDefault =
+        await rootBundle.loadString('packages/polkawallet_sdk/assets/main.js');
+    print('default js file loaded');
     // TODO: always load eth js for evm keyring (while evm online)
     // _jsCodeEth = await rootBundle
     //     .loadString('packages/polkawallet_sdk/js_api_eth/dist/main.js');
@@ -132,6 +138,7 @@ class WebViewRunner {
   Future<void> _startJSCode(
       ServiceKeyring? keyring, Keyring keyringStorage) async {
     // inject js file to webView
+    await _web!.webViewController.evaluateJavascript(source: _jsCodeDefault);
     // TODO: no eth injection before evm online
     if (_jsCode != null) {
       await _web!.webViewController.evaluateJavascript(source: _jsCode!);
