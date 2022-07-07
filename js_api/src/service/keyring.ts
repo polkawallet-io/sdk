@@ -285,6 +285,9 @@ function sendTx(api: ApiPromise, txInfo: any, paramList: any[], password: string
     } catch (err) {
       resolve({ error: "password check failed" });
     }
+
+    //TODO: let signer = await getSigner(keyPair.address)
+    // tx.signAndSend(keyPair, { tip: new BN(txInfo.tip, 10), signer }, onStatusChange)
     tx.signAndSend(keyPair, { tip: new BN(txInfo.tip, 10) }, onStatusChange)
       .then((res) => {
         unsub = res;
