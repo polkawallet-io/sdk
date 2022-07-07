@@ -1,0 +1,4 @@
+js_api/.yarn/releases/** binary
+js_api/.yarn/plugins/** binary
+js_api/dist/** binary
+assets/*.js binary
