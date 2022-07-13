@@ -1,6 +1,6 @@
 import { ApiProvider, BalanceData, Bridge, chains, FN, RegisteredChainName } from "@polkawallet/bridge";
-import { KusamaAdapter } from "@polkawallet/bridge/build/adapters/polkadot";
-import { KaruraAdapter } from "@polkawallet/bridge/build/adapters/acala";
+import { KusamaAdapter, PolkadotAdapter } from "@polkawallet/bridge/build/adapters/polkadot";
+import { AcalaAdapter, KaruraAdapter } from "@polkawallet/bridge/build/adapters/acala";
 import { Observable, firstValueFrom, combineLatest } from "rxjs";
 import { BaseCrossChainAdapter } from "@polkawallet/bridge/build/base-chain-adapter";
 import { subscribeMessage } from "./setting";
@@ -8,7 +8,9 @@ import { subscribeMessage } from "./setting";
 const provider = new ApiProvider();
 
 const availableAdapters: Record<string, BaseCrossChainAdapter> = {
+  acala: new AcalaAdapter(),
   karura: new KaruraAdapter(),
+  polkadot: new PolkadotAdapter(),
   kusama: new KusamaAdapter(),
 };
 const bridge = new Bridge({
@@ -33,7 +35,8 @@ async function getFromChainsAll() {
 }
 
 async function getRoutes() {
-  return bridge.router.getRouters().map((e) => ({ from: e.from.id, to: e.to.id, token: e.token }));
+  await bridge.isReady;
+  return bridge.router.getAvailableRouters().map((e) => ({ from: e.from.id, to: e.to.id, token: e.token }));
 }
 
 async function getChainsInfo() {
