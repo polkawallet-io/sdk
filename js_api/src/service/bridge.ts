@@ -1,6 +1,7 @@
 import { ApiProvider, BalanceData, Bridge, chains, FN, RegisteredChainName } from "@polkawallet/bridge";
 import { KusamaAdapter, PolkadotAdapter } from "@polkawallet/bridge/build/adapters/polkadot";
 import { AcalaAdapter, KaruraAdapter } from "@polkawallet/bridge/build/adapters/acala";
+import { StatemineAdapter } from "@polkawallet/bridge/build/adapters/statemint";
 import { Observable, firstValueFrom, combineLatest } from "rxjs";
 import { BaseCrossChainAdapter } from "@polkawallet/bridge/build/base-chain-adapter";
 import { subscribeMessage } from "./setting";
@@ -12,6 +13,7 @@ const availableAdapters: Record<string, BaseCrossChainAdapter> = {
   karura: new KaruraAdapter(),
   polkadot: new PolkadotAdapter(),
   kusama: new KusamaAdapter(),
+  statemine: new StatemineAdapter(),
 };
 const bridge = new Bridge({
   adapters: Object.values(availableAdapters),
