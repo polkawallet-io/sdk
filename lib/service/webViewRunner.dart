@@ -14,6 +14,7 @@ class WebViewRunner {
   late String _jsCodeEth;
   Map<String, Function> _msgHandlers = {};
   Map<String, Completer> _msgCompleters = {};
+  Map<String, Function> _reloadHandlers = {};
   int _evalJavascriptUID = 0;
 
   bool webViewLoaded = false;
@@ -30,6 +31,7 @@ class WebViewRunner {
     /// reset state before webView launch or reload
     _msgHandlers = {};
     _msgCompleters = {};
+    _reloadHandlers = {};
     _evalJavascriptUID = 0;
     _onLaunched = onLaunched;
     webViewLoaded = false;
@@ -47,7 +49,15 @@ class WebViewRunner {
       _web = new HeadlessInAppWebView(
         initialOptions: InAppWebViewGroupOptions(
           crossPlatform: InAppWebViewOptions(clearCache: true),
+          android: AndroidInAppWebViewOptions(useOnRenderProcessGone: true),
         ),
+        androidOnRenderProcessGone: (webView, detail) async {
+          if (_web?.webViewController == webView) {
+            webViewLoaded = false;
+            await _web?.webViewController.clearCache();
+            await _web?.webViewController.reload();
+          }
+        },
         initialUrlRequest: URLRequest(
             url: Uri.parse(
                 "http://localhost:8080/packages/polkawallet_sdk/assets/index.html")),
@@ -139,6 +149,9 @@ class WebViewRunner {
     // await _web!.webViewController.evaluateJavascript(source: _jsCodeEth);
 
     _onLaunched!();
+    _reloadHandlers.forEach((_, value) {
+      value();
+    });
   }
 
   int getEvalJavascriptUID() {
@@ -222,5 +235,13 @@ class WebViewRunner {
 
   void removeMsgHandler(String channel) {
     _msgHandlers.remove(channel);
+  }
+
+  void subscribeReloadAction(String reloadKey, Function reloadAction) {
+    _reloadHandlers[reloadKey] = reloadAction;
+  }
+
+  void unsubscribeReloadAction(String reloadKey) {
+    _reloadHandlers.remove(reloadKey);
   }
 }
