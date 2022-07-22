@@ -75,4 +75,27 @@ class ApiBridge {
         await service.getTxParams(from, to, token, address, amount, decimals);
     return BridgeTxParams.fromJson(Map<String, dynamic>.from(res));
   }
+
+  Future<void> init() async {
+    return await service.init();
+  }
+
+  Future<void> dispose() async {
+    return service.dispose();
+  }
+
+  Future<String> estimateTxFee(String from, String to, String token,
+      String address, String amount, int decimals,String sender) async {
+    final res =
+        await service.estimateTxFee(from, to, token, address, amount, decimals, sender);
+    return res;
+  }
+
+  void subscribeReloadAction(String reloadKey, Function reloadAction) {
+    service.subscribeReloadAction(reloadKey, reloadAction);
+  }
+
+  void unsubscribeReloadAction(String reloadKey) {
+    service.unsubscribeReloadAction(reloadKey);
+  }
 }

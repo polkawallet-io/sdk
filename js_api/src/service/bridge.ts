@@ -113,6 +113,19 @@ async function getTxParams(
   return adapter.getBridgeTxParams({ to: chainTo, token, address, amount: FN.fromInner(amount, decimals) });
 }
 
+async function estimateTxFee(
+  chainFrom: RegisteredChainName,
+  chainTo: RegisteredChainName,
+  token: string,
+  address: string,
+  amount: string,
+  decimals: number,
+  sender: string) {
+
+  const adapter = bridge.findAdapter(chainFrom);
+  return firstValueFrom(adapter.estimateTxFee({ to: chainTo, token, address, amount: FN.fromInner(amount, decimals) }, sender));
+}
+
 function getApi(chainName: RegisteredChainName) {
   return provider.getApiPromise(chainName);
 }
@@ -129,4 +142,5 @@ export default {
   getInputConfig,
   getTxParams,
   getApi,
+  estimateTxFee,
 };
