@@ -84,7 +84,8 @@ class TokenBalanceData {
       this.reserved,
       this.detailPageRoute,
       this.price,
-      this.isCacheChange = false});
+      this.isCacheChange = false,
+      this.getPrice});
 
   final String? id;
   final String? name;
@@ -103,4 +104,6 @@ class TokenBalanceData {
   String? detailPageRoute;
   final double? price;
   bool isCacheChange;
+
+  final double? Function()? getPrice;
 }

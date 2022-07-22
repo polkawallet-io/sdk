@@ -112,14 +112,17 @@ class WebViewRunner {
           _handleReloaded();
           await _startJSCode(keyring, keyringStorage);
         },
+        onLoadError: (controller, url, code, message) {
+          print("webview restart");
+          _web = null;
+          launch(keyring, keyringStorage, onLaunched);
+        },
       );
 
       await _web?.dispose();
       await _web?.run();
     } else {
-      _webViewReloadTimer = Timer.periodic(Duration(seconds: 3), (timer) {
-        _tryReload();
-      });
+      _tryReload();
     }
   }
 
