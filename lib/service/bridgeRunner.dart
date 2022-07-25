@@ -217,4 +217,10 @@ class BridgeRunner {
   void unsubscribeReloadAction(String reloadKey) {
     _reloadHandlers.remove(reloadKey);
   }
+
+  Future<void> reload() async {
+    webViewLoaded = false;
+    await _web?.webViewController.clearCache();
+    return _web?.webViewController.reload();
+  }
 }

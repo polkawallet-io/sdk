@@ -134,4 +134,8 @@ class ApiBridge {
     final res = await service.checkPassword(keyring, account.pubKey, pass);
     return res;
   }
+
+  Future<void> reload() async {
+    return service.reload();
+  }
 }

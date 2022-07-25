@@ -152,4 +152,8 @@ class ServiceBridge {
     }
     return true;
   }
+
+  Future<void> reload() async {
+    return _runner?.reload();
+  }
 }
