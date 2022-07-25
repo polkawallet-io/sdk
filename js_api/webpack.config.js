@@ -2,7 +2,10 @@ const path = require("path");
 const webpack = require("webpack");
 
 const config = {
-  entry: "./src/index.ts",
+  entry: {
+    index: './src/index.ts',
+    bridge: './src/bridge.ts',
+  },
   output: {
     publicPath: path.resolve(__dirname, ""),
     path: path.resolve(__dirname, "dist"),
@@ -47,6 +50,11 @@ const config = {
       {
         test: /\.js$/,
         include: path.resolve(__dirname, "node_modules/@nuts-finance/"),
+        use: "babel-loader",
+      },
+      {
+        test: /\.js$/,
+        include: path.resolve(__dirname, "node_modules/@polkawallet/"),
         use: "babel-loader",
       },
     ],

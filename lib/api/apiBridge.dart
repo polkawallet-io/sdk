@@ -5,7 +5,6 @@ import 'package:polkawallet_sdk/api/types/bridge/bridgeChainData.dart';
 import 'package:polkawallet_sdk/api/types/bridge/bridgeTokenBalance.dart';
 import 'package:polkawallet_sdk/api/types/bridge/bridgeTxParams.dart';
 import 'package:polkawallet_sdk/service/bridge.dart';
-import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 class ApiBridge {

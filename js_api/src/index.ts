@@ -9,7 +9,6 @@ import staking from "./service/staking";
 import gov from "./service/gov";
 import parachain from "./service/parachain";
 import assets from "./service/assets";
-import bridge from "./service/bridge";
 import { genLinks } from "./utils/config/config";
 
 // console.log will send message to MsgChannel to App
@@ -84,7 +83,6 @@ const settings = {
 (<any>window).gov = gov;
 (<any>window).parachain = parachain;
 (<any>window).assets = assets;
-(<any>window).bridge = bridge;
 
 // walletConnect supporting is not ready.
 // (<any>window).walletConnect = wc;

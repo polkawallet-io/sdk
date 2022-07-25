@@ -16,7 +16,8 @@ import { subscribeMessage } from "./setting";
 
 import { Keyring } from "@polkadot/keyring";
 import { KeyringPair$Json, } from "@polkadot/keyring/types";
-import BN from "bn.js";
+
+import { BN } from "@polkadot/util";
 import { ITuple } from "@polkadot/types/types";
 import { DispatchError } from "@polkadot/types/interfaces";
 import { SubmittableResult } from "@polkadot/api/submittable";
@@ -152,10 +153,22 @@ async function getTxParams(
     params: tx.args,
   }
 }
+async function estimateTxFee(
+  chainFrom: ChainName,
+  chainTo: ChainName,
+  token: string,
+  address: string,
+  amount: string,
+  decimals: number,
+  sender: string) {
+
+  const adapter = bridge.findAdapter(chainFrom);
+  return firstValueFrom(adapter.estimateTxFee({ to: chainTo, token, address, amount: FN.fromInner(amount, decimals), signer: sender }));
+}
 
 async function sendTx(
-  chainFrom: RegisteredChainName,
-  chainTo: RegisteredChainName,
+  chainFrom: ChainName,
+  chainTo: ChainName,
   token: string,
   address: string,
   amount: string,
@@ -168,7 +181,7 @@ async function sendTx(
   const adapter = bridge.findAdapter(chainFrom);
   return new Promise(async (resolve) => {
     const api = getApi(chainFrom);
-    const { module, call, params } = await getTxParams(chainFrom, chainTo, token, address, amount, decimals);
+    const { module, call, params } = await getTxParams(chainFrom, chainTo, token, address, amount, decimals, keyPairJson.address);
     const tx = api.tx[module][call](...params);
 
     const onStatusChange = (result: SubmittableResult) => {
@@ -278,6 +291,7 @@ export default {
   getInputConfig,
   getTxParams,
   getApi,
+  estimateTxFee,
   sendTx,
   checkPassword,
 };

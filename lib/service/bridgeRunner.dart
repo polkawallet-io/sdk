@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class BridgeRunner {
@@ -16,10 +17,8 @@ class BridgeRunner {
   bool webViewLoaded = false;
   int jsCodeStarted = -1;
   Timer? _webViewReloadTimer;
-  InAppLocalhostServer localhostServer = InAppLocalhostServer(port: 8090);
 
   Future<void>? dispose() async {
-    await localhostServer.close();
     return _web?.dispose();
   }
 
@@ -40,8 +39,6 @@ class BridgeRunner {
     _jsCode = jsCode;
 
     if (_web == null) {
-      await _startLocalServer();
-
       _web = new HeadlessInAppWebView(
         windowId: 2,
         initialOptions: InAppWebViewGroupOptions(
@@ -57,13 +54,13 @@ class BridgeRunner {
         },
         initialUrlRequest: URLRequest(
             url: Uri.parse(
-                "http://localhost:8090/packages/polkawallet_sdk/assets/index.html")),
+                "http://localhost:8080/packages/polkawallet_sdk/assets/bridge.html")),
         onWebViewCreated: (controller) async {
           print('Bridge HeadlessInAppWebView created!');
           controller.loadUrl(
               urlRequest: URLRequest(
                   url: Uri.parse(
-                      "http://localhost:8090/packages/polkawallet_sdk/assets/index.html")));
+                      "http://localhost:8080/packages/polkawallet_sdk/assets/bridge.html")));
         },
         onConsoleMessage: (controller, message) {
           print("CONSOLE MESSAGE: " + message.message);
@@ -133,10 +130,6 @@ class BridgeRunner {
   void _handleReloaded() {
     _webViewReloadTimer?.cancel();
     webViewLoaded = true;
-  }
-
-  Future<void> _startLocalServer() async {
-    await localhostServer.start();
   }
 
   Future<void> _startJSCode() async {

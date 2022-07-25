@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:polkawallet_sdk/service/bridgeRunner.dart';
 import 'package:polkawallet_sdk/service/index.dart';
-import 'package:polkawallet_sdk/storage/keyring.dart';
 
 class ServiceBridge {
   ServiceBridge(this.serviceRoot);
@@ -94,6 +94,14 @@ class ServiceBridge {
     assert(_runner != null, 'bridge not init');
     final Map res = await _runner?.evalJavascript(
         'bridge.getTxParams("$from", "$to", "$token", "$address", "$amount", $decimals, "$signer")');
+    return res;
+  }
+
+  Future<String> estimateTxFee(String from, String to, String token,
+      String address, String amount, int decimals, String sender) async {
+    assert(_runner != null, 'bridge not init');
+    final String res = await _runner?.evalJavascript(
+        'bridge.estimateTxFee("$from", "$to", "$token", "$address", "$amount", $decimals, "$sender")');
     return res;
   }
 
