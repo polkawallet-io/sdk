@@ -93,7 +93,7 @@ class ApiBridge {
     return res;
   }
 
-  Future<String> sendTx(
+  Future<Map?> sendTx(
       String from,
       String to,
       String token,

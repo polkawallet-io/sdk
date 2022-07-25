@@ -8,10 +8,10 @@ import { subscribeMessage } from "./setting";
 
 import { Keyring } from "@polkadot/keyring";
 import { KeyringPair$Json, } from "@polkadot/keyring/types";
-import { ISubmittableResult } from '@polkadot/types/types';
 import BN from "bn.js";
 import { ITuple } from "@polkadot/types/types";
 import { DispatchError } from "@polkadot/types/interfaces";
+import { SubmittableResult } from "@polkadot/api/submittable";
 let keyring = new Keyring({ ss58Format: 0, type: "sr25519" });
 
 const provider = new ApiProvider();
@@ -149,9 +149,11 @@ async function sendTx(
 
   const adapter = bridge.findAdapter(chainFrom);
   return new Promise(async (resolve) => {
-    let tx = adapter.createTx({ to: chainTo, token, address, amount: FN.fromInner(amount, decimals) });
+    const api = getApi(chainFrom);
+    const { module, call, params } = await getTxParams(chainFrom, chainTo, token, address, amount, decimals);
+    const tx = api.tx[module][call](...params);
 
-    const onStatusChange = (result: ISubmittableResult) => {
+    const onStatusChange = (result: SubmittableResult) => {
 
       if (result.status.isInBlock || result.status.isFinalized) {
         const { success, error } = _extractEvents(result);
@@ -165,10 +167,6 @@ async function sendTx(
         (<any>window).send(msgId, result.status.type);
       }
     };
-    if (txInfo.isUnsigned) {
-      tx.send(onStatusChange);
-      return;
-    }
 
     let keyPair = keyring.addFromJson(keyPairJson);
     try {
@@ -180,7 +178,7 @@ async function sendTx(
   });
 }
 
-function _extractEvents(result: ISubmittableResult) {
+function _extractEvents(result: SubmittableResult) {
   if (!result || !result.events) {
     return {};
   }

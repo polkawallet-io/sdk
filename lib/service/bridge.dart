@@ -105,7 +105,7 @@ class ServiceBridge {
     return res;
   }
 
-  Future<String> sendTx(
+  Future<Map?> sendTx(
       String from,
       String to,
       String token,
@@ -118,7 +118,7 @@ class ServiceBridge {
       Map keyring) async {
     assert(_runner != null, 'bridge not init');
     final String pairs = jsonEncode(keyring);
-    final String res = await _runner?.evalJavascript(
+    final dynamic res = await _runner?.evalJavascript(
         'bridge.sendTx("$from", "$to", "$token", "$address", "$amount", $decimals, ${jsonEncode(txInfo)},"$password","$msgId",$pairs)');
     return res;
   }
