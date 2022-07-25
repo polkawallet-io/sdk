@@ -1,7 +1,15 @@
-import { ApiProvider, BalanceData, Bridge, chains, FN, RegisteredChainName } from "@polkawallet/bridge";
+import { ApiProvider, BalanceData, Bridge, chains, FN, ChainName } from "@polkawallet/bridge";
 import { KusamaAdapter, PolkadotAdapter } from "@polkawallet/bridge/build/adapters/polkadot";
 import { AcalaAdapter, KaruraAdapter } from "@polkawallet/bridge/build/adapters/acala";
 import { StatemineAdapter } from "@polkawallet/bridge/build/adapters/statemint";
+import { AltairAdapter } from "@polkawallet/bridge/build/adapters/centrifuge";
+import { ShidenAdapter } from "@polkawallet/bridge/build/adapters/astar";
+import { BifrostAdapter } from "@polkawallet/bridge/build/adapters/bifrost";
+import { CalamariAdapter } from "@polkawallet/bridge/build/adapters/manta";
+import { ShadowAdapter } from "@polkawallet/bridge/build/adapters/crust";
+import { CrabAdapter } from "@polkawallet/bridge/build/adapters/darwinia";
+import { IntegriteeAdapter } from "@polkawallet/bridge/build/adapters/integritee";
+import { QuartzAdapter } from "@polkawallet/bridge/build/adapters/unique";
 import { Observable, firstValueFrom, combineLatest } from "rxjs";
 import { BaseCrossChainAdapter } from "@polkawallet/bridge/build/base-chain-adapter";
 import { subscribeMessage } from "./setting";
@@ -22,12 +30,20 @@ const availableAdapters: Record<string, BaseCrossChainAdapter> = {
   polkadot: new PolkadotAdapter(),
   kusama: new KusamaAdapter(),
   statemine: new StatemineAdapter(),
+  altair: new AltairAdapter(),
+  shiden: new ShidenAdapter(),
+  bifrost: new BifrostAdapter(),
+  calamari: new CalamariAdapter(),
+  shadow: new ShadowAdapter(),
+  crab: new CrabAdapter(),
+  integritee: new IntegriteeAdapter(),
+  quartz: new QuartzAdapter(),
 };
 const bridge = new Bridge({
   adapters: Object.values(availableAdapters),
 });
 
-async function connectFromChains(chains: RegisteredChainName[], nodeList: Partial<Record<RegisteredChainName, string[]>> | undefined) {
+async function connectFromChains(chains: ChainName[], nodeList: Partial<Record<ChainName, string[]>> | undefined) {
   // connect all adapters
   const connected = await firstValueFrom(provider.connectFromChain(chains, nodeList));
 
@@ -36,7 +52,7 @@ async function connectFromChains(chains: RegisteredChainName[], nodeList: Partia
 }
 
 async function disconnectFromChains() {
-  const fromChains = Object.keys(availableAdapters) as RegisteredChainName[];
+  const fromChains = Object.keys(availableAdapters) as ChainName[];
   fromChains.forEach((e) => provider.disconnect(e));
 }
 
@@ -53,11 +69,16 @@ async function getChainsInfo() {
   return chains;
 }
 
-async function getNetworkProperties(chain: RegisteredChainName) {
-  return bridge.findAdapter(chain).getNetworkProperties();
+async function getNetworkProperties(chain: ChainName) {
+  const props = await provider.getApiPromise(chain).rpc.system.properties();
+  return {
+      ss58Format: parseInt(props.ss58Format.toString()),
+      tokenDecimals: props.tokenDecimals.toJSON(),
+      tokenSymbol: props.tokenSymbol.toJSON(),
+  };
 }
 
-async function subscribeBalancesInner(chain: RegisteredChainName, address: string, callback: Function) {
+async function subscribeBalancesInner(chain: ChainName, address: string, callback: Function) {
   const adapter = bridge.findAdapter(chain);
   const tokens = {};
   adapter.getRouters().forEach((e) => {
@@ -88,15 +109,15 @@ async function subscribeBalancesInner(chain: RegisteredChainName, address: strin
   return () => sub.unsubscribe();
 }
 
-async function subscribeBalances(chain: RegisteredChainName, address: string, msgChannel: string) {
+async function subscribeBalances(chain: ChainName, address: string, msgChannel: string) {
   subscribeMessage((<any>window).bridge.subscribeBalancesInner, [chain, address], msgChannel, undefined);
   return;
 }
 
-async function getInputConfig(from: RegisteredChainName, to: RegisteredChainName, token: string, address: string) {
+async function getInputConfig(from: ChainName, to: ChainName, token: string, address: string, signer: string) {
   const adapter = bridge.findAdapter(from);
 
-  const res = await firstValueFrom(adapter.subscribeInputConfigs({ to, token, address }));
+  const res = await firstValueFrom(adapter.subscribeInputConfigs({ to, token, address, signer }));
   return {
     from,
     to,
@@ -105,35 +126,32 @@ async function getInputConfig(from: RegisteredChainName, to: RegisteredChainName
     decimals: res.minInput.getPrecision(),
     minInput: res.minInput.toChainData().toString(),
     maxInput: res.maxInput.toChainData().toString(),
-    destFee: res.destFee,
+    destFee: {
+      token: res.destFee.token,
+      amount: res.destFee.balance.toChainData().toString(),
+      decimals: res.destFee.balance.getPrecision()
+    },
+    estimateFee: res.estimateFee
   };
 }
 
 async function getTxParams(
-  chainFrom: RegisteredChainName,
-  chainTo: RegisteredChainName,
-  token: string,
-  address: string,
-  amount: string,
-  decimals: number
-) {
-  const adapter = bridge.findAdapter(chainFrom);
-  return adapter.getBridgeTxParams({ to: chainTo, token, address, amount: FN.fromInner(amount, decimals) });
-}
-
-async function estimateTxFee(
-  chainFrom: RegisteredChainName,
-  chainTo: RegisteredChainName,
+  chainFrom: ChainName,
+  chainTo: ChainName,
   token: string,
   address: string,
   amount: string,
   decimals: number,
-  sender: string) {
-
+  signer: string,
+) {
   const adapter = bridge.findAdapter(chainFrom);
-  return firstValueFrom(adapter.estimateTxFee({ to: chainTo, token, address, amount: FN.fromInner(amount, decimals) }, sender));
+  const tx = adapter.createTx({ to: chainTo, token, address, amount: FN.fromInner(amount, decimals), signer });
+  return {
+    module: tx.method.section,
+    call: tx.method.method,
+    params: tx.args,
+  }
 }
-
 
 async function sendTx(
   chainFrom: RegisteredChainName,
@@ -244,7 +262,7 @@ function checkPassword(keyPairJson: KeyringPair$Json, pubKey: string, pass: stri
   });
 }
 
-function getApi(chainName: RegisteredChainName) {
+function getApi(chainName: ChainName) {
   return provider.getApiPromise(chainName);
 }
 
@@ -260,7 +278,6 @@ export default {
   getInputConfig,
   getTxParams,
   getApi,
-  estimateTxFee,
   sendTx,
   checkPassword,
 };

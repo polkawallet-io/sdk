@@ -65,16 +65,17 @@ class ApiBridge {
     service.unsubscribeBalances(chain, address);
   }
 
-  Future<BridgeAmountInputConfig> getAmountInputConfig(
-      String from, String to, String token, String address) async {
-    final res = await service.getAmountInputConfig(from, to, token, address);
+  Future<BridgeAmountInputConfig> getAmountInputConfig(String from, String to,
+      String token, String address, String signer) async {
+    final res =
+        await service.getAmountInputConfig(from, to, token, address, signer);
     return BridgeAmountInputConfig.fromJson(Map<String, dynamic>.from(res));
   }
 
   Future<BridgeTxParams> getTxParams(String from, String to, String token,
-      String address, String amount, int decimals) async {
-    final res =
-        await service.getTxParams(from, to, token, address, amount, decimals);
+      String address, String amount, int decimals, String signer) async {
+    final res = await service.getTxParams(
+        from, to, token, address, amount, decimals, signer);
     return BridgeTxParams.fromJson(Map<String, dynamic>.from(res));
   }
 

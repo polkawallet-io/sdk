@@ -34,7 +34,7 @@
     "@polkadot/api": "^8.5.1",
     "@polkadot/extension-dapp": "^0.43.2",
     "@polkadot/ui-shared": "^2.2.1",
-    "@polkawallet/bridge": "0.0.2-2",
+    "@polkawallet/bridge": "0.0.2-4",
     "@walletconnect/sign-client": "2.0.0-beta.100",
     "@walletconnect/utils": "2.0.0-beta.100",
     "bn.js": "^5.1.2",

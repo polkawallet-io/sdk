@@ -81,27 +81,19 @@ class ServiceBridge {
     _runner?.unsubscribeMessage('${chain}BridgeTokenBalances$address');
   }
 
-  Future<Map> getAmountInputConfig(
-      String from, String to, String token, String address) async {
+  Future<Map> getAmountInputConfig(String from, String to, String token,
+      String address, String signer) async {
     assert(_runner != null, 'bridge not init');
     final Map res = await _runner?.evalJavascript(
-        'bridge.getInputConfig("$from", "$to", "$token", "$address")');
+        'bridge.getInputConfig("$from", "$to", "$token", "$address", "$signer")');
     return res;
   }
 
   Future<Map> getTxParams(String from, String to, String token, String address,
-      String amount, int decimals) async {
+      String amount, int decimals, String signer) async {
     assert(_runner != null, 'bridge not init');
     final Map res = await _runner?.evalJavascript(
-        'bridge.getTxParams("$from", "$to", "$token", "$address", "$amount", $decimals)');
-    return res;
-  }
-
-  Future<String> estimateTxFee(String from, String to, String token,
-      String address, String amount, int decimals, String sender) async {
-    assert(_runner != null, 'bridge not init');
-    final String res = await _runner?.evalJavascript(
-        'bridge.estimateTxFee("$from", "$to", "$token", "$address", "$amount", $decimals, "$sender")');
+        'bridge.getTxParams("$from", "$to", "$token", "$address", "$amount", $decimals, "$signer")');
     return res;
   }
 

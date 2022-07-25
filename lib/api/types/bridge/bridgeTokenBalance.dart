@@ -32,7 +32,8 @@ class BridgeAmountInputConfig {
   String address;
   String minInput;
   String maxInput;
-  String destFee;
+  BridgeDestFeeData destFee;
+  String estimateFee;
   BridgeAmountInputConfig({
     required this.token,
     required this.from,
@@ -41,9 +42,26 @@ class BridgeAmountInputConfig {
     required this.minInput,
     required this.maxInput,
     required this.destFee,
+    required this.estimateFee,
   });
 
   static BridgeAmountInputConfig fromJson(Map<String, dynamic> json) =>
       _$BridgeAmountInputConfigFromJson(json);
   Map<String, dynamic> toJson() => _$BridgeAmountInputConfigToJson(this);
+}
+
+@JsonSerializable()
+class BridgeDestFeeData {
+  String token;
+  String amount;
+  int decimals;
+  BridgeDestFeeData({
+    required this.token,
+    required this.amount,
+    required this.decimals,
+  });
+
+  static BridgeDestFeeData fromJson(Map<String, dynamic> json) =>
+      _$BridgeDestFeeDataFromJson(json);
+  Map<String, dynamic> toJson() => _$BridgeDestFeeDataToJson(this);
 }
