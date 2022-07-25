@@ -5,6 +5,8 @@ import 'package:polkawallet_sdk/api/types/bridge/bridgeChainData.dart';
 import 'package:polkawallet_sdk/api/types/bridge/bridgeTokenBalance.dart';
 import 'package:polkawallet_sdk/api/types/bridge/bridgeTxParams.dart';
 import 'package:polkawallet_sdk/service/bridge.dart';
+import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 class ApiBridge {
   ApiBridge(this.apiRoot, this.service);
@@ -85,9 +87,25 @@ class ApiBridge {
   }
 
   Future<String> estimateTxFee(String from, String to, String token,
-      String address, String amount, int decimals,String sender) async {
-    final res =
-        await service.estimateTxFee(from, to, token, address, amount, decimals, sender);
+      String address, String amount, int decimals, String sender) async {
+    final res = await service.estimateTxFee(
+        from, to, token, address, amount, decimals, sender);
+    return res;
+  }
+
+  Future<String> sendTx(
+      String from,
+      String to,
+      String token,
+      String address,
+      String amount,
+      int decimals,
+      Map txInfo,
+      String password,
+      String msgId,
+      Map keyring) async {
+    final res = await service.sendTx(from, to, token, address, amount, decimals,
+        txInfo, password, msgId, keyring);
     return res;
   }
 
@@ -97,5 +115,23 @@ class ApiBridge {
 
   void unsubscribeReloadAction(String reloadKey) {
     service.unsubscribeReloadAction(reloadKey);
+  }
+
+  int getEvalJavascriptUID() {
+    return service.getEvalJavascriptUID();
+  }
+
+  void addMsgHandler(String channel, Function onMessage) {
+    service.addMsgHandler(channel, onMessage);
+  }
+
+  void removeMsgHandler(String channel) {
+    service.removeMsgHandler(channel);
+  }
+
+  Future<bool> checkPassword(
+      Map keyring, KeyPairData account, String pass) async {
+    final res = await service.checkPassword(keyring, account.pubKey, pass);
+    return res;
   }
 }

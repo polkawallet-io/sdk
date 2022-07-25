@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:polkawallet_sdk/service/bridgeRunner.dart';
 import 'package:polkawallet_sdk/service/index.dart';
+import 'package:polkawallet_sdk/storage/keyring.dart';
 
 class ServiceBridge {
   ServiceBridge(this.serviceRoot);
@@ -104,11 +105,51 @@ class ServiceBridge {
     return res;
   }
 
+  Future<String> sendTx(
+      String from,
+      String to,
+      String token,
+      String address,
+      String amount,
+      int decimals,
+      Map txInfo,
+      String password,
+      String msgId,
+      Map keyring) async {
+    assert(_runner != null, 'bridge not init');
+    final String pairs = jsonEncode(keyring);
+    final String res = await _runner?.evalJavascript(
+        'bridge.sendTx("$from", "$to", "$token", "$address", "$amount", $decimals, ${jsonEncode(txInfo)},"$password","$msgId",$pairs)');
+    return res;
+  }
+
   void subscribeReloadAction(String reloadKey, Function reloadAction) {
     _runner?.subscribeReloadAction(reloadKey, reloadAction);
   }
 
   void unsubscribeReloadAction(String reloadKey) {
     _runner?.unsubscribeReloadAction(reloadKey);
+  }
+
+  int getEvalJavascriptUID() {
+    return _runner?.getEvalJavascriptUID() ?? 0;
+  }
+
+  void addMsgHandler(String channel, Function onMessage) {
+    _runner?.addMsgHandler(channel, onMessage);
+  }
+
+  void removeMsgHandler(String channel) {
+    _runner?.removeMsgHandler(channel);
+  }
+
+  Future<bool> checkPassword(Map keyring, String? pubKey, pass) async {
+    final String pairs = jsonEncode(keyring);
+    final res = await _runner
+        ?.evalJavascript('bridge.checkPassword($pairs,"$pubKey", "$pass")');
+    if (res == null) {
+      return false;
+    }
+    return true;
   }
 }

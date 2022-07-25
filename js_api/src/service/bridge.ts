@@ -6,6 +6,14 @@ import { Observable, firstValueFrom, combineLatest } from "rxjs";
 import { BaseCrossChainAdapter } from "@polkawallet/bridge/build/base-chain-adapter";
 import { subscribeMessage } from "./setting";
 
+import { Keyring } from "@polkadot/keyring";
+import { KeyringPair$Json, } from "@polkadot/keyring/types";
+import { ISubmittableResult } from '@polkadot/types/types';
+import BN from "bn.js";
+import { ITuple } from "@polkadot/types/types";
+import { DispatchError } from "@polkadot/types/interfaces";
+let keyring = new Keyring({ ss58Format: 0, type: "sr25519" });
+
 const provider = new ApiProvider();
 
 const availableAdapters: Record<string, BaseCrossChainAdapter> = {
@@ -126,6 +134,118 @@ async function estimateTxFee(
   return firstValueFrom(adapter.estimateTxFee({ to: chainTo, token, address, amount: FN.fromInner(amount, decimals) }, sender));
 }
 
+
+async function sendTx(
+  chainFrom: RegisteredChainName,
+  chainTo: RegisteredChainName,
+  token: string,
+  address: string,
+  amount: string,
+  decimals: number,
+  txInfo: any,
+  password: string,
+  msgId: string,
+  keyPairJson: KeyringPair$Json,) {
+
+  const adapter = bridge.findAdapter(chainFrom);
+  return new Promise(async (resolve) => {
+    let tx = adapter.createTx({ to: chainTo, token, address, amount: FN.fromInner(amount, decimals) });
+
+    const onStatusChange = (result: ISubmittableResult) => {
+
+      if (result.status.isInBlock || result.status.isFinalized) {
+        const { success, error } = _extractEvents(result);
+        if (success) {
+          resolve({ hash: tx.hash.toString() });
+        }
+        if (error) {
+          resolve({ error });
+        }
+      } else {
+        (<any>window).send(msgId, result.status.type);
+      }
+    };
+    if (txInfo.isUnsigned) {
+      tx.send(onStatusChange);
+      return;
+    }
+
+    let keyPair = keyring.addFromJson(keyPairJson);
+    try {
+      keyPair.decodePkcs8(password);
+    } catch (err) {
+      resolve({ error: "password check failed" });
+    }
+    tx.signAndSend(keyPair, { tip: new BN(txInfo.tip, 10) }, onStatusChange);
+  });
+}
+
+function _extractEvents(result: ISubmittableResult) {
+  if (!result || !result.events) {
+    return {};
+  }
+
+  let success = false;
+  let error: string;
+  result.events
+    .filter((event) => !!event.event)
+    .map(({ event: { data, method, section } }) => {
+      if (section === "system" && method === "ExtrinsicFailed") {
+        const [dispatchError] = (data as unknown) as ITuple<[DispatchError]>;
+        error = _getDispatchError(dispatchError);
+
+        (<any>window).send("txUpdateEvent", {
+          title: `${section}.${method}`,
+          message: error,
+        });
+      } else {
+        (<any>window).send("txUpdateEvent", {
+          title: `${section}.${method}`,
+          message: "ok",
+        });
+        if (section == "system" && method == "ExtrinsicSuccess") {
+          success = true;
+        }
+      }
+    });
+  return { success, error };
+}
+
+
+function _getDispatchError(dispatchError: DispatchError): string {
+  let message: string = dispatchError.type;
+
+  if (dispatchError.isModule) {
+    try {
+      const mod = dispatchError.asModule;
+      const error = dispatchError.registry.findMetaError(mod);
+
+      message = `${error.section}.${error.name}`;
+    } catch (error) {
+      // swallow
+    }
+  } else if (dispatchError.isToken) {
+    message = `${dispatchError.type}.${dispatchError.asToken.type}`;
+  }
+
+  return message;
+}
+
+function checkPassword(keyPairJson: KeyringPair$Json, pubKey: string, pass: string) {
+  return new Promise((resolve) => {
+    const keyPair = keyring.addFromJson(keyPairJson);
+    try {
+      if (!keyPair.isLocked) {
+        keyPair.lock();
+      }
+      keyPair.decodePkcs8(pass);
+    } catch (err) {
+      resolve(null);
+    }
+    resolve({ success: true });
+  });
+}
+
 function getApi(chainName: RegisteredChainName) {
   return provider.getApiPromise(chainName);
 }
@@ -143,4 +263,6 @@ export default {
   getTxParams,
   getApi,
   estimateTxFee,
+  sendTx,
+  checkPassword,
 };
