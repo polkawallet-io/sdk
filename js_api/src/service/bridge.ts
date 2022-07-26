@@ -71,7 +71,7 @@ async function getChainsInfo() {
 }
 
 async function getNetworkProperties(chain: ChainName) {
-  const props = await provider.getApiPromise(chain).rpc.system.properties();
+  const props = await firstValueFrom(provider.getApi(chain).rpc.system.properties());
   return {
       ss58Format: parseInt(props.ss58Format.toString()),
       tokenDecimals: props.tokenDecimals.toJSON(),
@@ -150,9 +150,10 @@ async function getTxParams(
   return {
     module: tx.method.section,
     call: tx.method.method,
-    params: tx.args,
+    params: tx.args.map(e => e.toHuman()),
   }
 }
+
 async function estimateTxFee(
   chainFrom: ChainName,
   chainTo: ChainName,

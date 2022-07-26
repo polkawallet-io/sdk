@@ -4125,9 +4125,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkawallet/bridge@npm:0.0.2-5":
-  version: 0.0.2-5
-  resolution: "@polkawallet/bridge@npm:0.0.2-5"
+"@polkawallet/bridge@npm:0.0.2-6":
+  version: 0.0.2-6
+  resolution: "@polkawallet/bridge@npm:0.0.2-6"
   dependencies:
     "@acala-network/api": ^4.1.6-3
     "@acala-network/sdk": ^4.1.6-3
@@ -4138,7 +4138,7 @@ __metadata:
     "@polkadot/types-augment": ^8.11.1
     axios: ^0.27.2
     lodash: ^4.17.20
-  checksum: 6258a5176e15553af49fd7fa129b47e57ca863eb6b9f00872dc62eea238b239a76a8839b02a0359a4e4a779131e351a9ac7e274b3c8e3c6fa16d288e4effe7c4
+  checksum: 61500e9fc24dec189c5c10887da24e46c0ab4c6fb5a3a1b210a70f2fa9b058e78a269d35be15ed155a2c28181318a8ff8d14e4476dfe3566eaa3a71eeb2b4e46
   languageName: node
   linkType: hard
 
@@ -4153,7 +4153,7 @@ __metadata:
     "@polkadot/api": ^8.5.1
     "@polkadot/extension-dapp": ^0.43.2
     "@polkadot/ui-shared": ^2.2.1
-    "@polkawallet/bridge": 0.0.2-5
+    "@polkawallet/bridge": 0.0.2-6
     "@walletconnect/sign-client": 2.0.0-beta.100
     "@walletconnect/utils": 2.0.0-beta.100
     babel-loader: ^8.0.6
@@ -6163,9 +6163,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.188":
-  version: 1.4.199
-  resolution: "electron-to-chromium@npm:1.4.199"
-  checksum: d029a04cd765400bfa245c17e4895e15fcab3fd5c4dff7bfe1ceae9316a06fb4695b7078a50cfd04e0ca77ae27897520e4a8a332c13f7c2fdb2ee4a4b4593199
+  version: 1.4.200
+  resolution: "electron-to-chromium@npm:1.4.200"
+  checksum: 25dc817f1e4a76c08fc41dc0df1d934a5e88c7d8f87539eb0048650657bcb108b3321b3034e8f3d16b63d5bef0bd5c9dd74ad9c46394735d7106e270cc7d3825
   languageName: node
   linkType: hard
 
@@ -7941,9 +7941,9 @@ __metadata:
   linkType: hard
 
 "multiformats@npm:^9.4.2":
-  version: 9.7.0
-  resolution: "multiformats@npm:9.7.0"
-  checksum: 6904d9d9f4ed764e9e61d064948f4590159fc85d9da5629e8ccad7fd84e55d7d9f6e8ffd471a27ac04fdc857acc4858b61cf579c87f45cca4d98a5a6ef200bf3
+  version: 9.7.1
+  resolution: "multiformats@npm:9.7.1"
+  checksum: 9193a4b55573dc88053a357e5f9562696d7cc47669e5ce5d7e147e3db1ec3f793567d7943c7e20271af9acd1e48c1679d0dfe932094333b16ed7f9f2ccf9197f
   languageName: node
   linkType: hard
 
