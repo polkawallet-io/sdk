@@ -3,11 +3,10 @@ import 'dart:convert';
 
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
-import 'package:polkawallet_sdk/service/keyring.dart';
-import 'package:polkawallet_sdk/storage/keyring.dart';
 
 class WebViewRunner {
   HeadlessInAppWebView? _web;
+  InAppLocalhostServer? _localhostServer;
   Function? _onLaunched;
 
   String? _jsCode;
@@ -19,11 +18,8 @@ class WebViewRunner {
 
   bool webViewLoaded = false;
   int jsCodeStarted = -1;
-  Timer? _webViewReloadTimer;
 
   Future<void> launch(
-    ServiceKeyring? keyring,
-    Keyring keyringStorage,
     Function? onLaunched, {
     String? jsCode,
     Function? socketDisconnectedAction,
@@ -33,7 +29,9 @@ class WebViewRunner {
     _msgCompleters = {};
     _reloadHandlers = {};
     _evalJavascriptUID = 0;
-    _onLaunched = onLaunched;
+    if (onLaunched != null) {
+      _onLaunched = onLaunched;
+    }
     webViewLoaded = false;
     jsCodeStarted = -1;
 
@@ -109,13 +107,15 @@ class WebViewRunner {
           print('webview loaded $url');
           if (webViewLoaded) return;
 
-          _handleReloaded();
-          await _startJSCode(keyring, keyringStorage);
+          webViewLoaded = true;
+          await _startJSCode();
         },
         onLoadError: (controller, url, code, message) {
           print("webview restart");
           _web = null;
-          launch(keyring, keyringStorage, onLaunched);
+          launch(null,
+              jsCode: jsCode,
+              socketDisconnectedAction: socketDisconnectedAction);
         },
       );
 
@@ -132,18 +132,13 @@ class WebViewRunner {
     }
   }
 
-  void _handleReloaded() {
-    _webViewReloadTimer?.cancel();
-    webViewLoaded = true;
-  }
-
   Future<void> _startLocalServer() async {
-    final localhostServer = new InAppLocalhostServer();
-    await localhostServer.start();
+    _localhostServer?.close();
+    _localhostServer = new InAppLocalhostServer();
+    await _localhostServer!.start();
   }
 
-  Future<void> _startJSCode(
-      ServiceKeyring? keyring, Keyring keyringStorage) async {
+  Future<void> _startJSCode() async {
     // inject js file to webView
     // TODO: no eth injection before evm online
     if (_jsCode != null) {

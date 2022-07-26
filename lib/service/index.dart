@@ -63,7 +63,7 @@ class SubstrateService {
     eth = ServiceEth(this);
 
     _web = webViewParam ?? WebViewRunner();
-    await _web!.launch(keyring, keyringStorage, onInitiated,
+    await _web!.launch(onInitiated,
         jsCode: jsCode, socketDisconnectedAction: socketDisconnectedAction);
   }
 }
