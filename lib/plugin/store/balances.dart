@@ -105,5 +105,5 @@ class TokenBalanceData {
   final double? price;
   bool isCacheChange;
 
-  final double? Function()? getPrice;
+  double? Function()? getPrice;
 }
