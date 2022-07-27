@@ -97,29 +97,20 @@ class ServiceBridge {
     return res;
   }
 
-  Future<String> estimateTxFee(String from, String to, String token,
-      String address, String amount, int decimals, String sender) async {
+  Future<String> estimateTxFee(
+      String chainFrom, String txHex, String sender) async {
     assert(_runner != null, 'bridge not init');
     final String res = await _runner?.evalJavascript(
-        'bridge.estimateTxFee("$from", "$to", "$token", "$address", "$amount", $decimals, "$sender")');
+        'bridge.estimateTxFee("$chainFrom", "$txHex", "$sender")');
     return res;
   }
 
-  Future<Map?> sendTx(
-      String from,
-      String to,
-      String token,
-      String address,
-      String amount,
-      int decimals,
-      Map txInfo,
-      String password,
-      String msgId,
-      Map keyring) async {
+  Future<Map?> sendTx(String chainFrom, Map txInfo, String password,
+      String msgId, Map keyring) async {
     assert(_runner != null, 'bridge not init');
     final String pairs = jsonEncode(keyring);
     final dynamic res = await _runner?.evalJavascript(
-        'bridge.sendTx("$from", "$to", "$token", "$address", "$amount", $decimals, ${jsonEncode(txInfo)},"$password","$msgId",$pairs)');
+        'bridge.sendTx("$chainFrom", ${jsonEncode(txInfo)},"$password","$msgId",$pairs)');
     return res;
   }
 

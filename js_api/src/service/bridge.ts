@@ -21,6 +21,7 @@ import { BN } from "@polkadot/util";
 import { ITuple } from "@polkadot/types/types";
 import { DispatchError } from "@polkadot/types/interfaces";
 import { SubmittableResult } from "@polkadot/api/submittable";
+
 let keyring = new Keyring({ ss58Format: 0, type: "sr25519" });
 
 const provider = new ApiProvider();
@@ -151,39 +152,21 @@ async function getTxParams(
     module: tx.method.section,
     call: tx.method.method,
     params: tx.args.map(e => e.toHuman()),
+    txHex: tx.toHex()
   }
 }
 
-async function estimateTxFee(
-  chainFrom: ChainName,
-  chainTo: ChainName,
-  token: string,
-  address: string,
-  amount: string,
-  decimals: number,
-  sender: string) {
+async function estimateTxFee(chainFrom: ChainName, txHex: string, sender: string) {
+  const tx = getApi(chainFrom).tx(txHex);
 
-  const adapter = bridge.findAdapter(chainFrom);
-  return firstValueFrom(adapter.estimateTxFee({ to: chainTo, token, address, amount: FN.fromInner(amount, decimals), signer: sender }));
+  const feeData = await tx.paymentInfo(sender);
+
+  return feeData.partialFee.toString();
 }
 
-async function sendTx(
-  chainFrom: ChainName,
-  chainTo: ChainName,
-  token: string,
-  address: string,
-  amount: string,
-  decimals: number,
-  txInfo: any,
-  password: string,
-  msgId: string,
-  keyPairJson: KeyringPair$Json,) {
-
-  const adapter = bridge.findAdapter(chainFrom);
+async function sendTx(chainFrom: ChainName, txInfo: any, password: string, msgId: string, keyPairJson: KeyringPair$Json) {
   return new Promise(async (resolve) => {
-    const api = getApi(chainFrom);
-    const { module, call, params } = await getTxParams(chainFrom, chainTo, token, address, amount, decimals, keyPairJson.address);
-    const tx = api.tx[module][call](...params);
+    const tx = getApi(chainFrom).tx(txInfo.txHex);
 
     const onStatusChange = (result: SubmittableResult) => {
 

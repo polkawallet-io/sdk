@@ -86,26 +86,16 @@ class ApiBridge {
     return service.dispose();
   }
 
-  Future<String> estimateTxFee(String from, String to, String token,
-      String address, String amount, int decimals, String sender) async {
-    final res = await service.estimateTxFee(
-        from, to, token, address, amount, decimals, sender);
+  Future<String> estimateTxFee(
+      String chainFrom, String txHex, String sender) async {
+    final res = await service.estimateTxFee(chainFrom, txHex, sender);
     return res;
   }
 
-  Future<Map?> sendTx(
-      String from,
-      String to,
-      String token,
-      String address,
-      String amount,
-      int decimals,
-      Map txInfo,
-      String password,
-      String msgId,
-      Map keyring) async {
-    final res = await service.sendTx(from, to, token, address, amount, decimals,
-        txInfo, password, msgId, keyring);
+  Future<Map?> sendTx(String chainFrom, Map txInfo, String password,
+      String msgId, Map keyring) async {
+    final res =
+        await service.sendTx(chainFrom, txInfo, password, msgId, keyring);
     return res;
   }
 

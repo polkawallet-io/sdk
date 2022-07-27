@@ -15,12 +15,14 @@ class TxInfoData {
     this.isUnsigned = false,
     this.proxy,
     this.txName,
+    this.txHex,
   });
 
   String? module;
   String? call;
   TxSenderData? sender;
   String? tip;
+  String? txHex;
 
   bool? isUnsigned;
 

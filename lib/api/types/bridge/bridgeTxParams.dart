@@ -7,10 +7,12 @@ class BridgeTxParams {
   String module;
   String call;
   List params;
+  String txHex;
   BridgeTxParams({
     required this.module,
     required this.call,
     required this.params,
+    required this.txHex,
   });
 
   static BridgeTxParams fromJson(Map<String, dynamic> json) =>
