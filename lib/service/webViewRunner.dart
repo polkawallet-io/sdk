@@ -14,10 +14,13 @@ class WebViewRunner {
   Map<String, Function> _msgHandlers = {};
   Map<String, Completer> _msgCompleters = {};
   Map<String, Function> _reloadHandlers = {};
+  Map<String, String> _msgJavascript = {};
   int _evalJavascriptUID = 0;
 
   bool webViewLoaded = false;
   int jsCodeStarted = -1;
+
+  bool _webViewOOMReload = false;
 
   Future<void> launch(
     Function? onLaunched, {
@@ -27,12 +30,14 @@ class WebViewRunner {
     /// reset state before webView launch or reload
     _msgHandlers = {};
     _msgCompleters = {};
+    _msgJavascript = {};
     _reloadHandlers = {};
     _evalJavascriptUID = 0;
     if (onLaunched != null) {
       _onLaunched = onLaunched;
     }
     webViewLoaded = false;
+    _webViewOOMReload = false;
     jsCodeStarted = -1;
 
     _jsCode = jsCode;
@@ -52,6 +57,7 @@ class WebViewRunner {
         androidOnRenderProcessGone: (webView, detail) async {
           if (_web?.webViewController == webView) {
             webViewLoaded = false;
+            _webViewOOMReload = true;
             await _web?.webViewController.clearCache();
             await _web?.webViewController.reload();
           }
@@ -87,8 +93,8 @@ class WebViewRunner {
           try {
             var msg = jsonDecode(message.message);
 
-            final String? path = msg['path'];
-            if (_msgCompleters[path!] != null) {
+            final String path = msg['path']!;
+            if (_msgCompleters[path] != null) {
               Completer handler = _msgCompleters[path]!;
               handler.complete(msg['data']);
               if (path.contains('uid=')) {
@@ -98,6 +104,10 @@ class WebViewRunner {
             if (_msgHandlers[path] != null) {
               Function handler = _msgHandlers[path]!;
               handler(msg['data']);
+            }
+
+            if (_msgJavascript[path.split(";")[1]] != null) {
+              _msgJavascript.remove(path.split(";")[1]);
             }
           } catch (_) {
             // ignore
@@ -190,6 +200,7 @@ class WebViewRunner {
         '  console.log(JSON.stringify({ path: "log", data: {call: "$method", error: err.message} }));'
         '});';
     _web!.webViewController.evaluateJavascript(source: script);
+    _msgJavascript[code.split('(')[0]] = script;
 
     return c.future;
   }
@@ -206,6 +217,15 @@ class WebViewRunner {
             'settings.connect(${jsonEncode(nodes.map((e) => e.endpoint).toList())})'));
     if (res != null) {
       final index = nodes.indexWhere((e) => e.endpoint!.trim() == res.trim());
+      if (_webViewOOMReload) {
+        print(
+            "webView OOM Reload evaluateJavascript====\n${_msgJavascript.keys.toString()}");
+        _msgJavascript.forEach((key, value) {
+          _web!.webViewController.evaluateJavascript(source: value);
+        });
+        _msgJavascript = {};
+        _webViewOOMReload = false;
+      }
       return nodes[index > -1 ? index : 0];
     }
     return null;
