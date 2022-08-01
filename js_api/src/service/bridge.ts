@@ -10,12 +10,21 @@ import { ShadowAdapter } from "@polkawallet/bridge/build/adapters/crust";
 import { CrabAdapter } from "@polkawallet/bridge/build/adapters/darwinia";
 import { IntegriteeAdapter } from "@polkawallet/bridge/build/adapters/integritee";
 import { QuartzAdapter } from "@polkawallet/bridge/build/adapters/unique";
+import { KintsugiAdapter, InterlayAdapter } from "@polkawallet/bridge/build/adapters/interlay";
+import { KicoAdapter } from "@polkawallet/bridge/build/adapters/kico";
+import { PichiuAdapter } from "@polkawallet/bridge/build/adapters/kylin";
+import { TuringAdapter } from "@polkawallet/bridge/build/adapters/oak";
+import { ParallelAdapter, HeikoAdapter } from "@polkawallet/bridge/build/adapters/parallel";
+import { KhalaAdapter } from "@polkawallet/bridge/build/adapters/phala";
+import { BasiliskAdapter } from "@polkawallet/bridge/build/adapters/hydradx";
+import { ListenAdapter } from "@polkawallet/bridge/build/adapters/listen";
 import { Observable, firstValueFrom, combineLatest } from "rxjs";
 import { BaseCrossChainAdapter } from "@polkawallet/bridge/build/base-chain-adapter";
 import { subscribeMessage } from "./setting";
 
 import { Keyring } from "@polkadot/keyring";
 import { KeyringPair$Json, } from "@polkadot/keyring/types";
+import { cryptoWaitReady } from "@polkadot/util-crypto";
 
 import { BN } from "@polkadot/util";
 import { ITuple } from "@polkadot/types/types";
@@ -40,6 +49,16 @@ const availableAdapters: Record<string, BaseCrossChainAdapter> = {
   crab: new CrabAdapter(),
   integritee: new IntegriteeAdapter(),
   quartz: new QuartzAdapter(),
+  kintsugi: new KintsugiAdapter(),
+  interlay: new InterlayAdapter(),
+  kico: new KicoAdapter(),
+  pichiu: new PichiuAdapter(),
+  turing: new TuringAdapter(),
+  parallel: new ParallelAdapter(),
+  heiko: new HeikoAdapter(),
+  khala: new KhalaAdapter(),
+  basilisk: new BasiliskAdapter(),
+  listen: new ListenAdapter(),
 };
 const bridge = new Bridge({
   adapters: Object.values(availableAdapters),
@@ -263,6 +282,17 @@ function getApi(chainName: ChainName) {
   return provider.getApiPromise(chainName);
 }
 
+async function checkAddressFormat(address: string, ss58: number) {
+  await cryptoWaitReady();
+  try {
+    const formated = keyring.encodeAddress(keyring.decodeAddress(address), ss58);
+    return formated.toUpperCase() == address.toUpperCase();
+  } catch (err) {
+    (<any>window).send("log", { error: err.message });
+    return false;
+  }
+}
+
 export default {
   getFromChainsAll,
   getRoutes,
@@ -278,4 +308,5 @@ export default {
   estimateTxFee,
   sendTx,
   checkPassword,
+  checkAddressFormat,
 };

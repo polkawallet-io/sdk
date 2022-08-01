@@ -4126,8 +4126,8 @@ __metadata:
   linkType: hard
 
 "@polkawallet/bridge@file:../../bridge::locator=%40polkawallet%2Fjs-api%40workspace%3A.":
-  version: 0.0.2-6
-  resolution: "@polkawallet/bridge@file:../../bridge#../../bridge::hash=42763a&locator=%40polkawallet%2Fjs-api%40workspace%3A."
+  version: 0.0.2-7
+  resolution: "@polkawallet/bridge@file:../../bridge#../../bridge::hash=18f59e&locator=%40polkawallet%2Fjs-api%40workspace%3A."
   dependencies:
     "@acala-network/api": ^4.1.6-3
     "@acala-network/sdk": ^4.1.6-3
@@ -4138,7 +4138,7 @@ __metadata:
     "@polkadot/types-augment": ^8.11.1
     axios: ^0.27.2
     lodash: ^4.17.20
-  checksum: 4a435fad684f31e75635b05643888b631dd56bbbe78b875c8a4ac7fa9520646d0a3051d5969beaa6f701fb91935ed473f90be5dfc9b8c9b209c89c5d0a7c05a3
+  checksum: 4220572d1adeb9c59d89310d7a3f62cf6165c820776ae9343088666b5405b7b6e840c557d337f7470aab2389ec5c4f212384a26525d32b17ae323fe53d99dd06
   languageName: node
   linkType: hard
 

@@ -144,6 +144,12 @@ class ServiceBridge {
     return true;
   }
 
+  Future<bool> checkAddressFormat(String address, int ss58) async {
+    final bool? res = await _runner
+        ?.evalJavascript('bridge.checkAddressFormat("$address", $ss58)');
+    return res ?? true;
+  }
+
   Future<void> reload() async {
     return _runner?.reload();
   }

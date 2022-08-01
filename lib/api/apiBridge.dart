@@ -125,6 +125,10 @@ class ApiBridge {
     return res;
   }
 
+  Future<bool> checkAddressFormat(String address, int ss58) async {
+    return service.checkAddressFormat(address, ss58);
+  }
+
   Future<void> reload() async {
     return service.reload();
   }
