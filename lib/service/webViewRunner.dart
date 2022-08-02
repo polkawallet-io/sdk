@@ -106,6 +106,18 @@ class WebViewRunner {
               handler(msg['data']);
             }
 
+            if (path == 'log') {
+              final String? call = msg['data']?['call'];
+              final String? error = msg['data']?['error'];
+              if (call != null && _msgCompleters[call] != null) {
+                Completer handler = _msgCompleters[call]!;
+                handler.completeError(error ?? "$call error");
+                if (call.contains('uid=')) {
+                  _msgCompleters.remove(call);
+                }
+              }
+            }
+
             if (_msgJavascript[path.split(";")[1]] != null) {
               _msgJavascript.remove(path.split(";")[1]);
             }
