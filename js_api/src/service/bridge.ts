@@ -30,8 +30,19 @@ import { BN } from "@polkadot/util";
 import { ITuple } from "@polkadot/types/types";
 import { DispatchError } from "@polkadot/types/interfaces";
 import { SubmittableResult } from "@polkadot/api/submittable";
+import axios from "axios";
 
 let keyring = new Keyring({ ss58Format: 0, type: "sr25519" });
+
+const _updateDisabledRoute = async () => {
+  const res = await axios.get('https://acala.polkawallet-cloud.com/config/bridge.json');
+
+  if (res.status !== 200) {
+    throw new Error("fetch metadata error");
+  }
+
+  return res.data.disabledRoute;
+}
 
 const provider = new ApiProvider();
 
@@ -60,9 +71,19 @@ const availableAdapters: Record<string, BaseCrossChainAdapter> = {
   basilisk: new BasiliskAdapter(),
   listen: new ListenAdapter(),
 };
-const bridge = new Bridge({
-  adapters: Object.values(availableAdapters),
-});
+let bridge: Bridge;
+
+const _initBridge = async () => {
+  if (!bridge) {
+    const disabledRoute = await _updateDisabledRoute();
+    bridge = new Bridge({
+      adapters: Object.values(availableAdapters),
+      routersDisabled: disabledRoute,
+    });
+
+    await bridge.isReady;
+  }
+}
 
 async function connectFromChains(chains: ChainName[], nodeList: Partial<Record<ChainName, string[]>> | undefined) {
   // connect all adapters
@@ -78,15 +99,20 @@ async function disconnectFromChains() {
 }
 
 async function getFromChainsAll() {
+  await _initBridge();
+
   return Object.keys(availableAdapters);
 }
 
 async function getRoutes() {
-  await bridge.isReady;
+  await _initBridge();
+
   return bridge.router.getAvailableRouters().map((e) => ({ from: e.from.id, to: e.to.id, token: e.token }));
 }
 
 async function getChainsInfo() {
+  await _initBridge();
+
   return chains;
 }
 
