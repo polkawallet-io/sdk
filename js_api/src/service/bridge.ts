@@ -126,6 +126,8 @@ async function getNetworkProperties(chain: ChainName) {
 }
 
 async function subscribeBalancesInner(chain: ChainName, address: string, callback: Function) {
+  await _initBridge();
+
   const adapter = bridge.findAdapter(chain);
   const tokens = {};
   adapter.getRouters().forEach((e) => {
@@ -162,6 +164,8 @@ async function subscribeBalances(chain: ChainName, address: string, msgChannel: 
 }
 
 async function getInputConfig(from: ChainName, to: ChainName, token: string, address: string, signer: string) {
+  await _initBridge();
+  
   const adapter = bridge.findAdapter(from);
 
   const res = await firstValueFrom(adapter.subscribeInputConfigs({ to, token, address, signer }));
