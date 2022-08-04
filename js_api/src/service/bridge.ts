@@ -18,6 +18,7 @@ import { ParallelAdapter, HeikoAdapter } from "@polkawallet/bridge/build/adapter
 import { KhalaAdapter } from "@polkawallet/bridge/build/adapters/phala";
 import { BasiliskAdapter } from "@polkawallet/bridge/build/adapters/hydradx";
 import { ListenAdapter } from "@polkawallet/bridge/build/adapters/listen";
+import { MoonbeamAdapter, MoonriverAdapter } from "@polkawallet/bridge/build/adapters/moonbeam";
 import { Observable, firstValueFrom, combineLatest } from "rxjs";
 import { BaseCrossChainAdapter } from "@polkawallet/bridge/build/base-chain-adapter";
 import { subscribeMessage } from "./setting";
@@ -47,29 +48,31 @@ const _updateDisabledRoute = async () => {
 const provider = new ApiProvider();
 
 const availableAdapters: Record<string, BaseCrossChainAdapter> = {
-  acala: new AcalaAdapter(),
-  karura: new KaruraAdapter(),
   polkadot: new PolkadotAdapter(),
   kusama: new KusamaAdapter(),
-  statemine: new StatemineAdapter(),
+  acala: new AcalaAdapter(),
+  karura: new KaruraAdapter(),
   altair: new AltairAdapter(),
-  shiden: new ShidenAdapter(),
+  basilisk: new BasiliskAdapter(),
   bifrost: new BifrostAdapter(),
   calamari: new CalamariAdapter(),
-  shadow: new ShadowAdapter(),
   crab: new CrabAdapter(),
-  integritee: new IntegriteeAdapter(),
-  quartz: new QuartzAdapter(),
-  kintsugi: new KintsugiAdapter(),
-  interlay: new InterlayAdapter(),
-  kico: new KicoAdapter(),
-  pichiu: new PichiuAdapter(),
-  turing: new TuringAdapter(),
-  parallel: new ParallelAdapter(),
   heiko: new HeikoAdapter(),
+  integritee: new IntegriteeAdapter(),
+  interlay: new InterlayAdapter(),
   khala: new KhalaAdapter(),
-  basilisk: new BasiliskAdapter(),
+  kintsugi: new KintsugiAdapter(),
+  kico: new KicoAdapter(),
   listen: new ListenAdapter(),
+  moonbeam: new MoonbeamAdapter(),
+  moonriver: new MoonriverAdapter(),
+  parallel: new ParallelAdapter(),
+  pichiu: new PichiuAdapter(),
+  quartz: new QuartzAdapter(),
+  shadow: new ShadowAdapter(),
+  shiden: new ShidenAdapter(),
+  statemine: new StatemineAdapter(),
+  turing: new TuringAdapter(),
 };
 let bridge: Bridge;
 
@@ -101,7 +104,7 @@ async function disconnectFromChains() {
 async function getFromChainsAll() {
   await _initBridge();
 
-  return Object.keys(availableAdapters);
+  return Object.keys(availableAdapters).filter(e => e !== 'moonbeam' && e !== 'moonriver');
 }
 
 async function getRoutes() {
