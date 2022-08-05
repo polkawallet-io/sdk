@@ -54,14 +54,14 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
         widget.checkAuth != null &&
         !widget.checkAuth!(uri.host)) {
       return _controller.runJavascriptReturningResult(
-          'walletExtension.onAppResponse("${msg['msgType']}", null, new Error("Rejected"))');
+          'walletExtension.onAppResponse("${msg['msgType']}${msg['id']}", null, new Error("Rejected"))');
     }
 
     switch (msg['msgType']) {
       case 'pub(authorize.tab)':
         if (widget.onConnectRequest == null) {
           return _controller.runJavascriptReturningResult(
-              'walletExtension.onAppResponse("${msg['msgType']}", true)');
+              'walletExtension.onAppResponse("${msg['msgType']}${msg['id']}", true)');
         }
         if (_signing) break;
         _signing = true;
@@ -69,7 +69,7 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
             DAppConnectParam.fromJson({'id': msg['id'], 'url': msg['url']}));
         _signing = false;
         return _controller.runJavascriptReturningResult(
-            'walletExtension.onAppResponse("${msg['msgType']}", ${accept ?? false})');
+            'walletExtension.onAppResponse("${msg['msgType']}${msg['id']}", ${accept ?? false}, null)');
       case 'pub(accounts.list)':
       case 'pub(accounts.subscribe)':
         final List<KeyPairData> ls = widget.keyring.keyPairs;
@@ -82,7 +82,7 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
           };
         }).toList();
         return _controller.runJavascriptReturningResult(
-            'walletExtension.onAppResponse("${msg['msgType']}", ${jsonEncode(res)})');
+            'walletExtension.onAppResponse("${msg['msgType']}${msg['id']}", ${jsonEncode(res)})');
       case 'pub(bytes.sign)':
         if (_signing) break;
         _signing = true;
@@ -93,10 +93,10 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
         if (res == null || res.signature == null) {
           // cancelled
           return _controller.runJavascriptReturningResult(
-              'walletExtension.onAppResponse("${param.msgType}", null, new Error("Rejected"))');
+              'walletExtension.onAppResponse("${param.msgType}${msg['id']}", null, new Error("Rejected"))');
         }
         return _controller.runJavascriptReturningResult(
-            'walletExtension.onAppResponse("${param.msgType}", ${jsonEncode(res.toJson())})');
+            'walletExtension.onAppResponse("${param.msgType}${msg['id']}", ${jsonEncode(res.toJson())})');
       case 'pub(extrinsic.sign)':
         if (_signing) break;
         _signing = true;
@@ -107,10 +107,10 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
         if (result == null || result.signature == null) {
           // cancelled
           return _controller.runJavascriptReturningResult(
-              'walletExtension.onAppResponse("${params.msgType}", null, new Error("Rejected"))');
+              'walletExtension.onAppResponse("${params.msgType}${msg['id']}", null, new Error("Rejected"))');
         }
         return _controller.runJavascriptReturningResult(
-            'walletExtension.onAppResponse("${params.msgType}", ${jsonEncode(result.toJson())})');
+            'walletExtension.onAppResponse("${params.msgType}${msg['id']}", ${jsonEncode(result.toJson())})');
       default:
         print('Unknown message from dapp: ${msg['msgType']}');
         return Future(() => "");

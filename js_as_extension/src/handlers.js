@@ -5,7 +5,7 @@ const _msgCompleters = {};
 // send request to host app
 async function requestApp({ id, message, request }) {
   return new Promise((resolve, reject) => {
-    _msgCompleters[message] = { resolve, reject };
+    _msgCompleters[message + id] = { resolve, reject };
     window.send(EXTENSION_MSG_PATH, {
       id,
       msgType: message,
