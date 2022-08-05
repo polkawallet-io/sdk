@@ -85,7 +85,9 @@ class TokenBalanceData {
       this.detailPageRoute,
       this.price,
       this.isCacheChange = false,
-      this.getPrice});
+      this.getPrice,
+      this.priceCurrency = 'USD',
+      this.priceRate = 1.0});
 
   final String? id;
   final String? name;
@@ -106,4 +108,7 @@ class TokenBalanceData {
   bool isCacheChange;
 
   double? Function()? getPrice;
+
+  String priceCurrency;
+  double priceRate;
 }
