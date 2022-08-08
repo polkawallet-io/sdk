@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/api/types/addressIconData.dart';
@@ -330,19 +331,19 @@ class _KeyringPageState extends State<KeyringPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      RaisedButton(
+                      CupertinoButton(
                         child: Text('Polkadot: 0'),
                         color:
                             _ss58 == 0 ? Theme.of(context).primaryColor : null,
                         onPressed: () => _setSS58(0),
                       ),
-                      RaisedButton(
+                      CupertinoButton(
                         child: Text('Kusama: 2'),
                         color:
                             _ss58 == 2 ? Theme.of(context).primaryColor : null,
                         onPressed: () => _setSS58(2),
                       ),
-                      RaisedButton(
+                      CupertinoButton(
                         child: Text('Substrate: 42'),
                         color:
                             _ss58 == 42 ? Theme.of(context).primaryColor : null,
