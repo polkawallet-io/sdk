@@ -38,6 +38,11 @@ window.addEventListener("message", ({ data, source }) => {
 });
 
 injectExtension(enable, {
+  name: "polkadot-js",
+  version: "0.9.0",
+});
+
+injectExtension(enable, {
   name: "polkawallet",
   version: "0.9.0",
 });

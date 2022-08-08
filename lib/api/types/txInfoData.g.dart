@@ -19,6 +19,7 @@ TxInfoData _$TxInfoDataFromJson(Map<String, dynamic> json) {
         ? null
         : TxSenderData.fromJson(json['proxy'] as Map<String, dynamic>),
     txName: json['txName'] as String?,
+    txHex: json['txHex'] as String?,
   );
 }
 
@@ -28,6 +29,7 @@ Map<String, dynamic> _$TxInfoDataToJson(TxInfoData instance) =>
       'call': instance.call,
       'sender': instance.sender?.toJson(),
       'tip': instance.tip,
+      'txHex': instance.txHex,
       'isUnsigned': instance.isUnsigned,
       'proxy': instance.proxy?.toJson(),
       'txName': instance.txName,

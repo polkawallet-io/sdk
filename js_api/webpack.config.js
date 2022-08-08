@@ -2,11 +2,14 @@ const path = require("path");
 const webpack = require("webpack");
 
 const config = {
-  entry: "./src/index.ts",
+  entry: {
+    index: './src/index.ts',
+    bridge: './src/bridge.ts',
+  },
   output: {
     publicPath: path.resolve(__dirname, ""),
     path: path.resolve(__dirname, "dist"),
-    filename: "main.js",
+    filename: "[name].js",
   },
   resolve: {
     extensions: [".ts", ".js", ".mjs", ".cjs", ".json"],
@@ -37,6 +40,21 @@ const config = {
       {
         test: /\.js$/,
         include: path.resolve(__dirname, "node_modules/@polkadot/"),
+        use: "babel-loader",
+      },
+      {
+        test: /\.js$/,
+        include: path.resolve(__dirname, "node_modules/@acala-network/"),
+        use: "babel-loader",
+      },
+      {
+        test: /\.js$/,
+        include: path.resolve(__dirname, "node_modules/@nuts-finance/"),
+        use: "babel-loader",
+      },
+      {
+        test: /\.js$/,
+        include: path.resolve(__dirname, "node_modules/@polkawallet/"),
         use: "babel-loader",
       },
     ],

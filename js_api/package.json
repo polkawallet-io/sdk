@@ -1,6 +1,6 @@
 {
   "name": "@polkawallet/js-api",
-  "version": "0.4.6",
+  "version": "3.2.1",
   "main": "index.js",
   "license": "Apache-2.0",
   "keywords": [
@@ -20,23 +20,28 @@
   },
   "scripts": {
     "clean": "rm -rf dist/*",
-    "build": "webpack --mode production",
+    "prebuild": "rm -rf ../assets/*.js",
+    "build": "yarn prebuild && yarn clean && webpack --mode production && yarn postbuild",
+    "postbuild": "mv dist/*.js ../assets/",
     "build-dev": "webpack --mode development"
   },
   "resolutions": {
-    "@polkadot/api": "^8.5.1",
+    "@polkadot/api": "8.10.1",
+    "@polkadot/rpc-provider": "^8.11.3",
     "bn.js": "4.12.0"
   },
   "dependencies": {
     "@polkadot/api": "^8.5.1",
     "@polkadot/extension-dapp": "^0.43.2",
     "@polkadot/ui-shared": "^2.2.1",
-    "@walletconnect/client": "2.0.0-alpha.26",
+    "@polkawallet/bridge": "file:../../bridge",
+    "@walletconnect/sign-client": "2.0.0-beta.100",
+    "@walletconnect/utils": "2.0.0-beta.100",
+    "axios": "^0.27.2",
     "bn.js": "^5.1.2",
     "oo7-substrate": "^0.8.0",
     "process": "^0.11.10",
-    "secp256k1": "^3.8.0",
-    "typescript": "^4.5.5"
+    "secp256k1": "^3.8.0"
   },
   "devDependencies": {
     "@babel/core": "^7.14.8",
@@ -51,7 +56,25 @@
     "prettier": "^1.19.1",
     "source-map-loader": "^3.0.1",
     "stream-browserify": "^3.0.0",
+    "typescript": "^4.7.4",
     "webpack": "^5.65.0",
     "webpack-cli": "^4.9.2"
-  }
+  },
+  "browserslist": {
+    "production": [
+      "chrome >= 67",
+      "edge >= 79",
+      "firefox >= 68",
+      "opera >= 54",
+      "safari >= 13",
+      "android >= 56",
+      "ios_saf >= 13"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "packageManager": "yarn@3.2.1"
 }

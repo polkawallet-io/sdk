@@ -8,13 +8,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.9.0"
-  auth_header:
+  bip32:
     dependency: transitive
     description:
-      name: auth_header
+      name: bip32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.1"
+    version: "2.0.0"
+  bip39:
+    dependency: transitive
+    description:
+      name: bip39
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.6"
+  bs58check:
+    dependency: transitive
+    description:
+      name: bs58check
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
   characters:
     dependency: transitive
     description:
@@ -50,6 +64,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.3"
+  decimal:
+    dependency: transitive
+    description:
+      name: decimal
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.0"
+  eip55:
+    dependency: transitive
+    description:
+      name: eip55
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2"
+  ethers:
+    dependency: transitive
+    description:
+      name: ethers
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1+3"
   ffi:
     dependency: transitive
     description:
@@ -102,6 +137,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.3"
+  hex:
+    dependency: transitive
+    description:
+      name: hex
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0"
   http:
     dependency: transitive
     description:
@@ -116,34 +158,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.1"
-  http_server:
-    dependency: transitive
-    description:
-      name: http_server
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.0"
-  jaguar:
-    dependency: transitive
-    description:
-      name: jaguar
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.1.3"
-  jaguar_common:
-    dependency: transitive
-    description:
-      name: jaguar_common
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.0"
-  jaguar_flutter_asset:
-    dependency: transitive
-    description:
-      name: jaguar_flutter_asset
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.0"
   js:
     dependency: transitive
     description:
@@ -158,13 +172,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.5.0"
-  logging:
+  json_rpc_2:
     dependency: transitive
     description:
-      name: logging
+      name: json_rpc_2
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.2"
+    version: "3.0.2"
   material_color_utilities:
     dependency: transitive
     description:
@@ -179,13 +193,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
-  mime:
-    dependency: transitive
-    description:
-      name: mime
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2"
   mobx:
     dependency: transitive
     description:
@@ -249,13 +256,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0"
-  path_tree:
-    dependency: transitive
-    description:
-      name: path_tree
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.0"
   platform:
     dependency: transitive
     description:
@@ -270,13 +270,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2"
+  pointycastle:
+    dependency: transitive
+    description:
+      name: pointycastle
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.6.0"
   polkawallet_sdk:
     dependency: "direct dev"
     description:
       path: ".."
       relative: true
     source: path
-    version: "0.4.7"
+    version: "0.4.8"
   process:
     dependency: transitive
     description:
@@ -284,6 +291,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.2.4"
+  rational:
+    dependency: transitive
+    description:
+      name: rational
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.2.0"
   shared_preferences:
     dependency: transitive
     description:
@@ -359,6 +373,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.10.0"
+  stream_channel:
+    dependency: transitive
+    description:
+      name: stream_channel
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
+  stream_transform:
+    dependency: transitive
+    description:
+      name: stream_transform
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   string_scanner:
     dependency: transitive
     description:
@@ -380,6 +408,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.1"
+  uuid:
+    dependency: transitive
+    description:
+      name: uuid
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.6"
   vector_math:
     dependency: transitive
     description:
@@ -387,6 +422,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2"
+  web3dart:
+    dependency: transitive
+    description:
+      name: web3dart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.4.0"
   webview_flutter:
     dependency: transitive
     description:

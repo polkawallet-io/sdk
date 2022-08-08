@@ -8,26 +8,55 @@ part of 'pairingData.dart';
 
 WCPairingData _$WCPairingDataFromJson(Map<String, dynamic> json) {
   return WCPairingData()
+    ..id = json['id'] as int?
     ..topic = json['topic'] as String?
-    ..relay = json['relay'] as Map<String, dynamic>?
-    ..proposer = json['proposer'] == null
+    ..params = json['params'] == null
         ? null
-        : WCProposerInfo.fromJson(json['proposer'] as Map<String, dynamic>)
-    ..signal = json['signal'] as Map<String, dynamic>?
-    ..permissions = json['permissions'] == null
-        ? null
-        : WCPermissionData.fromJson(json['permissions'] as Map<String, dynamic>)
-    ..ttl = json['ttl'] as int?;
+        : WCPairingParamsData.fromJson(json['params'] as Map<String, dynamic>);
 }
 
 Map<String, dynamic> _$WCPairingDataToJson(WCPairingData instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'topic': instance.topic,
-      'relay': instance.relay,
+      'params': instance.params?.toJson(),
+    };
+
+WCPairingParamsData _$WCPairingParamsDataFromJson(Map<String, dynamic> json) {
+  return WCPairingParamsData()
+    ..id = json['id'] as int?
+    ..expiry = json['expiry'] as int?
+    ..relays = (json['relays'] as List<dynamic>?)
+        ?.map((e) => WCRelayProtocol.fromJson(e as Map<String, dynamic>))
+        .toList()
+    ..proposer = json['proposer'] == null
+        ? null
+        : WCProposerInfo.fromJson(json['proposer'] as Map<String, dynamic>)
+    ..requiredNamespaces = json['requiredNamespaces'] as Map<String, dynamic>?
+    ..pairingTopic = json['pairingTopic'] as String?;
+}
+
+Map<String, dynamic> _$WCPairingParamsDataToJson(
+        WCPairingParamsData instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'expiry': instance.expiry,
+      'relays': instance.relays?.map((e) => e.toJson()).toList(),
       'proposer': instance.proposer?.toJson(),
-      'signal': instance.signal,
-      'permissions': instance.permissions?.toJson(),
-      'ttl': instance.ttl,
+      'requiredNamespaces': instance.requiredNamespaces,
+      'pairingTopic': instance.pairingTopic,
+    };
+
+WCRelayProtocol _$WCRelayProtocolFromJson(Map<String, dynamic> json) {
+  return WCRelayProtocol()
+    ..protocol = json['protocol'] as String?
+    ..data = json['data'] as String?;
+}
+
+Map<String, dynamic> _$WCRelayProtocolToJson(WCRelayProtocol instance) =>
+    <String, dynamic>{
+      'protocol': instance.protocol,
+      'data': instance.data,
     };
 
 WCPairedData _$WCPairedDataFromJson(Map<String, dynamic> json) {

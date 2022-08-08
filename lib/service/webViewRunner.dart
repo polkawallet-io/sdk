@@ -1,31 +1,28 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:jaguar/jaguar.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
-import 'package:polkawallet_sdk/service/jaguar_flutter_asset.dart';
-import 'package:polkawallet_sdk/service/keyring.dart';
-import 'package:polkawallet_sdk/storage/keyring.dart';
 
 class WebViewRunner {
   HeadlessInAppWebView? _web;
+  InAppLocalhostServer? _localhostServer;
   Function? _onLaunched;
 
-  late String _jsCode;
+  String? _jsCode;
+  late String _jsCodeEth;
   Map<String, Function> _msgHandlers = {};
   Map<String, Completer> _msgCompleters = {};
+  Map<String, Function> _reloadHandlers = {};
+  Map<String, String> _msgJavascript = {};
   int _evalJavascriptUID = 0;
 
   bool webViewLoaded = false;
   int jsCodeStarted = -1;
-  Timer? _webViewReloadTimer;
+
+  bool _webViewOOMReload = false;
 
   Future<void> launch(
-    ServiceKeyring? keyring,
-    Keyring keyringStorage,
     Function? onLaunched, {
     String? jsCode,
     Function? socketDisconnectedAction,
@@ -33,33 +30,58 @@ class WebViewRunner {
     /// reset state before webView launch or reload
     _msgHandlers = {};
     _msgCompleters = {};
+    _msgJavascript = {};
+    _reloadHandlers = {};
     _evalJavascriptUID = 0;
-    _onLaunched = onLaunched;
+    if (onLaunched != null) {
+      _onLaunched = onLaunched;
+    }
     webViewLoaded = false;
+    _webViewOOMReload = false;
     jsCodeStarted = -1;
 
-    _jsCode = jsCode ??
-        await rootBundle
-            .loadString('packages/polkawallet_sdk/js_api/dist/main.js');
-    print('js file loaded');
+    _jsCode = jsCode;
+    // TODO: always load eth js for evm keyring (while evm online)
+    // _jsCodeEth = await rootBundle
+    //     .loadString('packages/polkawallet_sdk/js_api_eth/dist/main.js');
+    // print('js eth file loaded');
 
     if (_web == null) {
       await _startLocalServer();
 
       _web = new HeadlessInAppWebView(
         initialOptions: InAppWebViewGroupOptions(
-          crossPlatform: InAppWebViewOptions(),
+          crossPlatform: InAppWebViewOptions(clearCache: true),
+          android: AndroidInAppWebViewOptions(useOnRenderProcessGone: true),
         ),
+        androidOnRenderProcessGone: (webView, detail) async {
+          if (_web?.webViewController == webView) {
+            webViewLoaded = false;
+            _webViewOOMReload = true;
+            await _web?.webViewController.clearCache();
+            await _web?.webViewController.reload();
+          }
+        },
+        initialUrlRequest: URLRequest(
+            url: Uri.parse(
+                "http://localhost:8080/packages/polkawallet_sdk/assets/index.html")),
         onWebViewCreated: (controller) {
           print('HeadlessInAppWebView created!');
         },
         onConsoleMessage: (controller, message) {
           print("CONSOLE MESSAGE: " + message.message);
           if (jsCodeStarted < 0) {
-            if (message.message.contains('js loaded')) {
-              jsCodeStarted = 1;
-            } else {
-              jsCodeStarted = 0;
+            try {
+              final msg = jsonDecode(message.message);
+              if (msg['path'] == 'log') {
+                if (message.message.contains('js loaded')) {
+                  jsCodeStarted = 1;
+                } else {
+                  jsCodeStarted = 0;
+                }
+              }
+            } catch (err) {
+              // ignore
             }
           }
           if (message.message.contains("WebSocket is not connected") &&
@@ -71,8 +93,8 @@ class WebViewRunner {
           try {
             var msg = jsonDecode(message.message);
 
-            final String? path = msg['path'];
-            if (_msgCompleters[path!] != null) {
+            final String path = msg['path']!;
+            if (_msgCompleters[path] != null) {
               Completer handler = _msgCompleters[path]!;
               handler.complete(msg['data']);
               if (path.contains('uid=')) {
@@ -83,26 +105,46 @@ class WebViewRunner {
               Function handler = _msgHandlers[path]!;
               handler(msg['data']);
             }
+
+            if (path == 'log') {
+              final String? call = msg['data']?['call'];
+              final String? error = msg['data']?['error'];
+              if (call != null && _msgCompleters[call] != null) {
+                Completer handler = _msgCompleters[call]!;
+                handler.completeError(error ?? "$call error");
+                if (call.contains('uid=')) {
+                  _msgCompleters.remove(call);
+                }
+              }
+            }
+
+            if (_msgJavascript[path.split(";")[1]] != null) {
+              _msgJavascript.remove(path.split(";")[1]);
+            }
           } catch (_) {
             // ignore
           }
         },
         onLoadStop: (controller, url) async {
-          print('webview loaded');
+          print('webview loaded $url');
           if (webViewLoaded) return;
 
-          _handleReloaded();
-          await _startJSCode(keyring, keyringStorage);
+          webViewLoaded = true;
+          await _startJSCode();
+        },
+        onLoadError: (controller, url, code, message) {
+          print("webview restart");
+          _web = null;
+          launch(null,
+              jsCode: jsCode,
+              socketDisconnectedAction: socketDisconnectedAction);
         },
       );
 
-      await _web!.run();
-      _web!.webViewController.loadUrl(
-          urlRequest: URLRequest(url: Uri.parse("https://localhost:8080/")));
+      await _web?.dispose();
+      await _web?.run();
     } else {
-      _webViewReloadTimer = Timer.periodic(Duration(seconds: 3), (timer) {
-        _tryReload();
-      });
+      _tryReload();
     }
   }
 
@@ -112,31 +154,24 @@ class WebViewRunner {
     }
   }
 
-  void _handleReloaded() {
-    _webViewReloadTimer?.cancel();
-    webViewLoaded = true;
-  }
-
   Future<void> _startLocalServer() async {
-    final cert = await rootBundle
-        .load("packages/polkawallet_sdk/lib/ssl/certificate.text");
-    final keys =
-        await rootBundle.load("packages/polkawallet_sdk/lib/ssl/keys.text");
-    final security = new SecurityContext()
-      ..useCertificateChainBytes(cert.buffer.asInt8List())
-      ..usePrivateKeyBytes(keys.buffer.asInt8List());
-    // Serves the API at localhost:8080 by default
-    final server = Jaguar(securityContext: security);
-    server.addRoute(serveFlutterAssets());
-    await server.serve(logRequests: false);
+    _localhostServer?.close();
+    _localhostServer = new InAppLocalhostServer();
+    await _localhostServer!.start();
   }
 
-  Future<void> _startJSCode(
-      ServiceKeyring? keyring, Keyring keyringStorage) async {
+  Future<void> _startJSCode() async {
     // inject js file to webView
-    await _web!.webViewController.evaluateJavascript(source: _jsCode);
+    // TODO: no eth injection before evm online
+    if (_jsCode != null) {
+      await _web!.webViewController.evaluateJavascript(source: _jsCode!);
+    }
+    // await _web!.webViewController.evaluateJavascript(source: _jsCodeEth);
 
     _onLaunched!();
+    _reloadHandlers.forEach((_, value) {
+      value();
+    });
   }
 
   int getEvalJavascriptUID() {
@@ -177,6 +212,7 @@ class WebViewRunner {
         '  console.log(JSON.stringify({ path: "log", data: {call: "$method", error: err.message} }));'
         '});';
     _web!.webViewController.evaluateJavascript(source: script);
+    _msgJavascript[code.split('(')[0]] = script;
 
     return c.future;
   }
@@ -193,6 +229,15 @@ class WebViewRunner {
             'settings.connect(${jsonEncode(nodes.map((e) => e.endpoint).toList())})'));
     if (res != null) {
       final index = nodes.indexWhere((e) => e.endpoint!.trim() == res.trim());
+      if (_webViewOOMReload) {
+        print(
+            "webView OOM Reload evaluateJavascript====\n${_msgJavascript.keys.toString()}");
+        _msgJavascript.forEach((key, value) {
+          _web!.webViewController.evaluateJavascript(source: value);
+        });
+        _msgJavascript = {};
+        _webViewOOMReload = false;
+      }
       return nodes[index > -1 ? index : 0];
     }
     return null;
@@ -220,5 +265,13 @@ class WebViewRunner {
 
   void removeMsgHandler(String channel) {
     _msgHandlers.remove(channel);
+  }
+
+  void subscribeReloadAction(String reloadKey, Function reloadAction) {
+    _reloadHandlers[reloadKey] = reloadAction;
+  }
+
+  void unsubscribeReloadAction(String reloadKey) {
+    _reloadHandlers.remove(reloadKey);
   }
 }

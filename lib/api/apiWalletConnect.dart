@@ -48,14 +48,11 @@ class ApiWalletConnect {
 
   Future<Map?> payloadRespond(WCPayloadData payload,
       {Map? response, Map? error}) async {
-    final Map? res = await service.payloadRespond({
-      'topic': payload.topic,
-      'response': {
-        'id': payload.payload!.id,
-        'jsonrpc': '2.0',
-        'result': response,
-        'error': error,
-      }
+    final Map? res = await service.payloadRespond(payload.topic!, {
+      'id': payload.payload!.id,
+      'jsonrpc': '2.0',
+      'result': response,
+      'error': error,
     });
     return res;
   }

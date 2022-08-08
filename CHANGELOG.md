@@ -1,3 +1,8 @@
+## [0.4.9] - 20220808
+
+* add bridge api
+* fix DApp browser request parsing with unknown address format
+
 ## [0.4.8] - 20220621
 
 * upgrade flutter 3.0.1

@@ -1,6 +1,5 @@
 import { keyExtractSuri, mnemonicGenerate, mnemonicValidate, cryptoWaitReady, signatureVerify, encodeAddress } from "@polkadot/util-crypto";
 import { hexToU8a, u8aToHex } from "@polkadot/util";
-import BN from "bn.js";
 import { parseQrCode, getSigner, makeTx, getSubmittable } from "../utils/QrSigner";
 import gov from "./gov";
 import metaDataMap from "../constants/networkMetadata";
@@ -285,7 +284,7 @@ function sendTx(api: ApiPromise, txInfo: any, paramList: any[], password: string
     } catch (err) {
       resolve({ error: "password check failed" });
     }
-    tx.signAndSend(keyPair, { tip: new BN(txInfo.tip, 10) }, onStatusChange)
+    tx.signAndSend(keyPair, { tip: txInfo.tip }, onStatusChange)
       .then((res) => {
         unsub = res;
       })
@@ -442,7 +441,7 @@ async function signTxAsExtension(password: string, json: any) {
       let registry: any;
       if (!(<any>window).api) {
         registry = new TypeRegistry();
-        registry.setMetadata(new Metadata(registry, metaDataMap["kusama"]));
+        registry.setMetadata(new Metadata(registry, metaDataMap["kusama"] as any));
       } else {
         registry = (<any>window).api.registry;
       }
