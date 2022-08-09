@@ -3,10 +3,10 @@ import 'dart:convert';
 
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
+import 'package:polkawallet_sdk/service/localServer.dart';
 
 class WebViewRunner {
   HeadlessInAppWebView? _web;
-  InAppLocalhostServer? _localhostServer;
   Function? _onLaunched;
 
   String? _jsCode;
@@ -47,8 +47,7 @@ class WebViewRunner {
     // print('js eth file loaded');
 
     if (_web == null) {
-      await _startLocalServer();
-
+      await LocalServer.getInstance().startLocalServer();
       _web = new HeadlessInAppWebView(
         initialOptions: InAppWebViewGroupOptions(
           crossPlatform: InAppWebViewOptions(clearCache: true),
@@ -152,12 +151,6 @@ class WebViewRunner {
     if (!webViewLoaded) {
       _web?.webViewController.reload();
     }
-  }
-
-  Future<void> _startLocalServer() async {
-    _localhostServer?.close();
-    _localhostServer = new InAppLocalhostServer();
-    await _localhostServer!.start();
   }
 
   Future<void> _startJSCode() async {
