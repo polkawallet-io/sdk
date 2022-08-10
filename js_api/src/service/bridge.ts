@@ -3,7 +3,7 @@ import { KusamaAdapter, PolkadotAdapter } from "@polkawallet/bridge/build/adapte
 import { AcalaAdapter, KaruraAdapter } from "@polkawallet/bridge/build/adapters/acala";
 import { StatemineAdapter } from "@polkawallet/bridge/build/adapters/statemint";
 import { AltairAdapter } from "@polkawallet/bridge/build/adapters/centrifuge";
-import { ShidenAdapter } from "@polkawallet/bridge/build/adapters/astar";
+import { AstarAdapter, ShidenAdapter } from "@polkawallet/bridge/build/adapters/astar";
 import { BifrostAdapter } from "@polkawallet/bridge/build/adapters/bifrost";
 import { CalamariAdapter } from "@polkawallet/bridge/build/adapters/manta";
 import { ShadowAdapter } from "@polkawallet/bridge/build/adapters/crust";
@@ -53,6 +53,7 @@ const availableAdapters: Record<string, BaseCrossChainAdapter> = {
   acala: new AcalaAdapter(),
   karura: new KaruraAdapter(),
   altair: new AltairAdapter(),
+  astar: new AstarAdapter(),
   basilisk: new BasiliskAdapter(),
   bifrost: new BifrostAdapter(),
   calamari: new CalamariAdapter(),
