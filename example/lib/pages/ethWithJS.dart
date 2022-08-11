@@ -208,8 +208,8 @@ class _EthWithJSPageState extends State<EthWithJSPage> {
     setState(() {
       _submitting = true;
     });
-    final bool passed =
-        await widget.sdk.api.eth.keyring.checkPassword(_testAcc!, _testPass);
+    final bool passed = await widget.sdk.api.eth.keyring
+        .checkPassword(_testAcc?.address ?? '', _testPass);
     // await widget.sdk.evm.checkPassword(_testAcc, 'a654321');
     widget.showResult(
       context,
@@ -284,7 +284,7 @@ class _EthWithJSPageState extends State<EthWithJSPage> {
       _submitting = true;
     });
     final res = await widget.sdk.api.eth.keyring
-        .signMessage(_testPass, _testMsg, _testAcc!);
+        .signMessage(_testPass, _testMsg, _testAcc?.address ?? '');
     widget.showResult(
       context,
       'signMessage',

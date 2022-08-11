@@ -9,6 +9,7 @@ import 'package:polkawallet_sdk/ethers/apiEthers.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 import 'package:polkawallet_sdk/service/webViewRunner.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_sdk/storage/keyringEVM.dart';
 
 /// SDK launchs a hidden webView to run polkadot.js/api for interacting
 /// with the substrate-based block-chain network.
@@ -29,7 +30,8 @@ class WalletSDK {
   /// param [jsCode] is customized js code of parachain,
   /// the api works without [jsCode] param in Kusama/Polkadot.
   Future<void> init(
-    Keyring keyring, {
+    Keyring keyring,
+    KeyringEVM keyringEVM, {
     WebViewRunner? webView,
     String? jsCode,
     Function? socketDisconnectedAction,
@@ -44,9 +46,11 @@ class WalletSDK {
       onInitiated: () {
         // inject keyPairs after webView launched
         _service.keyring.injectKeyPairsToWebView(keyring);
-
         // and initiate pubKeyIconsMap
         api.keyring.updatePubKeyIconsMap(keyring);
+
+        _service.eth.keyring.injectKeyPairsToWebView(keyringEVM);
+        api.eth.account.updateAddressIconsMap(keyringEVM);
 
         _updateBlackList();
 
