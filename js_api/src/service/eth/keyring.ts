@@ -24,7 +24,7 @@ async function gen(mnemonic: string, index: number) {
   const derivePath = ethers.utils.defaultPath.split("/");
   const path = derivePath.slice(0, derivePath.length - 1).join("/") + "/" + (index || 0).toString();
   const wallet = !!mnemonic ? ethers.Wallet.fromMnemonic(mnemonic, path) : ethers.Wallet.createRandom({ path });
-  const icon = accountETH.genIcons([wallet.address])[0];
+  const icon = (await accountETH.genIcons([wallet.address]))[0];
   return {
     mnemonic: wallet.mnemonic.phrase,
     path: wallet.mnemonic.path,
@@ -39,7 +39,7 @@ async function gen(mnemonic: string, index: number) {
 async function addressFromMnemonic(mnemonic: string, derivePath: string) {
   try {
     const wallet = ethers.Wallet.fromMnemonic(mnemonic, derivePath);
-    const icon = accountETH.genIcons([wallet.address])[0];
+    const icon = (await accountETH.genIcons([wallet.address]))[0];
     return {
       address: wallet.address,
       svg: icon[1],
@@ -55,7 +55,7 @@ async function addressFromMnemonic(mnemonic: string, derivePath: string) {
 async function addressFromPrivateKey(privateKey: string) {
   try {
     const wallet = new ethers.Wallet(privateKey);
-    const icon = accountETH.genIcons([wallet.address])[0];
+    const icon = (await accountETH.genIcons([wallet.address]))[0];
     return {
       address: wallet.address,
       svg: icon[1],
