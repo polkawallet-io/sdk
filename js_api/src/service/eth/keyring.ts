@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { verifyMessage } from "@ethersproject/wallet";
-import Jazzicon from "@metamask/jazzicon";
+import accountETH from "./account";
 import { erc20Abi, getProvider } from "./settings";
 
 interface GasOptions {
@@ -24,12 +24,12 @@ async function gen(mnemonic: string, index: number) {
   const derivePath = ethers.utils.defaultPath.split("/");
   const path = derivePath.slice(0, derivePath.length - 1).join("/") + "/" + (index || 0).toString();
   const wallet = !!mnemonic ? ethers.Wallet.fromMnemonic(mnemonic, path) : ethers.Wallet.createRandom({ path });
-  const icon = Jazzicon(16, parseInt(wallet.address.slice(2, 10), 16));
+  const icon = accountETH.genIcons([wallet.address])[0];
   return {
     mnemonic: wallet.mnemonic.phrase,
     path: wallet.mnemonic.path,
     address: wallet.address,
-    svg: icon.innerHTML,
+    svg: icon[1],
   };
 }
 
@@ -39,10 +39,10 @@ async function gen(mnemonic: string, index: number) {
 async function addressFromMnemonic(mnemonic: string, derivePath: string) {
   try {
     const wallet = ethers.Wallet.fromMnemonic(mnemonic, derivePath);
-    const icon = Jazzicon(16, parseInt(wallet.address.slice(2, 10), 16));
+    const icon = accountETH.genIcons([wallet.address])[0];
     return {
       address: wallet.address,
-      svg: icon.innerHTML,
+      svg: icon[1],
     };
   } catch (err) {
     return { error: err.message };
@@ -55,10 +55,10 @@ async function addressFromMnemonic(mnemonic: string, derivePath: string) {
 async function addressFromPrivateKey(privateKey: string) {
   try {
     const wallet = new ethers.Wallet(privateKey);
-    const icon = Jazzicon(16, parseInt(wallet.address.slice(2, 10), 16));
+    const icon = accountETH.genIcons([wallet.address])[0];
     return {
       address: wallet.address,
-      svg: icon.innerHTML,
+      svg: icon[1],
     };
   } catch (err) {
     return { error: err.message };
