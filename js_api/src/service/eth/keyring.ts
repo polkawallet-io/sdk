@@ -19,11 +19,20 @@ interface WCRequest {
 /// use this Map to store user's accounts
 const keystoreMap: Record<string, string> = {};
 
+function _formatAddress(address: string) {
+  return address.startsWith('0x') ? address : `0x${address}`;
+}
 function _updateAccount(address: string, keystore: string) {
-  keystoreMap[address.toLowerCase()] = keystore;
+  keystoreMap[_formatAddress(address.toLowerCase())] = keystore;
 }
 function _findAccount(address: string) {
-  return keystoreMap[address.toLowerCase()];
+  return keystoreMap[_formatAddress(address.toLowerCase())];
+}
+
+async function initKeys(accounts: any[]) {
+ accounts.forEach(e => {
+  _updateAccount(e['address'], JSON.stringify(e));
+ });
 }
 
 /**
@@ -268,6 +277,7 @@ async function signAndSendTx(tx: ethers.providers.TransactionRequest, sender: st
 }
 
 export default {
+  initKeys,
   gen,
   addressFromMnemonic,
   addressFromPrivateKey,
