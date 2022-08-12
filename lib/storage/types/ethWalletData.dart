@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 
 part 'ethWalletData.g.dart';
 
@@ -7,6 +8,15 @@ class EthWalletData extends _EthWalletData {
   static EthWalletData fromJson(Map json) =>
       _$EthWalletDataFromJson(Map<String, dynamic>.from(json));
   Map<String, dynamic> toJson() => _$EthWalletDataToJson(this);
+
+  KeyPairData toKeyPairData() {
+    return KeyPairData()
+      ..address = address
+      ..name = name
+      ..memo = memo
+      ..icon = icon
+      ..pubKey = address;
+  }
 }
 
 abstract class _EthWalletData {
