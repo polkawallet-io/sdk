@@ -102,6 +102,18 @@ class ServiceKeyringEth {
     return res;
   }
 
+  Future<Map> transfer(
+      {required String token,
+      required double amount,
+      required String to,
+      required String sender,
+      required String pass,
+      required Map gasOptions}) async {
+    final res = await serviceRoot.webView!.evalJavascript(
+        'eth.keyring.transfer("$token", $amount, "$to", "$sender", "$pass", ${jsonEncode(gasOptions)})');
+    return res;
+  }
+
   Map _formatAccountData(Map acc) {
     final keystore = jsonDecode(acc['keystore'] ?? '{}');
     return {

@@ -181,4 +181,20 @@ class ApiKeyringEth {
 
     return EthWalletData.fromJson(acc);
   }
+
+  Future<Map> transfer(
+      {required String token,
+      required double amount,
+      required String to,
+      required String sender,
+      required String pass,
+      required Map gasOptions}) async {
+    return service.transfer(
+        token: token,
+        amount: amount,
+        to: to,
+        sender: sender,
+        pass: pass,
+        gasOptions: gasOptions);
+  }
 }

@@ -17,9 +17,9 @@ interface WCRequest {
 }
 
 /// use this Map to store user's accounts
-const keystoreMap: Record<string, Record<string, any>> = {};
+const keystoreMap: Record<string, string> = {};
 
-function _updateAccount(address: string, keystore: Record<string, any>) {
+function _updateAccount(address: string, keystore: string) {
   keystoreMap[address.toLowerCase()] = keystore;
 }
 function _findAccount(address: string) {
@@ -101,7 +101,7 @@ async function recover(keyType: string, key: string, derivePath: string, passwor
   }
   if (keyPair.address) {
     const res = await keyPair.encrypt(password, { scrypt: { N: 1 << 14 } });
-    _updateAccount(keyPair.address, JSON.parse(res));
+    _updateAccount(keyPair.address, res);
     return {
       pubKey: keyPair.publicKey,
       address: keyPair.address,
@@ -121,7 +121,7 @@ async function checkPassword(address: string, pass: string) {
   if (!keystore) return { success: false, error: `Can not find account ${address}` };
 
   try {
-    const wallet = await ethers.Wallet.fromEncryptedJson(JSON.stringify(keystore), pass);
+    const wallet = await ethers.Wallet.fromEncryptedJson(keystore, pass);
     return { success: !!wallet.address };
   } catch (err) {
     return { success: false, error: err.message };
@@ -136,10 +136,10 @@ async function changePassword(address: string, passOld: string, passNew: string)
   if (!keystore) return { success: false, error: `Can not find account ${address}` };
 
   try {
-    const keyPair = await ethers.Wallet.fromEncryptedJson(JSON.stringify(keystore), passOld);
+    const keyPair = await ethers.Wallet.fromEncryptedJson(keystore, passOld);
     if (keyPair.address) {
       const res = await keyPair.encrypt(passNew, { scrypt: { N: 1 << 14 } });
-      _updateAccount(keyPair.address, JSON.parse(res));
+      _updateAccount(keyPair.address, res);
       return {
         pubKey: keyPair.publicKey,
         address: keyPair.address,
@@ -159,7 +159,7 @@ async function signMessage(message: string, address: string, pass: string) {
   if (!keystore) return { success: false, error: `Can not find account ${address}` };
 
   try {
-    const keyPair = await ethers.Wallet.fromEncryptedJson(JSON.stringify(keystore), pass);
+    const keyPair = await ethers.Wallet.fromEncryptedJson(keystore, pass);
     if (keyPair.address) {
       const res = await keyPair.signMessage(message);
       return {
@@ -209,7 +209,7 @@ async function transfer(token: string, amount: number, to: string, sender: strin
   if (!keystore) return { success: false, error: `Can not find account ${sender}` };
 
   try {
-    const keyPair = await ethers.Wallet.fromEncryptedJson(JSON.stringify(keystore), pass);
+    const keyPair = await ethers.Wallet.fromEncryptedJson(keystore, pass);
     if (keyPair.address) {
       const signer = keyPair.connect(getProvider());
       const options = {
@@ -248,7 +248,7 @@ async function signAndSendTx(tx: ethers.providers.TransactionRequest, sender: st
   if (!keystore) return { success: false, error: `Can not find account ${sender}` };
 
   try {
-    const keyPair = await ethers.Wallet.fromEncryptedJson(JSON.stringify(keystore), pass);
+    const keyPair = await ethers.Wallet.fromEncryptedJson(keystore, pass);
     if (keyPair.address) {
       const signer = keyPair.connect(getProvider());
       const res = await signer.sendTransaction({
