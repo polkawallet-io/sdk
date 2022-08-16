@@ -238,7 +238,7 @@ class WebViewRunner {
 
   Future<NetworkParams?> connectEVM(NetworkParams node) async {
     final Map? res =
-        await (evalJavascript('settings.connect("${node.endpoint}")'));
+        await (evalJavascript('eth.settings.connect("${node.endpoint}")'));
     if (res != null) {
       if (_webViewOOMReload) {
         print(
@@ -249,7 +249,7 @@ class WebViewRunner {
         _msgJavascript = {};
         _webViewOOMReload = false;
       }
-      node.chainId = res['chainId'];
+      node.chainId = res['chainId'].toString();
       return node;
     }
     return null;

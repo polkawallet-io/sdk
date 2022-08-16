@@ -35,6 +35,7 @@ class WalletSDK {
     WebViewRunner? webView,
     String? jsCode,
     Function? socketDisconnectedAction,
+    bool isEVM = false,
   }) async {
     final c = Completer();
 
@@ -44,17 +45,17 @@ class WalletSDK {
       jsCode: jsCode,
       socketDisconnectedAction: socketDisconnectedAction,
       onInitiated: () {
-        // inject keyPairs after webView launched
-        _service.keyring.injectKeyPairsToWebView(keyring);
-        // and initiate pubKeyIconsMap
-        api.keyring.updatePubKeyIconsMap(keyring);
-
-        if (keyringEVM != null) {
+        if (isEVM && keyringEVM != null) {
           _service.eth.keyring.injectKeyPairsToWebView(keyringEVM);
           api.eth.account.updateAddressIconsMap(keyringEVM);
-        }
+        } else {
+          // inject keyPairs after webView launched
+          _service.keyring.injectKeyPairsToWebView(keyring);
+          // and initiate pubKeyIconsMap
+          api.keyring.updatePubKeyIconsMap(keyring);
 
-        _updateBlackList();
+          _updateBlackList();
+        }
 
         if (!c.isCompleted) {
           c.complete();

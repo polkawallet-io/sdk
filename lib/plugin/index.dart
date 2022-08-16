@@ -128,7 +128,8 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
         keyringEVM: keyringEVM,
         webView: webView,
         jsCode: jsCode ?? (await loadJSCode()),
-        socketDisconnectedAction: socketDisconnectedAction);
+        socketDisconnectedAction: socketDisconnectedAction,
+        isEVM: isEVM);
     await (isEVM ? onWillStartEVM(keyringEVM!) : onWillStart(keyring));
   }
 
@@ -167,19 +168,15 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
       final data = await sdk.api.eth.account
           .getNativeTokenBalance(keyringEVM?.current.address ?? '');
 
-      final ethAccount = KeyPairData()
-        ..pubKey = keyringEVM?.current.address
-        ..address = keyringEVM?.current.address;
-
       _updateBalances(
-          ethAccount,
+          keyringEVM!.current.toKeyPairData(),
           BalanceData()
-            ..accountId = ethAccount.address
+            ..accountId = keyringEVM.current.address
             ..freeBalance = data['amount']
             ..availableBalance = data['amount']);
     }
 
-    onStarted(keyring);
+    onStartedEVM(keyringEVM!);
 
     return evmRes;
   }
