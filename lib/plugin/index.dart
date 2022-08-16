@@ -122,13 +122,14 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
     WebViewRunner? webView,
     String? jsCode,
     Function? socketDisconnectedAction,
+    bool isEVM = false,
   }) async {
     await sdk.init(keyring,
         keyringEVM: keyringEVM,
         webView: webView,
         jsCode: jsCode ?? (await loadJSCode()),
         socketDisconnectedAction: socketDisconnectedAction);
-    await onWillStart(keyring);
+    await (isEVM ? onWillStartEVM(keyringEVM!) : onWillStart(keyring));
   }
 
   /// This method will be called while App switched to a plugin.
@@ -201,8 +202,17 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
     }
   }
 
+  Future<void> onWillStartEVM(KeyringEVM keyring) async {
+    if (keyring.current.address != null) {
+      loadBalances(keyring.current.toKeyPairData());
+    }
+  }
+
   /// This method will be called after plugin started
   Future<void> onStarted(Keyring keyring) async => null;
+
+  /// This method will be called after plugin started
+  Future<void> onStartedEVM(KeyringEVM keyringEvm) async => null;
 
   /// This method will be called while App user changes account.
   /// In this method, the plugin should do:
