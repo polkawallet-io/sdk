@@ -137,23 +137,50 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   /// 2. retrieve network const & state.
   /// 3. subscribe balances & set balancesStore.
   Future<NetworkParams?> start(Keyring keyring,
-      {List<NetworkParams>? nodes}) async {
-    final res = await sdk.api.connectNode(keyring, nodes ?? nodeList);
-    if (res == null) return null;
+      {List<NetworkParams>? nodes,
+      KeyringEVM? keyringEVM,
+      NetworkParams? nodeEVM}) async {
+    if (nodeEVM == null) {
+      final res = await sdk.api.connectNode(keyring, nodes ?? nodeList);
+      if (res == null) return null;
 
-    keyring.setSS58(res.ss58);
-    await updateNetworkState();
+      keyring.setSS58(res.ss58);
+      await updateNetworkState();
 
-    if (keyring.current.address != null) {
-      sdk.api.account.subscribeBalance(keyring.current.address,
-          (BalanceData data) {
-        _updateBalances(keyring.current, data);
-      });
+      if (keyring.current.address != null) {
+        sdk.api.account.subscribeBalance(keyring.current.address,
+            (BalanceData data) {
+          _updateBalances(keyring.current, data);
+        });
+      }
+
+      onStarted(keyring);
+
+      return res;
+    }
+
+    final evmRes = await sdk.api.connectEVM(nodeEVM);
+    if (evmRes == null) return null;
+
+    if (keyringEVM?.current.address != null) {
+      final data = await sdk.api.eth.account
+          .getNativeTokenBalance(keyringEVM?.current.address ?? '');
+
+      final ethAccount = KeyPairData()
+        ..pubKey = keyringEVM?.current.address
+        ..address = keyringEVM?.current.address;
+
+      _updateBalances(
+          ethAccount,
+          BalanceData()
+            ..accountId = ethAccount.address
+            ..freeBalance = data['amount']
+            ..availableBalance = data['amount']);
     }
 
     onStarted(keyring);
 
-    return res;
+    return evmRes;
   }
 
   /// This method will be called while App user changes account.

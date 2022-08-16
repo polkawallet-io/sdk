@@ -100,6 +100,15 @@ class PolkawalletApi {
     return res;
   }
 
+  Future<NetworkParams?> connectEVM(NetworkParams node) async {
+    _connectedNode = null;
+    final NetworkParams? res = await service.webView!.connectEVM(node);
+    if (res != null) {
+      _connectedNode = res;
+    }
+    return res;
+  }
+
   /// subscribe message.
   Future<void> subscribeMessage(
     String JSCall,

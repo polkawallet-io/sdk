@@ -236,6 +236,25 @@ class WebViewRunner {
     return null;
   }
 
+  Future<NetworkParams?> connectEVM(NetworkParams node) async {
+    final Map? res =
+        await (evalJavascript('settings.connect("${node.endpoint}")'));
+    if (res != null) {
+      if (_webViewOOMReload) {
+        print(
+            "webView OOM Reload evaluateJavascript====\n${_msgJavascript.keys.toString()}");
+        _msgJavascript.forEach((key, value) {
+          _web!.webViewController.evaluateJavascript(source: value);
+        });
+        _msgJavascript = {};
+        _webViewOOMReload = false;
+      }
+      node.chainId = res['chainId'];
+      return node;
+    }
+    return null;
+  }
+
   Future<void> subscribeMessage(
     String code,
     String channel,

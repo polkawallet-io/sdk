@@ -33,4 +33,15 @@ class ApiAccountEth {
       keyring.store.updateIconsMap(Map<String, String>.from(data));
     }
   }
+
+  Future<Map> getNativeTokenBalance(String address) async {
+    final Map? res = await service.getNativeTokenBalance(address);
+    return res ?? {};
+  }
+
+  Future<List?> getTokenBalance(
+      String address, List<String> contractAddresses) async {
+    final List? res = await service.getTokenBalance(address, contractAddresses);
+    return res;
+  }
 }
