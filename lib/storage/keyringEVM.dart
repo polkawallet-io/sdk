@@ -60,6 +60,10 @@ class KeyringEVM {
   Future<void> init() async {
     store = KeyringEVMPrivateStore();
     await store.init();
+
+    // The first call is 0, so I call it once
+    print(
+        "_keyringEVM.keyPairs.length===${this.keyPairs.length}====_keyringEVM.contacts.length${this.contacts.length}");
   }
 }
 
