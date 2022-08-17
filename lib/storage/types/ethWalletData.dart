@@ -15,7 +15,8 @@ class EthWalletData extends _EthWalletData {
       ..name = name
       ..memo = memo
       ..icon = icon
-      ..pubKey = address;
+      ..pubKey = address
+      ..observation = observation;
   }
 }
 

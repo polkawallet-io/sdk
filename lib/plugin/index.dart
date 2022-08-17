@@ -182,12 +182,25 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
   }
 
   /// This method will be called while App user changes account.
-  void changeAccount(KeyPairData account) {
-    sdk.api.account.unsubscribeBalance();
-    loadBalances(account);
-    sdk.api.account.subscribeBalance(account.address, (BalanceData data) {
-      _updateBalances(account, data);
-    });
+  Future<void> changeAccount(KeyPairData account) async {
+    if (account.pubKey == account.address) {
+      //eth
+      final data = await sdk.api.eth.account
+          .getNativeTokenBalance(account.address ?? '');
+
+      _updateBalances(
+          account,
+          BalanceData()
+            ..accountId = account.address
+            ..freeBalance = data['amount']
+            ..availableBalance = data['amount']);
+    } else {
+      sdk.api.account.unsubscribeBalance();
+      loadBalances(account);
+      sdk.api.account.subscribeBalance(account.address, (BalanceData data) {
+        _updateBalances(account, data);
+      });
+    }
 
     onAccountChanged(account);
   }
