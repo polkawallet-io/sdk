@@ -119,6 +119,7 @@ class ApiKeyringEth {
   /// change name of account
   Future<EthWalletData> changeName(KeyringEVM keyring, String name) async {
     final json = keyring.current.toJson();
+    json['name'] = name;
     // update keyPair date in storage
     keyring.store.updateAccount(json);
     return EthWalletData.fromJson(json);
