@@ -13,11 +13,12 @@ const config = {
   },
   resolve: {
     extensions: [".ts", ".js", ".mjs", ".cjs", ".json"],
-    fallback: { crypto: require.resolve("crypto-browserify"), stream: require.resolve("stream-browserify") },
+    fallback: { crypto: require.resolve("crypto-browserify"), stream: require.resolve("stream-browserify"), "assert": require.resolve("assert"), buffer: require.resolve('buffer'), },
   },
   plugins: [
     new webpack.ProvidePlugin({
       process: "process/browser.js",
+      Buffer: ['buffer', 'Buffer'],
     }),
   ],
   module: {
