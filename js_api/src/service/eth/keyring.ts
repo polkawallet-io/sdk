@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { verifyMessage } from "@ethersproject/wallet";
 import accountETH from "./account";
 import { erc20Abi, getProvider } from "./settings";
 import { signTypedData_v4, recoverTypedSignature_v4 } from "eth-sig-util";
@@ -161,9 +162,43 @@ async function changePassword(address: string, passOld: string, passNew: string)
 }
 
 /**
+ * sign message with private key of an account.
+ */
+async function signMessage(message: string, address: string, pass: string) {
+  const keystore = _findAccount(address);
+  if (!keystore) return { success: false, error: `Can not find account ${address}` };
+
+  try {
+    const keyPair = await ethers.Wallet.fromEncryptedJson(keystore, pass);
+    if (keyPair.address) {
+      const res = await keyPair.signMessage(message);
+      return {
+        pubKey: keyPair.publicKey,
+        address: keyPair.address,
+        signature: res,
+      };
+    }
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}
+
+/**
+ * get signer of a signature. so we can verify the signer.
+ */
+async function verifySignature(message: string, signature: string) {
+  try {
+    const res = verifyMessage(message, signature);
+    return { signer: res };
+  } catch (err) {
+    return { error: err.message };
+  }
+}
+
+/**
  * sign typedData with private key of an account.
  */
-async function signMessage(data: any, address: string, pass: string) {
+async function signTypedData(data: any, address: string, pass: string) {
   const keystore = _findAccount(address);
   if (!keystore) return { success: false, error: `Can not find account ${address}` };
 
@@ -187,7 +222,7 @@ async function signMessage(data: any, address: string, pass: string) {
 /**
  * get signer of a signature. so we can verify the signer.
  */
-async function verifySignature(data: any, signature: string) {
+async function verifyTypedData(data: any, signature: string) {
   try {
     const res = recoverTypedSignature_v4({ data: data, sig: signature });
     return { signer: res };
@@ -291,4 +326,6 @@ export default {
   // estimateTransferGas,
   transfer,
   signAndSendTx,
+  signTypedData,
+  verifyTypedData,
 };
