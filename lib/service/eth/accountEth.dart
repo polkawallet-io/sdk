@@ -15,10 +15,10 @@ class ServiceAccountEth {
     return res;
   }
 
-  Future<Map?> getNativeTokenBalance(String address) async {
-    final Map? res = await serviceRoot.webView!
+  Future<String> getNativeTokenBalance(String address) async {
+    final String? res = await serviceRoot.webView!
         .evalJavascript('eth.account.getEthBalance("$address")');
-    return res;
+    return res ?? '0';
   }
 
   Future<List?> getTokenBalance(

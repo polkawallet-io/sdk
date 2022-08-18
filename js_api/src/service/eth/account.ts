@@ -13,10 +13,7 @@ async function genIcons(addresses: string[]) {
 
 async function getEthBalance(address: string) {
   const res = await getProvider().getBalance(address);
-  return {
-    amount: res.toString(),
-    decimals: 18,
-  };
+  return res.toString();
 }
 
 async function getTokenBalance(address: string, contractAddresses: string[]) {

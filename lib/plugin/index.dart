@@ -172,8 +172,10 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
           keyringEVM!.current.toKeyPairData(),
           BalanceData()
             ..accountId = keyringEVM.current.address
-            ..freeBalance = data['amount']
-            ..availableBalance = data['amount']);
+            ..freeBalance = data
+            ..availableBalance = data
+            ..lockedBalance = '0'
+            ..reservedBalance = '0');
     }
 
     onStartedEVM(keyringEVM!);
@@ -192,8 +194,10 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
           account,
           BalanceData()
             ..accountId = account.address
-            ..freeBalance = data['amount']
-            ..availableBalance = data['amount']);
+            ..freeBalance = data
+            ..availableBalance = data
+            ..lockedBalance = '0'
+            ..reservedBalance = '0');
     } else {
       sdk.api.account.unsubscribeBalance();
       loadBalances(account);

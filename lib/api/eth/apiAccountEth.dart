@@ -34,9 +34,8 @@ class ApiAccountEth {
     }
   }
 
-  Future<Map> getNativeTokenBalance(String address) async {
-    final Map? res = await service.getNativeTokenBalance(address);
-    return res ?? {};
+  Future<String> getNativeTokenBalance(String address) async {
+    return service.getNativeTokenBalance(address);
   }
 
   Future<List?> getTokenBalance(
