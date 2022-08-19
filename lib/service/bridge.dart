@@ -153,4 +153,8 @@ class ServiceBridge {
   Future<void> reload() async {
     return _runner?.reload();
   }
+
+  Future<dynamic> evalJavascript(String code) async {
+    return await _runner?.evalJavascript(code);
+  }
 }
