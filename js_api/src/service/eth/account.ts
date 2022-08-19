@@ -37,8 +37,16 @@ async function getTokenBalance(address: string, contractAddresses: string[]) {
   );
 }
 
+/**
+ * validate input address & return checksumed.
+ */
+async function getAddress(address: string) {
+  return ethers.utils.getAddress(address);
+}
+
 export default {
   genIcons,
   getEthBalance,
   getTokenBalance,
+  getAddress,
 };

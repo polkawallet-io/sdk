@@ -93,6 +93,18 @@ class WebViewRunner {
             var msg = jsonDecode(message.message);
 
             final String path = msg['path']!;
+            final error = msg['error'];
+
+            if (error != null) {
+              if (_msgCompleters[path] != null) {
+                Completer handler = _msgCompleters[path]!;
+                handler.completeError(error);
+                if (path.contains('uid=')) {
+                  _msgCompleters.remove(path);
+                }
+              }
+            }
+
             if (_msgCompleters[path] != null) {
               Completer handler = _msgCompleters[path]!;
               handler.complete(msg['data']);
@@ -105,23 +117,12 @@ class WebViewRunner {
               handler(msg['data']);
             }
 
-            if (path == 'log') {
-              final String? call = msg['data']?['call'];
-              final String? error = msg['data']?['error'];
-              if (call != null && _msgCompleters[call] != null) {
-                Completer handler = _msgCompleters[call]!;
-                handler.completeError(error ?? "$call error");
-                if (call.contains('uid=')) {
-                  _msgCompleters.remove(call);
-                }
-              }
+            if (_msgJavascript[path] != null) {
+              _msgJavascript.remove(path);
             }
-
-            if (_msgJavascript[path.split(";")[1]] != null) {
-              _msgJavascript.remove(path.split(";")[1]);
-            }
-          } catch (_) {
+          } catch (err) {
             // ignore
+            print('msg parsing error $err');
           }
         },
         onLoadStop: (controller, url) async {
@@ -196,16 +197,17 @@ class WebViewRunner {
     final c = new Completer();
 
     final uid = getEvalJavascriptUID();
-    final method = 'uid=$uid;${code.split('(')[0]}';
+    final jsCall = code.split('(');
+    final method = 'uid=$uid;${jsCall[0]}';
     _msgCompleters[method] = c;
 
     final script = '$code.then(function(res) {'
         '  console.log(JSON.stringify({ path: "$method", data: res }));'
         '}).catch(function(err) {'
-        '  console.log(JSON.stringify({ path: "log", data: {call: "$method", error: err.message} }));'
+        '  console.log(JSON.stringify({ path: "$method", error: err.message }));'
         '});';
     _web!.webViewController.evaluateJavascript(source: script);
-    _msgJavascript[code.split('(')[0]] = script;
+    _msgJavascript[jsCall[0]] = script;
 
     return c.future;
   }

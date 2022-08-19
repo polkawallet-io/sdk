@@ -27,4 +27,12 @@ class ServiceAccountEth {
         'eth.account.getTokenBalance("$address", ${jsonEncode(contractAddresses)})');
     return res;
   }
+
+  /// Validate address
+  /// return checksumed address or null
+  Future<String?> getAddress(String address) async {
+    final String? res = await serviceRoot.webView!
+        .evalJavascript('eth.account.getAddress("$address")');
+    return res;
+  }
 }

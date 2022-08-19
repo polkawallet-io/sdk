@@ -43,4 +43,9 @@ class ApiAccountEth {
     final List? res = await service.getTokenBalance(address, contractAddresses);
     return res;
   }
+
+  Future<String?> getAddress(String address) async {
+    final String? res = await service.getAddress(address);
+    return res;
+  }
 }
