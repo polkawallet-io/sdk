@@ -185,6 +185,7 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
 
   /// This method will be called while App user changes account.
   Future<void> changeAccount(KeyPairData account) async {
+    onAccountChanged(account);
     if (account.pubKey == account.address) {
       //eth
       final data = await sdk.api.eth.account
@@ -205,8 +206,6 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
         _updateBalances(account, data);
       });
     }
-
-    onAccountChanged(account);
   }
 
   /// This method will be called before plugin start
