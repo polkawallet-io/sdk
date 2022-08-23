@@ -96,9 +96,24 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
 
   /// This method will be called while user request to query balance.
   Future<void> updateBalances(KeyPairData acc) async {
-    final data = await (sdk.api.account.queryBalance(acc.address)
-        as FutureOr<BalanceData>);
-    _updateBalances(acc, data);
+    if (acc.pubKey == acc.address) {
+      //eth
+      final data =
+          await sdk.api.eth.account.getNativeTokenBalance(acc.address ?? '');
+
+      _updateBalances(
+          acc,
+          BalanceData()
+            ..accountId = acc.address
+            ..freeBalance = data
+            ..availableBalance = data
+            ..lockedBalance = '0'
+            ..reservedBalance = '0');
+    } else {
+      final data = await (sdk.api.account.queryBalance(acc.address)
+          as FutureOr<BalanceData>);
+      _updateBalances(acc, data);
+    }
   }
 
   void loadBalances(KeyPairData acc) {
