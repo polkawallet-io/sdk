@@ -11,6 +11,9 @@ class ServiceBridge {
 
   BridgeRunner? _runner;
 
+  ///For multiple use at the same time
+  int _retainCount = 0;
+
   Future<void> init() async {
     final c = Completer();
     if (_runner == null) {
@@ -21,10 +24,13 @@ class ServiceBridge {
     } else {
       if (!c.isCompleted) c.complete();
     }
+    _retainCount++;
     return c.future;
   }
 
   Future<void> dispose() async {
+    _retainCount--;
+    if (_retainCount > 0) return;
     _runner?.dispose();
     _runner = null;
   }
@@ -111,6 +117,9 @@ class ServiceBridge {
     final String pairs = jsonEncode(keyring);
     final dynamic res = await _runner?.evalJavascript(
         'bridge.sendTx("$chainFrom", ${jsonEncode(txInfo)},"$password","$msgId",$pairs)');
+    if (res?['error'] != null) {
+      throw Exception(res?['error']);
+    }
     return res;
   }
 

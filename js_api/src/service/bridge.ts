@@ -169,7 +169,7 @@ async function subscribeBalances(chain: ChainName, address: string, msgChannel: 
 
 async function getInputConfig(from: ChainName, to: ChainName, token: string, address: string, signer: string) {
   await _initBridge();
-  
+
   const adapter = bridge.findAdapter(from);
 
   const res = await firstValueFrom(adapter.subscribeInputConfigs({ to, token, address, signer }));
@@ -242,7 +242,9 @@ async function sendTx(chainFrom: ChainName, txInfo: any, password: string, msgId
     } catch (err) {
       resolve({ error: "password check failed" });
     }
-    tx.signAndSend(keyPair, { tip: new BN(txInfo.tip, 10) }, onStatusChange);
+    tx.signAndSend(keyPair, { tip: new BN(txInfo.tip, 10) }, onStatusChange).catch((err) => {
+      resolve({ error: err.message });
+    });
   });
 }
 
