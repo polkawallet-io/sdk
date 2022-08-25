@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_sdk/service/bridgeRunner.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 
@@ -53,16 +54,32 @@ class ServiceBridge {
     return res;
   }
 
+  Future<String?> _checkConnection(String chain) async {
+    final api = await _runner?.evalJavascript(
+            'Promise.all([bridge.getApi("$chain")&&bridge.getApi("$chain").isConnected])')
+        as List;
+    return api[0] == true ? chain : null;
+  }
+
   Future<List<String>> connectFromChains(List<String> chains,
       {Map<String, List<String>>? nodeList}) async {
     assert(_runner != null, 'bridge not init');
+    final list =
+        await Future.wait(chains.map((e) => _checkConnection(e)).toList());
+    final nonNullList =
+        list.where((element) => element != null).toList() as List<String>;
+    chains.removeWhere((element) => nonNullList.contains(element));
+    if (chains.isEmpty) {
+      return nonNullList;
+    }
     final res = await _runner?.evalJavascript(
         'bridge.connectFromChains(${jsonEncode(chains)}, ${nodeList == null ? 'undefined' : jsonEncode(nodeList)})');
-    return List<String>.from(res);
+    return List<String>.from(res) + nonNullList;
   }
 
   Future<void> disconnectFromChains() async {
     assert(_runner != null, 'bridge not init');
+    if (_retainCount > 0) return;
     await _runner?.evalJavascript('bridge.disconnectFromChains()');
   }
 
