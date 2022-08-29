@@ -114,6 +114,21 @@ class ServiceKeyringEth {
     return res;
   }
 
+  Future<int> estimateTransferGas(
+      {required String token,
+      required double amount,
+      required String to}) async {
+    final res = await serviceRoot.webView!.evalJavascript(
+        'eth.keyring.estimateTransferGas("$token", $amount, "$to")');
+    return res ?? 200000;
+  }
+
+  Future<String?> getGasPrice() async {
+    final res =
+        await serviceRoot.webView!.evalJavascript('eth.keyring.getGasPrice()');
+    return res;
+  }
+
   Map _formatAccountData(Map acc) {
     final keystore = jsonDecode(acc['keystore'] ?? '{}');
     return {

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:http/http.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 
 class ServiceAccountEth {
@@ -35,4 +36,14 @@ class ServiceAccountEth {
         .evalJavascript('eth.account.getAddress("$address")');
     return res;
   }
+
+  Future<Map> queryEthGasParams() async {
+    const url =
+        'https://gas-api.metaswap.codefi.network/networks/1/suggestedGasFees';
+    final res = await get(Uri.parse(url));
+    final obj = jsonDecode(res.body);
+    return obj['data'] ?? {};
+  }
 }
+
+const postHeaders = {"Content-type": "application/json", "Accept": "*/*"};

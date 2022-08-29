@@ -198,4 +198,15 @@ class ApiKeyringEth {
         pass: pass,
         gasOptions: gasOptions);
   }
+
+  Future<int> estimateTransferGas(
+      {required String token,
+      required double amount,
+      required String to}) async {
+    return service.estimateTransferGas(token: token, amount: amount, to: to);
+  }
+
+  Future<String?> getGasPrice() async {
+    return service.getGasPrice();
+  }
 }

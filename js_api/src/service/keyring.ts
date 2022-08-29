@@ -167,7 +167,7 @@ async function txFeeEstimate(api: ApiPromise, txInfo: any, paramList: any[]) {
   } else if (txInfo.txName == "treasury.rejectProposal") {
     tx = await gov.makeTreasuryProposalSubmission(api, paramList[0], true);
   } else {
-    tx = api.tx[txInfo.module][txInfo.call](...paramList);
+    tx = !!txInfo.txHex ? api.tx(txInfo.txHex) : api.tx[txInfo.module][txInfo.call](...paramList);
   }
 
   let sender = txInfo.sender.address;
@@ -242,7 +242,7 @@ function sendTx(api: ApiPromise, txInfo: any, paramList: any[], password: string
     } else if (txInfo.txName == "treasury.rejectProposal") {
       tx = await gov.makeTreasuryProposalSubmission(api, paramList[0], true);
     } else {
-      tx = api.tx[txInfo.module][txInfo.call](...paramList);
+      tx = !!txInfo.txHex ? api.tx(txInfo.txHex) : api.tx[txInfo.module][txInfo.call](...paramList);
     }
     let unsub = () => {};
     const onStatusChange = (result: SubmittableResult) => {

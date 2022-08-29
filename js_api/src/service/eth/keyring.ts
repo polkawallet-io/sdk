@@ -5,6 +5,8 @@ import { erc20Abi, getProvider } from "./settings";
 import { signTypedData_v4, recoverTypedSignature_v4 } from "eth-sig-util";
 
 interface GasOptions {
+  gasLimit: number;
+  gasPrice: string;
   maxFeePerGas: string;
   maxPriorityFeePerGas: string;
 }
@@ -231,24 +233,25 @@ async function verifyTypedData(data: any, signature: string) {
   }
 }
 
-// async function estimateTransferGas(token: string, amount: number, to: string) {
-//   try {
-//     if (token === "ETH") {
-//       const gas = await getProvider().estimateGas({
-//         to,
-//         value: ethers.utils.parseEther(amount.toString()),
-//       });
-//       return gas.toString();
-//     } else {
-//       const contract = new ethers.Contract(token, erc20Abi, getProvider());
-//       const decimals = await contract.decimals();
-//       const gas = await contract.estimateGas.transfer(to, ethers.utils.parseUnits(amount.toString(), decimals));
-//       return gas.toString();
-//     }
-//   } catch (err) {
-//     return { success: false, error: err.message };
-//   }
-// }
+async function estimateTransferGas(token: string, amount: number, to: string) {
+  if (token.startsWith('0x')) {
+    const contract = new ethers.Contract(token, erc20Abi, getProvider());
+    const decimals = await contract.decimals();
+    const gas = await contract.estimateGas.transfer(to, ethers.utils.parseUnits(amount.toString(), decimals));
+    return gas.toNumber();
+  } else {
+    const gas = await getProvider().estimateGas({
+      to,
+      value: ethers.utils.parseEther(amount.toString()),
+    });
+    return gas.toNumber();
+  }
+}
+
+async function getGasPrice() {
+  const gasPrice = await getProvider().getGasPrice();
+  return gasPrice.toString();
+}
 
 async function transfer(token: string, amount: number, to: string, sender: string, pass: string, gasOptions: GasOptions) {
   const keystore = _findAccount(sender);
@@ -323,7 +326,8 @@ export default {
   changePassword,
   signMessage,
   verifySignature,
-  // estimateTransferGas,
+  estimateTransferGas,
+  getGasPrice,
   transfer,
   signAndSendTx,
   signTypedData,
