@@ -107,7 +107,7 @@ async function getBalance(api: ApiPromise, address: string, msgChannel: string) 
   const transfrom = (res: any) => {
     const lockedBreakdown = res.lockedBreakdown.map((i: any) => {
       return {
-        ...i,
+        ...i.toJSON(),
         use: hexToString(i.id.toHex()),
       };
     });
