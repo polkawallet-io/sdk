@@ -45,15 +45,15 @@ class ApiTx {
     final Map tx = txInfo.toJson();
     print(tx);
     print(param);
-    final res = await (service.signAndSend(
+    final res = await service.signAndSend(
       tx,
       param,
       password,
       onStatusChange ?? (status) => print(status),
-    ) as FutureOr<Map<dynamic, dynamic>>);
-    if (res['error'] != null) {
-      throw Exception(res['error']);
+    );
+    if (res?['error'] != null) {
+      throw Exception(res?['error']);
     }
-    return res;
+    return res ?? {};
   }
 }

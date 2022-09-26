@@ -3,10 +3,10 @@ import 'dart:convert';
 
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
+import 'package:polkawallet_sdk/service/localServer.dart';
 
 class WebViewRunner {
   HeadlessInAppWebView? _web;
-  InAppLocalhostServer? _localhostServer;
   Function? _onLaunched;
 
   String? _jsCode;
@@ -47,8 +47,7 @@ class WebViewRunner {
     // print('js eth file loaded');
 
     if (_web == null) {
-      await _startLocalServer();
-
+      await LocalServer.getInstance().startLocalServer();
       _web = new HeadlessInAppWebView(
         initialOptions: InAppWebViewGroupOptions(
           crossPlatform: InAppWebViewOptions(clearCache: true),
@@ -94,6 +93,18 @@ class WebViewRunner {
             var msg = jsonDecode(message.message);
 
             final String path = msg['path']!;
+            final error = msg['error'];
+
+            if (error != null) {
+              if (_msgCompleters[path] != null) {
+                Completer handler = _msgCompleters[path]!;
+                handler.completeError(error);
+                if (path.contains('uid=')) {
+                  _msgCompleters.remove(path);
+                }
+              }
+            }
+
             if (_msgCompleters[path] != null) {
               Completer handler = _msgCompleters[path]!;
               handler.complete(msg['data']);
@@ -106,23 +117,12 @@ class WebViewRunner {
               handler(msg['data']);
             }
 
-            if (path == 'log') {
-              final String? call = msg['data']?['call'];
-              final String? error = msg['data']?['error'];
-              if (call != null && _msgCompleters[call] != null) {
-                Completer handler = _msgCompleters[call]!;
-                handler.completeError(error ?? "$call error");
-                if (call.contains('uid=')) {
-                  _msgCompleters.remove(call);
-                }
-              }
+            if (_msgJavascript[path] != null) {
+              _msgJavascript.remove(path);
             }
-
-            if (_msgJavascript[path.split(";")[1]] != null) {
-              _msgJavascript.remove(path.split(";")[1]);
-            }
-          } catch (_) {
+          } catch (err) {
             // ignore
+            print('msg parsing error $err');
           }
         },
         onLoadStop: (controller, url) async {
@@ -152,12 +152,6 @@ class WebViewRunner {
     if (!webViewLoaded) {
       _web?.webViewController.reload();
     }
-  }
-
-  Future<void> _startLocalServer() async {
-    _localhostServer?.close();
-    _localhostServer = new InAppLocalhostServer();
-    await _localhostServer!.start();
   }
 
   Future<void> _startJSCode() async {
@@ -203,16 +197,17 @@ class WebViewRunner {
     final c = new Completer();
 
     final uid = getEvalJavascriptUID();
-    final method = 'uid=$uid;${code.split('(')[0]}';
+    final jsCall = code.split('(');
+    final method = 'uid=$uid;${jsCall[0]}';
     _msgCompleters[method] = c;
 
     final script = '$code.then(function(res) {'
         '  console.log(JSON.stringify({ path: "$method", data: res }));'
         '}).catch(function(err) {'
-        '  console.log(JSON.stringify({ path: "log", data: {call: "$method", error: err.message} }));'
+        '  console.log(JSON.stringify({ path: "$method", error: err.message }));'
         '});';
     _web!.webViewController.evaluateJavascript(source: script);
-    _msgJavascript[code.split('(')[0]] = script;
+    _msgJavascript[jsCall[0]] = script;
 
     return c.future;
   }
@@ -239,6 +234,25 @@ class WebViewRunner {
         _webViewOOMReload = false;
       }
       return nodes[index > -1 ? index : 0];
+    }
+    return null;
+  }
+
+  Future<NetworkParams?> connectEVM(NetworkParams node) async {
+    final Map? res =
+        await (evalJavascript('eth.settings.connect("${node.endpoint}")'));
+    if (res != null) {
+      if (_webViewOOMReload) {
+        print(
+            "webView OOM Reload evaluateJavascript====\n${_msgJavascript.keys.toString()}");
+        _msgJavascript.forEach((key, value) {
+          _web!.webViewController.evaluateJavascript(source: value);
+        });
+        _msgJavascript = {};
+        _webViewOOMReload = false;
+      }
+      node.chainId = res['chainId'].toString();
+      return node;
     }
     return null;
   }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_sdk/service/bridgeRunner.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 
@@ -10,6 +11,9 @@ class ServiceBridge {
   final SubstrateService serviceRoot;
 
   BridgeRunner? _runner;
+
+  ///For multiple use at the same time
+  int _retainCount = 0;
 
   Future<void> init() async {
     final c = Completer();
@@ -21,10 +25,13 @@ class ServiceBridge {
     } else {
       if (!c.isCompleted) c.complete();
     }
+    _retainCount++;
     return c.future;
   }
 
   Future<void> dispose() async {
+    _retainCount--;
+    if (_retainCount > 0) return;
     _runner?.dispose();
     _runner = null;
   }
@@ -47,16 +54,32 @@ class ServiceBridge {
     return res;
   }
 
+  Future<String?> _checkConnection(String chain) async {
+    final api = await _runner?.evalJavascript(
+            'Promise.all([bridge.getApi("$chain")&&bridge.getApi("$chain").isConnected])')
+        as List;
+    return api[0] == true ? chain : null;
+  }
+
   Future<List<String>> connectFromChains(List<String> chains,
       {Map<String, List<String>>? nodeList}) async {
     assert(_runner != null, 'bridge not init');
+    final list =
+        await Future.wait(chains.map((e) => _checkConnection(e)).toList());
+    final nonNullList =
+        list.where((element) => element != null).toList() as List<String>;
+    chains.removeWhere((element) => nonNullList.contains(element));
+    if (chains.isEmpty) {
+      return nonNullList;
+    }
     final res = await _runner?.evalJavascript(
         'bridge.connectFromChains(${jsonEncode(chains)}, ${nodeList == null ? 'undefined' : jsonEncode(nodeList)})');
-    return List<String>.from(res);
+    return List<String>.from(res) + nonNullList;
   }
 
   Future<void> disconnectFromChains() async {
     assert(_runner != null, 'bridge not init');
+    if (_retainCount > 0) return;
     await _runner?.evalJavascript('bridge.disconnectFromChains()');
   }
 
@@ -111,6 +134,9 @@ class ServiceBridge {
     final String pairs = jsonEncode(keyring);
     final dynamic res = await _runner?.evalJavascript(
         'bridge.sendTx("$chainFrom", ${jsonEncode(txInfo)},"$password","$msgId",$pairs)');
+    if (res?['error'] != null) {
+      throw Exception(res?['error']);
+    }
     return res;
   }
 
@@ -152,5 +178,9 @@ class ServiceBridge {
 
   Future<void> reload() async {
     return _runner?.reload();
+  }
+
+  Future<dynamic> evalJavascript(String code) async {
+    return await _runner?.evalJavascript(code);
   }
 }

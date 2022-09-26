@@ -10,6 +10,10 @@ import gov from "./service/gov";
 import parachain from "./service/parachain";
 import assets from "./service/assets";
 import { genLinks } from "./utils/config/config";
+// ethers APIs:
+import keyringETH from "./service/eth/keyring";
+import accountETH from "./service/eth/account";
+import { connect as connectEVM } from "./service/eth/settings";
 
 // console.log will send message to MsgChannel to App
 function send(path: string, data: any) {
@@ -83,6 +87,7 @@ const settings = {
 (<any>window).gov = gov;
 (<any>window).parachain = parachain;
 (<any>window).assets = assets;
+(<any>window).eth = { settings: { connect: connectEVM }, keyring: keyringETH, account: accountETH };
 
 // walletConnect supporting is not ready.
 // (<any>window).walletConnect = wc;

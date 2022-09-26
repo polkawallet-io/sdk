@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/ethers/apiEthers.dart';
 import 'package:polkawallet_sdk/service/index.dart';
+import 'package:polkawallet_sdk/storage/keyringEVM.dart';
 
 const default_derive_path = "m/44'/60'/0'/0/0";
 
@@ -10,6 +11,13 @@ class ServiceKeyringEth {
   ServiceKeyringEth(this.serviceRoot);
 
   final SubstrateService serviceRoot;
+
+  Future<void> injectKeyPairsToWebView(KeyringEVM keyring) async {
+    if (keyring.store.list.length > 0) {
+      final String pairs = jsonEncode(keyring.store.list);
+      serviceRoot.webView!.evalJavascript('eth.keyring.initKeys($pairs)');
+    }
+  }
 
   /// Generate a set of new mnemonic.
   Future<AddressIconDataWithMnemonic> generateMnemonic(
@@ -21,10 +29,9 @@ class ServiceKeyringEth {
 
   /// get address and avatar from mnemonic.
   Future<dynamic> addressFromMnemonic(
-      {required String derivePath, required String mnemonic}) async {
-    print('eth.keyring.addressFromMnemonic("$mnemonic","$derivePath")');
+      {String? derivePath, required String mnemonic}) async {
     final dynamic acc = await serviceRoot.webView!.evalJavascript(
-        'eth.keyring.addressFromMnemonic("$mnemonic","$derivePath")');
+        'eth.keyring.addressFromMnemonic("$mnemonic","${derivePath ?? default_derive_path}")');
     return acc;
   }
 
@@ -60,30 +67,30 @@ class ServiceKeyringEth {
 
   /// check password of account
   Future<bool> checkPassword(
-      {required String keystore, required String pass}) async {
+      {required String address, required String pass}) async {
     final res = await serviceRoot.webView!
-        .evalJavascript('eth.keyring.checkPassword($keystore, "$pass")');
+        .evalJavascript('eth.keyring.checkPassword("$address", "$pass")');
     //An error Message is displayed if it fails :{ success: false, error: err.message }
     return res["success"];
   }
 
   /// change password of account
   Future<Map> changePassword(
-      {required String keystore,
+      {required String address,
       required String passOld,
       required String passNew}) async {
     final res = await serviceRoot.webView!.evalJavascript(
-        'eth.keyring.changePassword($keystore, "$passOld", "$passNew")');
+        'eth.keyring.changePassword("$address", "$passOld", "$passNew")');
     return _formatAccountData(res ?? {});
   }
 
   /// sign message with private key of an account.
   Future<dynamic> signMessage(
       {required String message,
-      required String keystore,
+      required String address,
       required String pass}) async {
     final res = await serviceRoot.webView!.evalJavascript(
-        'eth.keyring.signMessage("$message", $keystore, "$pass")');
+        'eth.keyring.signMessage("$message", "$address", "$pass")');
     return res;
   }
 
@@ -95,11 +102,30 @@ class ServiceKeyringEth {
     return res;
   }
 
-  /// Get icons of addresses
-  /// return svg strings
-  Future<List?> getAddressIcons(List addresses) async {
-    final dynamic res = await serviceRoot.webView!
-        .evalJavascript('eth.account.genIcons(${jsonEncode(addresses)})');
+  Future<Map> transfer(
+      {required String token,
+      required double amount,
+      required String to,
+      required String sender,
+      required String pass,
+      required Map gasOptions}) async {
+    final res = await serviceRoot.webView!.evalJavascript(
+        'eth.keyring.transfer("$token", $amount, "$to", "$sender", "$pass", ${jsonEncode(gasOptions)})');
+    return res;
+  }
+
+  Future<int> estimateTransferGas(
+      {required String token,
+      required double amount,
+      required String to}) async {
+    final res = await serviceRoot.webView!.evalJavascript(
+        'eth.keyring.estimateTransferGas("$token", $amount, "$to")');
+    return res ?? 200000;
+  }
+
+  Future<String?> getGasPrice() async {
+    final res =
+        await serviceRoot.webView!.evalJavascript('eth.keyring.getGasPrice()');
     return res;
   }
 

@@ -26,19 +26,30 @@
     "build-dev": "webpack --mode development"
   },
   "resolutions": {
-    "@polkadot/api": "8.10.1",
-    "@polkadot/rpc-provider": "^8.11.3",
-    "bn.js": "4.12.0"
+    "@polkadot/api": "^9.1.1",
+    "@polkadot/rpc-provider": "^9.1.1",
+    "@polkadot/types": "^9.1.1",
+    "@polkadot/types-create": "^9.1.1",
+    "@polkadot/types-codec": "^9.1.1",
+    "@polkadot/util": "^10.1.3",
+    "@polkadot/util-crypto": "^10.1.3",
+    "@polkadot/keyring": "^10.1.3",
+    "bn.js": "4.12.0",
+    "ethers": "^5.6.8"
   },
   "dependencies": {
+    "@metamask/jazzicon": "^2.0.0",
     "@polkadot/api": "^8.5.1",
     "@polkadot/extension-dapp": "^0.43.2",
     "@polkadot/ui-shared": "^2.2.1",
-    "@polkawallet/bridge": "file:../../bridge",
+    "@polkawallet/bridge": "^0.0.3-2",
     "@walletconnect/sign-client": "2.0.0-beta.100",
     "@walletconnect/utils": "2.0.0-beta.100",
+    "assert": "^2.0.0",
     "axios": "^0.27.2",
     "bn.js": "^5.1.2",
+    "eth-sig-util": "^3.0.1",
+    "ethers": "^5.6.8",
     "oo7-substrate": "^0.8.0",
     "process": "^0.11.10",
     "secp256k1": "^3.8.0"

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/ethers/apiEthers.dart';
 import 'package:polkawallet_sdk/service/eth/keyringEth.dart';
@@ -26,7 +24,7 @@ class ApiKeyringEth {
 
   /// get address and avatar from mnemonic.
   Future<AddressIconData> addressFromMnemonic(
-      {required String derivePath, required String mnemonic}) async {
+      {String? derivePath, required String mnemonic}) async {
     final acc = await service.addressFromMnemonic(
         derivePath: derivePath, mnemonic: mnemonic);
     if (acc['error'] != null) {
@@ -62,9 +60,8 @@ class ApiKeyringEth {
   }
 
   /// check password of account
-  Future<bool> checkPassword(EthWalletData account, String pass) async {
-    final res = await service.checkPassword(
-        keystore: jsonEncode(account.toJson()), pass: pass);
+  Future<bool> checkPassword(String address, String pass) async {
+    final res = await service.checkPassword(address: address, pass: pass);
     return res;
   }
 
@@ -73,7 +70,7 @@ class ApiKeyringEth {
       KeyringEVM keyring, String passOld, String passNew) async {
     // 1. change password of keyPair in webView
     final res = await service.changePassword(
-        keystore: jsonEncode(keyring.current.toJson()),
+        address: keyring.current.address ?? '',
         passNew: passNew,
         passOld: passOld);
 
@@ -114,39 +111,15 @@ class ApiKeyringEth {
     // save keystore to storage
     await keyring.store.addAccount(acc);
 
-    await updateAddressIconsMap(keyring, [acc['address']]);
+    await apiRoot.eth.account.updateAddressIconsMap(keyring, [acc['address']]);
 
     return EthWalletData.fromJson(acc);
-  }
-
-  /// This method query account icons and set icons to [Keyring.store]
-  /// so we can get icon of an account from [Keyring] instance.
-  Future<void> updateAddressIconsMap(KeyringEVM keyring,
-      [List? address]) async {
-    final List<String?> ls = [];
-    if (address != null) {
-      ls.addAll(List<String>.from(address));
-    } else {
-      ls.addAll(keyring.keyPairs.map((e) => e.address).toList());
-      ls.addAll(keyring.contacts.map((e) => e.address).toList());
-    }
-
-    if (ls.length == 0) return;
-    // get icons from webView.
-    final res = await service.getAddressIcons(ls);
-    // set new icons to Keyring instance.
-    if (res != null) {
-      final data = {};
-      res.forEach((e) {
-        data[e[0]] = e[1];
-      });
-      keyring.store.updateIconsMap(Map<String, String>.from(data));
-    }
   }
 
   /// change name of account
   Future<EthWalletData> changeName(KeyringEVM keyring, String name) async {
     final json = keyring.current.toJson();
+    json['name'] = name;
     // update keyPair date in storage
     keyring.store.updateAccount(json);
     return EthWalletData.fromJson(json);
@@ -162,12 +135,10 @@ class ApiKeyringEth {
   Future<ExtensionSignResult?> signMessage(
     String password,
     String message,
-    EthWalletData account,
+    String address,
   ) async {
     final signature = await service.signMessage(
-        keystore: jsonEncode(account.toJson()),
-        message: message,
-        pass: password);
+        address: address, message: message, pass: password);
     if (signature == null) {
       return null;
     }
@@ -207,8 +178,35 @@ class ApiKeyringEth {
     // save keystore to storage
     await keyring.store.addContact(acc);
 
-    await updateAddressIconsMap(keyring, [acc['address']]);
+    await apiRoot.eth.account.updateAddressIconsMap(keyring, [acc['address']]);
 
     return EthWalletData.fromJson(acc);
+  }
+
+  Future<Map> transfer(
+      {required String token,
+      required double amount,
+      required String to,
+      required String sender,
+      required String pass,
+      required Map gasOptions}) async {
+    return service.transfer(
+        token: token,
+        amount: amount,
+        to: to,
+        sender: sender,
+        pass: pass,
+        gasOptions: gasOptions);
+  }
+
+  Future<int> estimateTransferGas(
+      {required String token,
+      required double amount,
+      required String to}) async {
+    return service.estimateTransferGas(token: token, amount: amount, to: to);
+  }
+
+  Future<String?> getGasPrice() async {
+    return service.getGasPrice();
   }
 }

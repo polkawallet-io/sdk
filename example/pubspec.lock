@@ -35,7 +35,7 @@ packages:
       name: characters
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.1"
   collection:
     dependency: transitive
     description:
@@ -114,10 +114,12 @@ packages:
   flutter_inappwebview:
     dependency: transitive
     description:
-      name: flutter_inappwebview
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "5.3.2"
+      path: "."
+      ref: HEAD
+      resolved-ref: "252d836d52bff32870ed1b72231e428b0009e89e"
+      url: "https://github.com/CodeEagle/flutter_inappwebview"
+    source: git
+    version: "5.4.3+7"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -185,14 +187,14 @@ packages:
       name: material_color_utilities
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.4"
+    version: "0.1.5"
   meta:
     dependency: transitive
     description:
       name: meta
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.7.0"
+    version: "1.8.0"
   mobx:
     dependency: transitive
     description:
@@ -283,7 +285,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.4.8"
+    version: "0.4.9"
   process:
     dependency: transitive
     description:

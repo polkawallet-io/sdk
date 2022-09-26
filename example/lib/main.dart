@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
     await keyring.init([0, 2]);
     await keyringEVM.init();
 
-    await sdk.init(keyring);
+    await sdk.init(keyring, keyringEVM: keyringEVM);
     setState(() {
       _sdkReady = true;
     });

@@ -36,11 +36,14 @@ class ApiUOS {
     signed,
     Function(String) onStatusChange,
   ) async {
-    final res = service.addSignatureAndSend(
+    final res = await service.addSignatureAndSend(
       address,
       signed,
       onStatusChange,
     );
+    if (res?['error'] != null) {
+      throw Exception(res?['error']);
+    }
     return res;
   }
 
