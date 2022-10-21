@@ -41,8 +41,7 @@ class ServiceAccountEth {
     const url =
         'https://gas-api.metaswap.codefi.network/networks/1/suggestedGasFees';
     final res = await get(Uri.parse(url));
-    final obj = jsonDecode(res.body);
-    return obj['data'] ?? {};
+    return jsonDecode(res.body);
   }
 }
 
