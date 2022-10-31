@@ -189,21 +189,25 @@ class ApiKeyringEth {
       required String to,
       required String sender,
       required String pass,
-      required Map gasOptions}) async {
+      required Map gasOptions,
+      required Function(Map) onStatusChange}) async {
     return service.transfer(
         token: token,
         amount: amount,
         to: to,
         sender: sender,
         pass: pass,
-        gasOptions: gasOptions);
+        gasOptions: gasOptions,
+        onStatusChange: onStatusChange);
   }
 
   Future<int> estimateTransferGas(
       {required String token,
       required double amount,
-      required String to}) async {
-    return service.estimateTransferGas(token: token, amount: amount, to: to);
+      required String to,
+      required String from}) async {
+    return service.estimateTransferGas(
+        token: token, amount: amount, to: to, from: from);
   }
 
   Future<String?> getGasPrice() async {

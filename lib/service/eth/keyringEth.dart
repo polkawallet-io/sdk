@@ -108,18 +108,31 @@ class ServiceKeyringEth {
       required String to,
       required String sender,
       required String pass,
-      required Map gasOptions}) async {
-    final res = await serviceRoot.webView!.evalJavascript(
-        'eth.keyring.transfer("$token", $amount, "$to", "$sender", "$pass", ${jsonEncode(gasOptions)})');
+      required Map gasOptions,
+      required Function(Map) onStatusChange}) async {
+    final code =
+        'eth.keyring.transfer("$token", $amount, "$to", "$sender", "$pass", ${jsonEncode(gasOptions)})';
+    print('send evm transfer:');
+    print(code);
+    final res = await serviceRoot.webView!.evalJavascript(code);
+    if (res != null && res['hash'] != null) {
+      serviceRoot.webView!.addMsgHandler(res['hash'], (Map res) {
+        onStatusChange(res);
+        if (res['confirmNumber'] ?? -1 > 1) {
+          serviceRoot.webView!.removeMsgHandler(res['hash']);
+        }
+      });
+    }
     return res;
   }
 
   Future<int> estimateTransferGas(
       {required String token,
       required double amount,
-      required String to}) async {
+      required String to,
+      required String from}) async {
     final res = await serviceRoot.webView!.evalJavascript(
-        'eth.keyring.estimateTransferGas("$token", $amount, "$to")');
+        'eth.keyring.estimateTransferGas("$token", $amount, "$to", "$from")');
     return res ?? 200000;
   }
 

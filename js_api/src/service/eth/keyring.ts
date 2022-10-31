@@ -234,14 +234,15 @@ async function verifyTypedData(data: any, signature: string) {
   }
 }
 
-async function estimateTransferGas(token: string, amount: number, to: string) {
+async function estimateTransferGas(token: string, amount: number, to: string, from: string) {
   const web3 = getWeb3().eth;
   if (token.startsWith("0x")) {
     const contract = new web3.Contract(erc20Abi, token);
     const decimals = await contract.methods.decimals().call();
-    return contract.methods.transfer(to, ethers.utils.parseUnits(amount.toString(), decimals).toHexString()).estimateGas();
+    return contract.methods.transfer(to, ethers.utils.parseUnits(amount.toString(), decimals).toHexString()).estimateGas({ from });
   } else {
     return web3.estimateGas({
+      from,
       to,
       value: ethers.utils.parseEther(amount.toString()).toHexString(),
     });
@@ -265,6 +266,9 @@ async function transfer(token: string, amount: number, to: string, sender: strin
       //   maxFeePerGas: ethers.utils.parseUnits(gasOptions.maxFeePerGas, 9),
       //   maxPriorityFeePerGas: ethers.utils.parseUnits(gasOptions.maxPriorityFeePerGas, 9),
       // };
+      const _onConfirm = (confirmNumber: Number, receipt: any) => {
+        (<any>window).send(receipt.transactionHash, { hash: receipt.transactionHash, confirmNumber });
+      };
       const txHash = await new Promise(async (resolve, reject) => {
         if (token.startsWith("0x")) {
           const contract = new web3.Contract(erc20Abi, token);
@@ -279,6 +283,7 @@ async function transfer(token: string, amount: number, to: string, sender: strin
             .on("transactionHash", function(hash) {
               resolve(hash);
             })
+            .on("confirmation", _onConfirm)
             .on("error", reject);
         } else {
           web3
@@ -292,6 +297,7 @@ async function transfer(token: string, amount: number, to: string, sender: strin
             .on("transactionHash", function(hash) {
               resolve(hash);
             })
+            .on("confirmation", _onConfirm)
             .on("error", reject);
         }
       });

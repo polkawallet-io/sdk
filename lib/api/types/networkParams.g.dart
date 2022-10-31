@@ -10,7 +10,9 @@ NetworkParams _$NetworkParamsFromJson(Map<String, dynamic> json) {
   return NetworkParams()
     ..name = json['name'] as String?
     ..endpoint = json['endpoint'] as String?
-    ..ss58 = json['ss58'] as int?;
+    ..ss58 = json['ss58'] as int?
+    ..chainId = json['chainId'] as String?
+    ..networkType = json['networkType'] as String?;
 }
 
 Map<String, dynamic> _$NetworkParamsToJson(NetworkParams instance) =>
@@ -18,4 +20,6 @@ Map<String, dynamic> _$NetworkParamsToJson(NetworkParams instance) =>
       'name': instance.name,
       'endpoint': instance.endpoint,
       'ss58': instance.ss58,
+      'chainId': instance.chainId,
+      'networkType': instance.networkType,
     };
