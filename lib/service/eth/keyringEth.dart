@@ -118,7 +118,7 @@ class ServiceKeyringEth {
     if (res != null && res['hash'] != null) {
       serviceRoot.webView!.addMsgHandler(res['hash'], (Map res) {
         onStatusChange(res);
-        if (res['confirmNumber'] ?? -1 > 1) {
+        if ((res['confirmNumber'] ?? -1) > 1) {
           serviceRoot.webView!.removeMsgHandler(res['hash']);
         }
       });

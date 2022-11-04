@@ -267,6 +267,8 @@ async function transfer(token: string, amount: number, to: string, sender: strin
       //   maxPriorityFeePerGas: ethers.utils.parseUnits(gasOptions.maxPriorityFeePerGas, 9),
       // };
       const _onConfirm = (confirmNumber: Number, receipt: any) => {
+        if (confirmNumber > 3) return;
+
         (<any>window).send(receipt.transactionHash, { hash: receipt.transactionHash, confirmNumber });
       };
       const txHash = await new Promise(async (resolve, reject) => {
