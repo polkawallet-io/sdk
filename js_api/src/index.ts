@@ -5,11 +5,12 @@ import { subscribeMessage, getNetworkConst, getNetworkProperties } from "./servi
 import keyring from "./service/keyring";
 import account from "./service/account";
 import staking from "./service/staking";
-// import wc from "./service/walletconnect";
+import wc from "./service/walletconnect";
 import gov from "./service/gov";
 import parachain from "./service/parachain";
 import assets from "./service/assets";
 import { genLinks } from "./utils/config/config";
+
 // ethers APIs:
 import keyringETH from "./service/eth/keyring";
 import accountETH from "./service/eth/account";
@@ -90,6 +91,6 @@ const settings = {
 (<any>window).eth = { settings: { connect: connectEVM }, keyring: keyringETH, account: accountETH };
 
 // walletConnect supporting is not ready.
-// (<any>window).walletConnect = wc;
+(<any>window).walletConnect = wc;
 
 export default settings;

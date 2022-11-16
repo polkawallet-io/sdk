@@ -3,7 +3,7 @@ import { verifyMessage } from "@ethersproject/wallet";
 import accountETH from "./account";
 import { erc20Abi, getWeb3 } from "./settings";
 import { signTypedData_v4, recoverTypedSignature_v4 } from "eth-sig-util";
-import { TransactionReceipt } from "web3-core";
+import { TransactionConfig } from "web3-core";
 
 interface GasOptions {
   gas: number; // gasLimit
@@ -174,7 +174,7 @@ async function signMessage(message: string, address: string, pass: string) {
   try {
     const keyPair = await ethers.Wallet.fromEncryptedJson(keystore, pass);
     if (keyPair.address) {
-      const res = await keyPair.signMessage(message);
+      const res = await keyPair.signMessage(ethers.utils.isHexString(message) ? ethers.utils.arrayify(message) : message);
       return {
         pubKey: keyPair.publicKey,
         address: keyPair.address,
@@ -209,7 +209,7 @@ async function signTypedData(data: any, address: string, pass: string) {
     const keyPair = await ethers.Wallet.fromEncryptedJson(keystore, pass);
     if (keyPair.address) {
       const res = signTypedData_v4(Buffer.from(keyPair.privateKey.slice(2), "hex"), {
-        data: data,
+        data: typeof data === "string" ? JSON.parse(data) : data,
       });
       return {
         pubKey: keyPair.publicKey,
@@ -262,10 +262,7 @@ async function transfer(token: string, amount: number, to: string, sender: strin
     if (keyPair.address) {
       const web3 = getWeb3().eth;
       web3.accounts.wallet.add(keyPair.privateKey);
-      // const options = {
-      //   maxFeePerGas: ethers.utils.parseUnits(gasOptions.maxFeePerGas, 9),
-      //   maxPriorityFeePerGas: ethers.utils.parseUnits(gasOptions.maxPriorityFeePerGas, 9),
-      // };
+
       const _onConfirm = (confirmNumber: Number, receipt: any) => {
         if (confirmNumber > 3) return;
 
@@ -280,7 +277,6 @@ async function transfer(token: string, amount: number, to: string, sender: strin
             .send({
               from: keyPair.address,
               ...gasOptions,
-              // ...options,
             })
             .on("transactionHash", function(hash) {
               resolve(hash);
@@ -294,7 +290,6 @@ async function transfer(token: string, amount: number, to: string, sender: strin
               to,
               value: ethers.utils.parseEther(amount.toString()).toHexString(),
               ...gasOptions,
-              // ...options,
             })
             .on("transactionHash", function(hash) {
               resolve(hash);
@@ -315,29 +310,62 @@ async function transfer(token: string, amount: number, to: string, sender: strin
   }
 }
 
-// async function signAndSendTx(tx: ethers.providers.TransactionRequest, sender: string, pass: string, gasOptions: GasOptions) {
-//   const keystore = _findAccount(sender);
-//   if (!keystore) return { success: false, error: `Can not find account ${sender}` };
+async function signAndSendTx(tx: TransactionConfig, sender: string, pass: string) {
+  const keystore = _findAccount(sender);
+  if (!keystore) return { success: false, error: `Can not find account ${sender}` };
 
-//   try {
-//     const keyPair = await ethers.Wallet.fromEncryptedJson(keystore, pass);
-//     if (keyPair.address) {
-//       const signer = keyPair.connect(getProvider());
-//       const res = await signer.sendTransaction({
-//         ...tx,
-//         maxFeePerGas: ethers.utils.parseUnits(gasOptions.maxFeePerGas, 9),
-//         maxPriorityFeePerGas: ethers.utils.parseUnits(gasOptions.maxPriorityFeePerGas, 9),
-//       });
-//       return {
-//         pubKey: keyPair.publicKey,
-//         address: keyPair.address,
-//         hash: res.hash,
-//       };
-//     }
-//   } catch (err) {
-//     return { success: false, error: err.message };
-//   }
-// }
+  try {
+    const keyPair = await ethers.Wallet.fromEncryptedJson(keystore, pass);
+    if (keyPair.address) {
+      const web3 = getWeb3().eth;
+      web3.accounts.wallet.add(keyPair.privateKey);
+
+      const txHash = await new Promise(async (resolve, reject) => {
+        web3
+          .sendTransaction(tx)
+          .on("transactionHash", function(hash) {
+            resolve(hash);
+          })
+          .on("error", reject);
+      });
+      web3.accounts.wallet.clear();
+      return {
+        pubKey: keyPair.publicKey,
+        address: keyPair.address,
+        hash: txHash,
+      };
+    }
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}
+
+async function signTx(tx: TransactionConfig, sender: string, pass: string) {
+  const keystore = _findAccount(sender);
+  if (!keystore) return { success: false, error: `Can not find account ${sender}` };
+
+  try {
+    const keyPair = await ethers.Wallet.fromEncryptedJson(keystore, pass);
+    if (keyPair.address) {
+      const data = { ...tx } as any;
+      if (data && data.from) {
+        delete data.from;
+      }
+      data.gasLimit = data.gas;
+      delete data.gas;
+
+      const signed = await keyPair.signTransaction(data);
+
+      return {
+        pubKey: keyPair.publicKey,
+        address: keyPair.address,
+        signed,
+      };
+    }
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}
 
 export default {
   initKeys,
@@ -352,7 +380,8 @@ export default {
   estimateTransferGas,
   getGasPrice,
   transfer,
-  // signAndSendTx,
+  signAndSendTx,
+  signTx,
   signTypedData,
   verifyTypedData,
 };
