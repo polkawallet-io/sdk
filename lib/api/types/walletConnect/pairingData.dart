@@ -97,3 +97,18 @@ abstract class _WCPermissionData {
   Map? jsonrpc;
   Map? notifications;
 }
+
+@JsonSerializable()
+class WCPeerMetaData extends _WCPeerMetaData {
+  static WCPeerMetaData fromJson(Map json) =>
+      _$WCPeerMetaDataFromJson(json as Map<String, dynamic>);
+  Map toJson() => _$WCPeerMetaDataToJson(this);
+}
+
+abstract class _WCPeerMetaData {
+  String? name;
+  String? url;
+  String? description;
+  List<String>? icons;
+  bool? ssl;
+}

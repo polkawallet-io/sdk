@@ -167,6 +167,8 @@ class ClientApp {
         }
 
         this.setState({ connected: true });
+
+        notifyWallet({ event: "connect" });
       });
 
       connector.on("disconnect", (error, payload) => {
@@ -180,6 +182,8 @@ class ClientApp {
       });
 
       this.setState({ connector });
+
+      notifyWallet({ event: "disconnect" });
     }
   };
 

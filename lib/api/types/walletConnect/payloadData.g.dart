@@ -34,3 +34,46 @@ Map<String, dynamic> _$WCPayloadToJson(WCPayload instance) => <String, dynamic>{
       'method': instance.method,
       'params': instance.params,
     };
+
+WCCallRequestData _$WCCallRequestDataFromJson(Map<String, dynamic> json) {
+  return WCCallRequestData()
+    ..event = json['event'] as String?
+    ..id = json['id'] as int?
+    ..params = (json['params'] as List<dynamic>?)
+        ?.map((e) => WCCallRequestParamItem.fromJson(e as Map<String, dynamic>))
+        .toList();
+}
+
+Map<String, dynamic> _$WCCallRequestDataToJson(WCCallRequestData instance) =>
+    <String, dynamic>{
+      'event': instance.event,
+      'id': instance.id,
+      'params': instance.params,
+    };
+
+WCCallRequestParamItem _$WCCallRequestParamItemFromJson(
+    Map<String, dynamic> json) {
+  return WCCallRequestParamItem()
+    ..label = json['label'] as String?
+    ..value = json['value'];
+}
+
+Map<String, dynamic> _$WCCallRequestParamItemToJson(
+        WCCallRequestParamItem instance) =>
+    <String, dynamic>{
+      'label': instance.label,
+      'value': instance.value,
+    };
+
+WCCallRequestResult _$WCCallRequestResultFromJson(Map<String, dynamic> json) {
+  return WCCallRequestResult()
+    ..result = json['result'] as String?
+    ..error = json['error'] as String?;
+}
+
+Map<String, dynamic> _$WCCallRequestResultToJson(
+        WCCallRequestResult instance) =>
+    <String, dynamic>{
+      'result': instance.result,
+      'error': instance.error,
+    };

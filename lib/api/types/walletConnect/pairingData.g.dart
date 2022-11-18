@@ -127,3 +127,22 @@ Map<String, dynamic> _$WCPermissionDataToJson(WCPermissionData instance) =>
       'jsonrpc': instance.jsonrpc,
       'notifications': instance.notifications,
     };
+
+WCPeerMetaData _$WCPeerMetaDataFromJson(Map<String, dynamic> json) {
+  return WCPeerMetaData()
+    ..name = json['name'] as String?
+    ..url = json['url'] as String?
+    ..description = json['description'] as String?
+    ..icons =
+        (json['icons'] as List<dynamic>?)?.map((e) => e as String).toList()
+    ..ssl = json['ssl'] as bool?;
+}
+
+Map<String, dynamic> _$WCPeerMetaDataToJson(WCPeerMetaData instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+      'url': instance.url,
+      'description': instance.description,
+      'icons': instance.icons,
+      'ssl': instance.ssl,
+    };

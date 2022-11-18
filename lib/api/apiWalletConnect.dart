@@ -10,50 +10,35 @@ class ApiWalletConnect {
   final ServiceWalletConnect service;
 
   void initClient(
-    Function(WCPairingData) onPairing,
-    Function(WCPairedData) onPaired,
-    Function(WCPayloadData) onPayload,
-  ) {
-    service.initClient((Map proposal) {
-      onPairing(WCPairingData.fromJson(proposal));
-    }, (Map session) {
-      onPaired(WCPairedData.fromJson(session));
-    }, (Map payload) {
-      onPayload(WCPayloadData.fromJson(payload));
+    String uri,
+    String address, {
+    required Function(WCPeerMetaData) onPairing,
+    required Function() onPaired,
+    required Function(WCCallRequestData) onCallRequest,
+    required Function() onDisconnect,
+  }) {
+    service.initClient(uri, address, onPairing: (Map peerMeta) {
+      onPairing(WCPeerMetaData.fromJson(peerMeta));
+    }, onPaired: () {
+      onPaired();
+    }, onCallRequest: (Map payload) {
+      onCallRequest(WCCallRequestData.fromJson(payload));
+    }, onDisconnect: () {
+      onDisconnect();
     });
   }
 
-  Future<Map?> connect(String uri) async {
-    final Map? res = await service.connect(uri);
-    return res;
+  Future<void> disconnect() async {
+    await service.disconnect();
   }
 
-  Future<Map?> disconnect(Map params) async {
-    return await service.disconnect(params);
+  Future<void> confirmPairing(bool approve) async {
+    await service.confirmPairing(approve);
   }
 
-  Future<Map?> approvePairing(WCPairingData proposal, String address) async {
-    final Map? res = await service.approvePairing(proposal.toJson(), address);
-    return res;
-  }
-
-  Future<Map?> rejectPairing(WCPairingData proposal) async {
-    final Map? res = await service.rejectPairing(proposal.toJson());
-    return res;
-  }
-
-  Future<Map?> signPayload(WCPayloadData payload, String password) async {
-    return await service.signPayload(payload.toJson(), password);
-  }
-
-  Future<Map?> payloadRespond(WCPayloadData payload,
-      {Map? response, Map? error}) async {
-    final Map? res = await service.payloadRespond(payload.topic!, {
-      'id': payload.payload!.id,
-      'jsonrpc': '2.0',
-      'result': response,
-      'error': error,
-    });
-    return res;
+  Future<WCCallRequestResult?> confirmPayload(
+      int id, bool approve, String password) async {
+    final res = await service.confirmPayload(id, approve, password);
+    return WCCallRequestResult.fromJson(res);
   }
 }
