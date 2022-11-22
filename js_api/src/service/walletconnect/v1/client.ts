@@ -88,7 +88,7 @@ class ClientApp {
   };
 
   public approveSession = () => {
-    console.log("ACTION", "approveSession");
+    // console.log("ACTION", "approveSession");
     const { connector, chainId, address } = this.state;
     if (connector) {
       connector.approveSession({ chainId, accounts: [address] });
@@ -97,7 +97,7 @@ class ClientApp {
   };
 
   public rejectSession = () => {
-    console.log("ACTION", "rejectSession");
+    // console.log("ACTION", "rejectSession");
     const { connector } = this.state;
     if (connector) {
       connector.rejectSession();
@@ -106,7 +106,7 @@ class ClientApp {
   };
 
   public killSession = () => {
-    console.log("ACTION", "killSession");
+    // console.log("ACTION", "killSession");
     const { connector } = this.state;
     if (connector) {
       connector.killSession();
@@ -119,17 +119,17 @@ class ClientApp {
   };
 
   public subscribeToEvents = () => {
-    console.log("ACTION", "subscribeToEvents");
+    // console.log("ACTION", "subscribeToEvents");
     const { connector } = this.state;
 
     if (connector) {
       connector.on("session_request", (error, payload) => {
-        console.log("EVENT", "session_request");
+        // console.log("EVENT", "session_request");
 
         if (error) {
           throw error;
         }
-        console.log("SESSION_REQUEST", payload.params);
+        // console.log("SESSION_REQUEST", payload.params);
         const { peerMeta } = payload.params[0];
         this.setState({ peerMeta });
 
@@ -137,7 +137,7 @@ class ClientApp {
       });
 
       connector.on("session_update", (error) => {
-        console.log("EVENT", "session_update");
+        // console.log("EVENT", "session_update");
 
         if (error) {
           throw error;
@@ -146,8 +146,8 @@ class ClientApp {
 
       connector.on("call_request", async (error, payload) => {
         // tslint:disable-next-line
-        console.log("EVENT", "call_request", "method", payload.method);
-        console.log("EVENT", "call_request", "params", payload.params);
+        // console.log("EVENT", "call_request", "method", payload.method);
+        // console.log("EVENT", "call_request", "params", payload.params);
 
         if (error) {
           throw error;
@@ -160,7 +160,7 @@ class ClientApp {
       });
 
       connector.on("connect", (error, payload) => {
-        console.log("EVENT", "connect");
+        // console.log("EVENT", "connect");
 
         if (error) {
           throw error;
@@ -172,18 +172,18 @@ class ClientApp {
       });
 
       connector.on("disconnect", (error, payload) => {
-        console.log("EVENT", "disconnect");
+        // console.log("EVENT", "disconnect");
 
         if (error) {
           throw error;
         }
 
+        notifyWallet({ event: "disconnect" });
+
         this.resetApp();
       });
 
       this.setState({ connector });
-
-      notifyWallet({ event: "disconnect" });
     }
   };
 
