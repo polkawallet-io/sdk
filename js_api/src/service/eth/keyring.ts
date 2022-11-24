@@ -249,6 +249,10 @@ async function estimateTransferGas(token: string, amount: number, to: string, fr
   }
 }
 
+async function estimateTxGas(tx: TransactionConfig) {
+  return getWeb3().eth.estimateGas({ ...tx, gas: undefined, gasPrice: undefined });
+}
+
 async function getGasPrice() {
   return getWeb3().eth.getGasPrice();
 }
@@ -310,7 +314,7 @@ async function transfer(token: string, amount: number, to: string, sender: strin
   }
 }
 
-async function signAndSendTx(tx: TransactionConfig, sender: string, pass: string) {
+async function signAndSendTx(tx: TransactionConfig, sender: string, pass: string, gasOptions: any) {
   const keystore = _findAccount(sender);
   if (!keystore) return { success: false, error: `Can not find account ${sender}` };
 
@@ -322,7 +326,7 @@ async function signAndSendTx(tx: TransactionConfig, sender: string, pass: string
 
       const txHash = await new Promise(async (resolve, reject) => {
         web3
-          .sendTransaction(tx)
+          .sendTransaction({ ...tx, ...gasOptions })
           .on("transactionHash", function(hash) {
             resolve(hash);
           })
@@ -378,6 +382,7 @@ export default {
   signMessage,
   verifySignature,
   estimateTransferGas,
+  estimateTxGas,
   getGasPrice,
   transfer,
   signAndSendTx,

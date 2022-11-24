@@ -142,7 +142,7 @@ export interface IRpcEngine {
   filter: (payload: IJsonRpcRequest) => boolean;
   router: (payload: IJsonRpcRequest, state: IAppState, setState: any) => Promise<void>;
   render: (payload: IJsonRpcRequest) => IRequestRenderParams[];
-  signer: (payload: IJsonRpcRequest, state: IAppState, setState: any, pass: string) => Promise<any>;
+  signer: (payload: IJsonRpcRequest, state: IAppState, setState: any, pass: string, gasOptions: any) => Promise<any>;
 }
 
 export interface IAppEvents {

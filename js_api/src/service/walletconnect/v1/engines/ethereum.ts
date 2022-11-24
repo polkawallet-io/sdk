@@ -1,4 +1,5 @@
-import { signingMethods, convertHexToNumber } from "@walletconnect/utils";
+import { signingMethods, convertHexToNumber, convertNumberToHex } from "@walletconnect/utils";
+import { IJsonRpcRequest } from "@walletconnect/types";
 
 import { IAppState } from "../client";
 import { apiGetCustomRequest } from "../helpers/api";
@@ -17,10 +18,17 @@ export function filterEthereumRequests(payload: any) {
   );
 }
 
-export async function routeEthereumRequests(payload: any, state: IAppState, setState: any) {
+export async function routeEthereumRequests(payload: IJsonRpcRequest, state: IAppState, setState: any) {
   if (!state.connector) {
     return;
   }
+
+  // estimate gas limit if we send the tx
+  if (payload.method === "eth_sendTransaction") {
+    payload.params[0].gas = convertNumberToHex(await ethKeyring.estimateTxGas(payload.params[0]));
+    payload.params[0].gasLimit = payload.params[0].gas;
+  }
+
   const { chainId, connector } = state;
   if (!signingMethods.includes(payload.method)) {
     try {
@@ -107,7 +115,7 @@ export function renderEthereumRequests(payload: any): IRequestRenderParams[] {
   return params;
 }
 
-export async function signEthereumRequests(payload: any, state: IAppState, setState: any, pass: string) {
+export async function signEthereumRequests(payload: any, state: IAppState, setState: any, pass: string, gasOptions: any) {
   const { connector, address, chainId } = state;
 
   let errorMsg = "";
@@ -123,7 +131,7 @@ export async function signEthereumRequests(payload: any, state: IAppState, setSt
         transaction = payload.params[0];
         addressRequested = transaction.from;
         if (address.toLowerCase() === addressRequested.toLowerCase()) {
-          const res = await ethKeyring.signAndSendTx(transaction, address, pass);
+          const res = await ethKeyring.signAndSendTx(transaction, address, pass, gasOptions);
           if (res.error) {
             errorMsg = res.error;
           } else {

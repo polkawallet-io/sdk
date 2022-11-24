@@ -22,10 +22,10 @@ async function disconnect() {
   wc.killSession();
 }
 
-async function confirmCallRequest(id: number, approve: boolean, pass: string) {
+async function confirmCallRequest(id: number, approve: boolean, pass: string, gasOptions: any) {
   return new Promise((resolve) => {
     if (approve) {
-      wc.approveRequest(id, pass, (res: any) => {
+      wc.approveRequest(id, pass, gasOptions, (res: any) => {
         resolve(res);
       });
     } else {

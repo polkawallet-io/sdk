@@ -23,9 +23,9 @@ class RpcEngine implements IRpcEngine {
     return engine.render(payload);
   }
 
-  public signer(payload: any, state: IAppState, setState: any, pass: string) {
+  public signer(payload: any, state: IAppState, setState: any, pass: string, gasOptions: any) {
     const engine = this.getEngine(payload);
-    return engine.signer(payload, state, setState, pass);
+    return engine.signer(payload, state, setState, pass, gasOptions);
   }
 
   private getEngine(payload: any) {

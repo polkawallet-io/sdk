@@ -37,8 +37,8 @@ class ApiWalletConnect {
   }
 
   Future<WCCallRequestResult?> confirmPayload(
-      int id, bool approve, String password) async {
-    final res = await service.confirmPayload(id, approve, password);
+      int id, bool approve, String password, Map gasOptions) async {
+    final res = await service.confirmPayload(id, approve, password, gasOptions);
     return WCCallRequestResult.fromJson(res);
   }
 }

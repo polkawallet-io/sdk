@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:polkawallet_sdk/service/index.dart';
 
@@ -46,9 +47,10 @@ class ServiceWalletConnect {
         .evalJavascript('walletConnect.confirmConnect($approve)');
   }
 
-  Future<Map> confirmPayload(int id, bool approve, String password) async {
+  Future<Map> confirmPayload(
+      int id, bool approve, String password, Map gasOptions) async {
     final Map? res = await serviceRoot.webView!.evalJavascript(
-        'walletConnect.confirmCallRequest($id, $approve, "$password")');
+        'walletConnect.confirmCallRequest($id, $approve, "$password", ${jsonEncode(gasOptions)})');
     return res ?? {};
   }
 }

@@ -229,7 +229,7 @@ class ClientApp {
     });
   };
 
-  public approveRequest = async (id: number, pass: string, callback: Function) => {
+  public approveRequest = async (id: number, pass: string, gasOptions: any, callback: Function) => {
     const { connector, payload, address } = this.state;
 
     if (payload.id !== id) {
@@ -248,7 +248,7 @@ class ClientApp {
     }
 
     try {
-      const result = await getRpcEngine().signer(payload, this.state, this.bindedSetState, pass);
+      const result = await getRpcEngine().signer(payload, this.state, this.bindedSetState, pass, gasOptions);
       callback(result);
     } catch (error) {
       console.error(error);
