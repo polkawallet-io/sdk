@@ -134,8 +134,7 @@ WCPeerMetaData _$WCPeerMetaDataFromJson(Map<String, dynamic> json) {
     ..url = json['url'] as String?
     ..description = json['description'] as String?
     ..icons =
-        (json['icons'] as List<dynamic>?)?.map((e) => e as String).toList()
-    ..ssl = json['ssl'] as bool?;
+        (json['icons'] as List<dynamic>?)?.map((e) => e as String).toList();
 }
 
 Map<String, dynamic> _$WCPeerMetaDataToJson(WCPeerMetaData instance) =>
@@ -144,5 +143,4 @@ Map<String, dynamic> _$WCPeerMetaDataToJson(WCPeerMetaData instance) =>
       'url': instance.url,
       'description': instance.description,
       'icons': instance.icons,
-      'ssl': instance.ssl,
     };

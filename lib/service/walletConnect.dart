@@ -12,12 +12,18 @@ class ServiceWalletConnect {
     String uri,
     String address, {
     required Function(Map) onPairing,
-    required Function() onPaired,
+    required Function(Map) onPaired,
     required Function(Map) onCallRequest,
     required Function() onDisconnect,
+    Map? cachedSession,
   }) {
-    serviceRoot.webView!
-        .evalJavascript('walletConnect.initConnect("$uri", "$address")');
+    if (cachedSession != null) {
+      serviceRoot.webView!.evalJavascript(
+          'walletConnect.reConnectSession(${jsonEncode(cachedSession)})');
+    } else {
+      serviceRoot.webView!
+          .evalJavascript('walletConnect.initConnect("$uri", "$address")');
+    }
     serviceRoot.webView!.addMsgHandler("wallet_connect_message", (data) {
       final event = data['event'];
       switch (event) {
@@ -25,7 +31,7 @@ class ServiceWalletConnect {
           onPairing(data['peerMeta']);
           break;
         case 'connect':
-          onPaired();
+          onPaired(data['session']);
           break;
         case 'call_request':
           onCallRequest(data);

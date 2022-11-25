@@ -1,9 +1,10 @@
 import WalletConnect from "@walletconnect/client";
-import { DEFAULT_CHAIN_ID } from "./constants";
+import { DEFAULT_CHAIN_ID, DEFAULT_WALLET_CLIENT } from "./constants";
 import { getRpcEngine } from "./engines";
 import { notifyWallet } from "./helpers/wallet";
 
 import ethKeyring from "../../eth/keyring";
+import { getCachedSession } from "./helpers/utilities";
 
 export interface IAppState {
   loading: boolean;
@@ -14,14 +15,12 @@ export interface IAppState {
     url: string;
     icons: string[];
     name: string;
-    ssl: boolean;
   };
   connected: boolean;
   chainId: number;
   address: string;
   requests: any[];
   results: any[];
-  payload: any;
 }
 
 export const INITIAL_STATE: IAppState = {
@@ -33,14 +32,12 @@ export const INITIAL_STATE: IAppState = {
     url: "",
     icons: [],
     name: "",
-    ssl: false,
   },
   connected: false,
   chainId: DEFAULT_CHAIN_ID,
   address: "",
   requests: [],
   results: [],
-  payload: null,
 };
 
 class ClientApp {
@@ -67,13 +64,13 @@ class ClientApp {
     this.setState({ loading: true, address });
 
     try {
-      const connector = new WalletConnect({ uri });
+      const connector = new WalletConnect({ uri, clientMeta: DEFAULT_WALLET_CLIENT });
 
       if (!connector.connected) {
         await connector.createSession();
       }
 
-      await this.setState({
+      this.setState({
         loading: false,
         connector,
         uri: connector.uri,
@@ -85,6 +82,21 @@ class ClientApp {
 
       throw error;
     }
+  };
+
+  public reConnectSession = async (session: any) => {
+    const connector = new WalletConnect({ session });
+
+    const { chainId, accounts, peerMeta } = connector;
+
+    this.setState({
+      connector,
+      address: accounts[0],
+      chainId,
+      peerMeta,
+    });
+
+    this.subscribeToEvents();
   };
 
   public approveSession = () => {
@@ -115,7 +127,7 @@ class ClientApp {
   };
 
   public resetApp = async () => {
-    await this.setState({ ...INITIAL_STATE });
+    this.setState({ ...INITIAL_STATE });
   };
 
   public subscribeToEvents = () => {
@@ -168,7 +180,7 @@ class ClientApp {
 
         this.setState({ connected: true });
 
-        notifyWallet({ event: "connect" });
+        notifyWallet({ event: "connect", session: getCachedSession() });
       });
 
       connector.on("disconnect", (error, payload) => {
@@ -197,7 +209,7 @@ class ClientApp {
         accounts: [address],
       });
     }
-    await this.setState({
+    this.setState({
       connector,
       address: newAddress,
       chainId: newChainId,
@@ -211,7 +223,7 @@ class ClientApp {
   public onURIReceive = async (data: any, address: string) => {
     const uri = typeof data === "string" ? data : "";
     if (uri) {
-      await this.setState({ uri });
+      this.setState({ uri });
       await this.initWalletConnect(address);
     }
   };
@@ -220,19 +232,19 @@ class ClientApp {
     throw error;
   };
 
-  public closeRequest = async () => {
-    const { requests, payload } = this.state;
-    const filteredRequests = requests.filter((request) => request.id !== payload.id);
-    await this.setState({
+  public closeRequest = async (id: number) => {
+    const { requests } = this.state;
+    const filteredRequests = requests.filter((request) => request.id !== id);
+    this.setState({
       requests: filteredRequests,
-      payload: null,
     });
   };
 
   public approveRequest = async (id: number, pass: string, gasOptions: any, callback: Function) => {
-    const { connector, payload, address } = this.state;
+    const { connector, requests, address } = this.state;
 
-    if (payload.id !== id) {
+    const payload = requests.find((e) => e.id === id);
+    if (!payload) {
       console.error("call request id no match.");
 
       callback({ error: "call request id no match." });
@@ -261,20 +273,20 @@ class ClientApp {
       }
     }
 
-    this.closeRequest();
-    await this.setState({ connector });
+    this.closeRequest(id);
+    this.setState({ connector });
   };
 
-  public rejectRequest = async () => {
-    const { connector, payload } = this.state;
+  public rejectRequest = async (id: number) => {
+    const { connector } = this.state;
     if (connector) {
       connector.rejectRequest({
-        id: payload.id,
+        id,
         error: { message: "Failed or Rejected Request" },
       });
     }
-    await this.closeRequest();
-    await this.setState({ connector });
+    await this.closeRequest(id);
+    this.setState({ connector });
   };
 }
 

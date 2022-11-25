@@ -110,5 +110,4 @@ abstract class _WCPeerMetaData {
   String? url;
   String? description;
   List<String>? icons;
-  bool? ssl;
 }

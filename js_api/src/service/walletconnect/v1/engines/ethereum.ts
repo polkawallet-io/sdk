@@ -44,11 +44,6 @@ export async function routeEthereumRequests(payload: IJsonRpcRequest, state: IAp
       });
     }
   } else {
-    if (!state.payload) {
-      await setState({ payload });
-      return;
-    }
-
     const requests = state.requests;
     requests.push(payload);
     await setState({ requests });

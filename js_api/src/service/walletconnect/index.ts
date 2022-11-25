@@ -6,6 +6,10 @@ async function initConnect(uri: string, address: string) {
   wc.onURIReceive(uri, address);
 }
 
+async function reConnectSession(uri: string, session: any) {
+  wc.reConnectSession(uri, session);
+}
+
 /**
  * User will see a confirm dialog while wc client received 'session_request' from DApp.
  * Then user will confirm approve or reject the connection.
@@ -29,15 +33,21 @@ async function confirmCallRequest(id: number, approve: boolean, pass: string, ga
         resolve(res);
       });
     } else {
-      wc.rejectRequest();
+      wc.rejectRequest(id);
       resolve({});
     }
   });
 }
 
+async function updateSession(sessionParams: { chainId?: number; address?: string }) {
+  wc.updateSession(sessionParams);
+}
+
 export default {
   initConnect,
+  reConnectSession,
   confirmConnect,
+  updateSession,
   disconnect,
   confirmCallRequest,
 };
