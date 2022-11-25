@@ -6,8 +6,8 @@ async function initConnect(uri: string, address: string) {
   wc.onURIReceive(uri, address);
 }
 
-async function reConnectSession(uri: string, session: any) {
-  wc.reConnectSession(uri, session);
+async function reConnectSession(session: any) {
+  wc.reConnectSession(session);
 }
 
 /**
