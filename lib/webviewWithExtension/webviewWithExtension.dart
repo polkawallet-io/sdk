@@ -10,6 +10,7 @@ import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebViewWithExtension extends StatefulWidget {
@@ -139,6 +140,20 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
     }
   }
 
+  Future<void> _launchWalletConnectLink(Uri url) async {
+    if (await canLaunchUrl(url)) {
+      try {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } catch (err) {
+        if (kDebugMode) {
+          print(err);
+        }
+      }
+    } else {
+      debugPrint('Could not launch $url');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return WebView(
@@ -175,6 +190,13 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
         }
       },
       gestureNavigationEnabled: true,
+      navigationDelegate: (NavigationRequest request) {
+        if (request.url.startsWith('wc:')) {
+          _launchWalletConnectLink(Uri.parse(request.url));
+          return NavigationDecision.prevent;
+        }
+        return NavigationDecision.navigate;
+      },
     );
   }
 }

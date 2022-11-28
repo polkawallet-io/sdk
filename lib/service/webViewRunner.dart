@@ -10,7 +10,6 @@ class WebViewRunner {
   Function? _onLaunched;
 
   String? _jsCode;
-  late String _jsCodeEth;
   Map<String, Function> _msgHandlers = {};
   Map<String, Completer> _msgCompleters = {};
   Map<String, Function> _reloadHandlers = {};
@@ -41,10 +40,6 @@ class WebViewRunner {
     jsCodeStarted = -1;
 
     _jsCode = jsCode;
-    // TODO: always load eth js for evm keyring (while evm online)
-    // _jsCodeEth = await rootBundle
-    //     .loadString('packages/polkawallet_sdk/js_api_eth/dist/main.js');
-    // print('js eth file loaded');
 
     if (_web == null) {
       await LocalServer.getInstance().startLocalServer();
@@ -156,11 +151,9 @@ class WebViewRunner {
 
   Future<void> _startJSCode() async {
     // inject js file to webView
-    // TODO: no eth injection before evm online
     if (_jsCode != null) {
       await _web!.webViewController.evaluateJavascript(source: _jsCode!);
     }
-    // await _web!.webViewController.evaluateJavascript(source: _jsCodeEth);
 
     _onLaunched!();
     _reloadHandlers.forEach((_, value) {
