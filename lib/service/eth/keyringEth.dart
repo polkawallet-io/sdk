@@ -149,7 +149,7 @@ class ServiceKeyringEth {
       'address': acc['address'],
       'id': keystore['id'],
       'version': keystore['version'],
-      'crypto': keystore['Crypto'],
+      'crypto': keystore['Crypto'] ?? keystore['crypto'],
     };
   }
 }
