@@ -42,4 +42,12 @@ class ApiWalletConnect {
     final res = await service.confirmPayload(id, approve, password, gasOptions);
     return WCCallRequestResult.fromJson(res);
   }
+
+  Future<void> changeAccount(String address) async {
+    await service.changeAccount(address);
+  }
+
+  Future<void> changeNetwork(int chainId, String address) async {
+    await service.changeNetwork(chainId, address);
+  }
 }

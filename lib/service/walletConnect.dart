@@ -59,4 +59,14 @@ class ServiceWalletConnect {
         'walletConnect.confirmCallRequest($id, $approve, "$password", ${jsonEncode(gasOptions)})');
     return res ?? {};
   }
+
+  Future<void> changeAccount(String address) async {
+    await serviceRoot.webView!
+        .evalJavascript('walletConnect.updateSession({address: "$address"})');
+  }
+
+  Future<void> changeNetwork(int chainId, String address) async {
+    await serviceRoot.webView!.evalJavascript(
+        'walletConnect.updateSession({address: "$address", chainId: $chainId})');
+  }
 }

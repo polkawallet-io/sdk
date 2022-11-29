@@ -70,12 +70,17 @@ export function renderEthereumRequests(payload: any): IRequestRenderParams[] {
         },
         {
           label: "Gas Price",
-          value: convertHexToNumber(payload.params[0].gasPrice),
+          value: convertHexToNumber(payload.params[0].gasPrice ?? "0x0"),
         },
-        {
+      ];
+      if (payload.params[0].nonce !== undefined) {
+        params.push({
           label: "Nonce",
           value: convertHexToNumber(payload.params[0].nonce),
-        },
+        });
+      }
+      params = [
+        ...params,
         {
           label: "Value",
           value: payload.params[0].value ? convertHexToNumber(payload.params[0].value) : "",

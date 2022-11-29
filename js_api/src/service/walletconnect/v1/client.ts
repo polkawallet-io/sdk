@@ -206,7 +206,7 @@ class ClientApp {
     if (connector) {
       connector.updateSession({
         chainId: newChainId,
-        accounts: [address],
+        accounts: [newAddress],
       });
     }
     this.setState({
