@@ -58,16 +58,16 @@ class ClientApp {
 
   public bindedSetState = (newState: Partial<IAppState>) => this.setState(newState);
 
-  public initWalletConnect = async (address: string) => {
+  public initWalletConnect = async (address: string, chainId: number) => {
     const { uri } = this.state;
 
-    this.setState({ loading: true, address });
+    this.setState({ loading: true, address, chainId });
 
     try {
       const connector = new WalletConnect({ uri, clientMeta: DEFAULT_WALLET_CLIENT });
 
       if (!connector.connected) {
-        await connector.createSession();
+        await connector.createSession({ chainId });
       }
 
       this.setState({
@@ -220,11 +220,11 @@ class ClientApp {
     await this.updateSession({ chainId: Number(chainId) });
   };
 
-  public onURIReceive = async (data: any, address: string) => {
+  public onURIReceive = async (data: any, address: string, chainId: number) => {
     const uri = typeof data === "string" ? data : "";
     if (uri) {
       this.setState({ uri });
-      await this.initWalletConnect(address);
+      await this.initWalletConnect(address, chainId);
     }
   };
 

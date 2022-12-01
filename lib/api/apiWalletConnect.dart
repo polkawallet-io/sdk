@@ -11,14 +11,15 @@ class ApiWalletConnect {
 
   void initClient(
     String uri,
-    String address, {
+    String address,
+    int chainId, {
     required Function(WCPeerMetaData) onPairing,
     required Function(Map) onPaired,
     required Function(WCCallRequestData) onCallRequest,
     required Function() onDisconnect,
     Map? cachedSession,
   }) {
-    service.initClient(uri, address, onPairing: (Map peerMeta) {
+    service.initClient(uri, address, chainId, onPairing: (Map peerMeta) {
       onPairing(WCPeerMetaData.fromJson(peerMeta));
     }, onPaired: (Map session) {
       onPaired(session);

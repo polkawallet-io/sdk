@@ -2,8 +2,8 @@ import ClientApp from "./v1/client";
 
 const wc = new ClientApp();
 
-async function initConnect(uri: string, address: string) {
-  wc.onURIReceive(uri, address);
+async function initConnect(uri: string, address: string, chainId: number) {
+  wc.onURIReceive(uri, address, chainId);
 }
 
 async function reConnectSession(session: any) {

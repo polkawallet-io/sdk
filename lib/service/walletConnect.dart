@@ -10,7 +10,8 @@ class ServiceWalletConnect {
 
   void initClient(
     String uri,
-    String address, {
+    String address,
+    int chainId, {
     required Function(Map) onPairing,
     required Function(Map) onPaired,
     required Function(Map) onCallRequest,
@@ -21,8 +22,8 @@ class ServiceWalletConnect {
       serviceRoot.webView!.evalJavascript(
           'walletConnect.reConnectSession(${jsonEncode(cachedSession)})');
     } else {
-      serviceRoot.webView!
-          .evalJavascript('walletConnect.initConnect("$uri", "$address")');
+      serviceRoot.webView!.evalJavascript(
+          'walletConnect.initConnect("$uri", "$address", $chainId)');
     }
     serviceRoot.webView!.addMsgHandler("wallet_connect_message", (data) {
       final event = data['event'];
