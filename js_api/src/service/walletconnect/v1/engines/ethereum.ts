@@ -115,6 +115,96 @@ export function renderEthereumRequests(payload: any): IRequestRenderParams[] {
   return params;
 }
 
+export async function signEthPayload(payload: any, address: string, pass: string, gasOptions: any) {
+  let errorMsg = "";
+  let result = null;
+
+  let transaction = null;
+  let dataToSign = null;
+  let addressRequested = null;
+
+  switch (payload.method) {
+    case "eth_sendTransaction":
+      transaction = payload.params[0];
+      addressRequested = transaction.from;
+      if (address.toLowerCase() === addressRequested.toLowerCase()) {
+        const res = await ethKeyring.signAndSendTx(transaction, address, pass, gasOptions);
+        if (res.error) {
+          errorMsg = res.error;
+        } else {
+          result = res.hash;
+        }
+      } else {
+        errorMsg = "Address requested does not match active account";
+      }
+      break;
+    case "eth_signTransaction":
+      transaction = payload.params[0];
+      addressRequested = transaction.from;
+      if (address.toLowerCase() === addressRequested.toLowerCase()) {
+        const res = await ethKeyring.signTx(transaction, address, pass);
+        if (res.error) {
+          errorMsg = res.error;
+        } else {
+          result = res.signed;
+        }
+      } else {
+        errorMsg = "Address requested does not match active account";
+      }
+      break;
+    case "eth_sign":
+      dataToSign = payload.params[1];
+      addressRequested = payload.params[0];
+      if (address.toLowerCase() === addressRequested.toLowerCase()) {
+        const res = await ethKeyring.signMessage(dataToSign, address, pass);
+        if (res.error) {
+          errorMsg = res.error;
+        } else {
+          result = res.signature;
+        }
+      } else {
+        errorMsg = "Address requested does not match active account";
+      }
+      break;
+    case "personal_sign":
+      dataToSign = payload.params[0];
+      addressRequested = payload.params[1];
+      if (address.toLowerCase() === addressRequested.toLowerCase()) {
+        const res = await ethKeyring.signMessage(dataToSign, address, pass);
+        if (res.error) {
+          errorMsg = res.error;
+        } else {
+          result = res.signature;
+        }
+      } else {
+        errorMsg = "Address requested does not match active account";
+      }
+      break;
+    case "eth_signTypedData":
+      dataToSign = payload.params[1];
+      addressRequested = payload.params[0];
+      if (address.toLowerCase() === addressRequested.toLowerCase()) {
+        const res = await ethKeyring.signTypedData(dataToSign, address, pass);
+        if (res.error) {
+          errorMsg = res.error;
+        } else {
+          result = res.signature;
+        }
+      } else {
+        errorMsg = "Address requested does not match active account";
+      }
+      break;
+    default:
+      break;
+  }
+
+  if (!result && !errorMsg) {
+    errorMsg = "JSON RPC method not supported";
+  }
+
+  return { id: payload.id, result, error: errorMsg };
+}
+
 export async function signEthereumRequests(payload: any, state: IAppState, setState: any, pass: string, gasOptions: any) {
   const { connector, address, chainId } = state;
 
@@ -122,84 +212,9 @@ export async function signEthereumRequests(payload: any, state: IAppState, setSt
   let result = null;
 
   if (connector) {
-    let transaction = null;
-    let dataToSign = null;
-    let addressRequested = null;
-
-    switch (payload.method) {
-      case "eth_sendTransaction":
-        transaction = payload.params[0];
-        addressRequested = transaction.from;
-        if (address.toLowerCase() === addressRequested.toLowerCase()) {
-          const res = await ethKeyring.signAndSendTx(transaction, address, pass, gasOptions);
-          if (res.error) {
-            errorMsg = res.error;
-          } else {
-            result = res.hash;
-          }
-        } else {
-          errorMsg = "Address requested does not match active account";
-        }
-        break;
-      case "eth_signTransaction":
-        transaction = payload.params[0];
-        addressRequested = transaction.from;
-        if (address.toLowerCase() === addressRequested.toLowerCase()) {
-          const res = await ethKeyring.signTx(transaction, address, pass);
-          if (res.error) {
-            errorMsg = res.error;
-          } else {
-            result = res.signed;
-          }
-        } else {
-          errorMsg = "Address requested does not match active account";
-        }
-        break;
-      case "eth_sign":
-        dataToSign = payload.params[1];
-        addressRequested = payload.params[0];
-        if (address.toLowerCase() === addressRequested.toLowerCase()) {
-          const res = await ethKeyring.signMessage(dataToSign, address, pass);
-          if (res.error) {
-            errorMsg = res.error;
-          } else {
-            result = res.signature;
-          }
-        } else {
-          errorMsg = "Address requested does not match active account";
-        }
-        break;
-      case "personal_sign":
-        dataToSign = payload.params[0];
-        addressRequested = payload.params[1];
-        if (address.toLowerCase() === addressRequested.toLowerCase()) {
-          const res = await ethKeyring.signMessage(dataToSign, address, pass);
-          if (res.error) {
-            errorMsg = res.error;
-          } else {
-            result = res.signature;
-          }
-        } else {
-          errorMsg = "Address requested does not match active account";
-        }
-        break;
-      case "eth_signTypedData":
-        dataToSign = payload.params[1];
-        addressRequested = payload.params[0];
-        if (address.toLowerCase() === addressRequested.toLowerCase()) {
-          const res = await ethKeyring.signTypedData(dataToSign, address, pass);
-          if (res.error) {
-            errorMsg = res.error;
-          } else {
-            result = res.signature;
-          }
-        } else {
-          errorMsg = "Address requested does not match active account";
-        }
-        break;
-      default:
-        break;
-    }
+    const res = await signEthPayload(payload, address, pass, gasOptions);
+    result = res.result;
+    errorMsg = res.error;
 
     if (result) {
       connector.approveRequest({
@@ -207,13 +222,9 @@ export async function signEthereumRequests(payload: any, state: IAppState, setSt
         result,
       });
     } else {
-      let message = "JSON RPC method not supported";
-      if (errorMsg) {
-        message = errorMsg;
-      }
       connector.rejectRequest({
         id: payload.id,
-        error: { message },
+        error: { message: errorMsg },
       });
     }
   }

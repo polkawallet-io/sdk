@@ -152,4 +152,18 @@ class ServiceKeyringEth {
       'crypto': keystore['Crypto'] ?? keystore['crypto'],
     };
   }
+
+  Future<List> renderEthRequest(Map payload) async {
+    final List res = await serviceRoot.webView!.evalJavascript(
+        'eth.keyring.renderEthRequest(${jsonEncode(payload)})',
+        wrapPromise: false);
+    return res;
+  }
+
+  Future<Map> signEthRequest(
+      Map payload, String address, String pass, Map gasOptions) async {
+    final Map res = await serviceRoot.webView!.evalJavascript(
+        'eth.keyring.signEthRequest(${jsonEncode(payload)}, "$address", "$pass", ${jsonEncode(gasOptions)})');
+    return res;
+  }
 }

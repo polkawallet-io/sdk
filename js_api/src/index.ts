@@ -6,6 +6,7 @@ import keyring from "./service/keyring";
 import account from "./service/account";
 import staking from "./service/staking";
 import wc from "./service/walletconnect";
+import { renderEthereumRequests, signEthPayload } from "./service/walletconnect/v1/engines/ethereum";
 import gov from "./service/gov";
 import parachain from "./service/parachain";
 import assets from "./service/assets";
@@ -88,7 +89,11 @@ const settings = {
 (<any>window).gov = gov;
 (<any>window).parachain = parachain;
 (<any>window).assets = assets;
-(<any>window).eth = { settings: { connect: connectEVM }, keyring: keyringETH, account: accountETH };
+(<any>window).eth = {
+  settings: { connect: connectEVM },
+  keyring: { ...keyringETH, signEthRequest: signEthPayload, renderEthRequest: renderEthereumRequests },
+  account: accountETH,
+};
 
 // walletConnect supporting is not ready.
 (<any>window).walletConnect = wc;

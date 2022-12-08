@@ -172,10 +172,9 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
           name: 'Extension',
           onMessageReceived: (JavascriptMessage message) {
             print('msg from dapp: ${message.message}');
-            compute(jsonDecode, message.message).then((msg) {
-              if (msg['path'] != 'extensionRequest') return;
-              _msgHandler(msg['data']);
-            });
+            final msg = jsonDecode(message.message);
+            if (msg['path'] != 'extensionRequest') return;
+            _msgHandler(msg['data']);
           },
         ),
       ].toSet(),

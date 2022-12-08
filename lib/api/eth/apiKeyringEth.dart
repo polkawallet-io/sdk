@@ -1,4 +1,5 @@
 import 'package:polkawallet_sdk/api/types/addressIconData.dart';
+import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 import 'package:polkawallet_sdk/ethers/apiEthers.dart';
 import 'package:polkawallet_sdk/service/eth/keyringEth.dart';
 import 'package:polkawallet_sdk/storage/keyringEVM.dart';
@@ -212,5 +213,16 @@ class ApiKeyringEth {
 
   Future<String?> getGasPrice() async {
     return service.getGasPrice();
+  }
+
+  Future<List> renderEthRequest(Map payload) async {
+    return service.renderEthRequest(payload);
+  }
+
+  Future<WCCallRequestResult> signEthRequest(
+      Map payload, String address, String pass, Map gasOptions) async {
+    final Map res =
+        await service.signEthRequest(payload, address, pass, gasOptions);
+    return WCCallRequestResult.fromJson(res);
   }
 }
