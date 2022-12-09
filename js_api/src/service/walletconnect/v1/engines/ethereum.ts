@@ -181,8 +181,10 @@ export async function signEthPayload(payload: any, address: string, pass: string
       }
       break;
     case "eth_signTypedData":
-      dataToSign = payload.params[1];
-      addressRequested = payload.params[0];
+    case "eth_signTypedData_v4":
+      const isV4 = typeof payload.params[0] === "string" && payload.params[0].substring(0, 2) === "0x";
+      dataToSign = payload.params[isV4 ? 1 : 0];
+      addressRequested = payload.params[isV4 ? 0 : 1];
       if (address.toLowerCase() === addressRequested.toLowerCase()) {
         const res = await ethKeyring.signTypedData(dataToSign, address, pass);
         if (res.error) {

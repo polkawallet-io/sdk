@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
+import 'package:polkawallet_sdk/consts/settings.dart';
+import 'package:polkawallet_sdk/service/eth/rpcApi.dart';
 import 'package:polkawallet_sdk/storage/keyringEVM.dart';
 import 'package:polkawallet_sdk/webviewWithExtension/types/signExtrinsicParam.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -45,6 +47,8 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
   bool _signing = false;
 
   Future<String> _respondToDApp(Map msg, Map res) async {
+    print('respond ${msg['name']} to dapp:');
+    print(res);
     return _controller.runJavascriptReturningResult(
         'msgFromPolkawallet({name: "${msg['name']}", data: ${jsonEncode(res)}})');
   }
@@ -55,11 +59,23 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
 
     final uri = Uri.parse(msg['origin']);
     final method = res['method'];
+    final isSigningMethod = SigningMethodsEVM.contains(method);
+    if (!isSigningMethod) {
+      final data = await EvmRpcApi.getRpcCall(
+          widget.api.connectedNode?.endpoint ?? '', res);
+      if (data['result'] != null) {
+        res['result'] = data['result'];
+      } else {
+        res['error'] = ['unauthorized', 'Rpc call error.'];
+      }
+      return _respondToDApp(msg, res);
+    }
     if (method != 'eth_requestAccounts' &&
         method != 'eth_accounts' &&
         widget.checkAuth != null &&
         !widget.checkAuth!(uri.host)) {
-      return 'ignore';
+      res['error'] = ['unauthorized', 'wallet accounts unauthorized.'];
+      return _respondToDApp(msg, res);
     }
 
     switch (method) {
@@ -80,13 +96,25 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
         ];
         return _respondToDApp(msg, res);
       case 'metamask_getProviderState':
+        final chainId = int.parse(widget.api.connectedNode?.chainId ?? '1');
         res['result'] = {
           'accounts': [widget.keyringEVM.current.address],
-          'chainId': int.parse(widget.api.connectedNode?.chainId ?? '1'),
+          'chainId': '0x${chainId.toRadixString(16)}',
           'isUnlocked': true,
+          'networkVersion': '0',
         };
         return _respondToDApp(msg, res);
+      case 'eth_chainId':
+        final chainId = int.parse(widget.api.connectedNode?.chainId ?? '1');
+        // Convert to hex
+        res['result'] = '0x${chainId.toRadixString(16)}';
+        return _respondToDApp(msg, res);
       case 'eth_sign':
+      case 'personal_sign':
+      case 'eth_signTypedData':
+      case 'eth_signTypedData_v4':
+      case 'eth_signTransaction':
+      case 'eth_sendTransaction':
         if (_signing) break;
         _signing = true;
         final signed = await widget.onSignRequest!(msg);
@@ -97,28 +125,13 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
         } else if (signed.result != null) {
           res['result'] = signed.result;
         } else {
-          res['error'] = signed.error;
+          res['error'] = ['userRejectedRequest', signed.error];
         }
         return _respondToDApp(msg, res);
-        res['result'] = signed;
-        return _respondToDApp(msg, res);
-      // case 'pub(extrinsic.sign)':
-      //   if (_signing) break;
-      //   _signing = true;
-      //   final SignAsExtensionParam params =
-      //       SignAsExtensionParam.fromJson(msg as Map<String, dynamic>);
-      //   final result = await widget.onSignExtrinsicRequest!(params);
-      //   _signing = false;
-      //   if (result == null || result.signature == null) {
-      //     // cancelled
-      //     return _controller.runJavascriptReturningResult(
-      //         'walletExtension.onAppResponse("${params.msgType}${msg['id']}", null, new Error("Rejected"))');
-      //   }
-      //   return _controller.runJavascriptReturningResult(
-      //       'walletExtension.onAppResponse("${params.msgType}${msg['id']}", ${jsonEncode(result.toJson())})');
       default:
         print('Unknown message from dapp: ${msg['msgType']}');
-        return Future(() => "");
+        res['error'] = ['unauthorized', 'Method $method not support.'];
+        return _respondToDApp(msg, res);
     }
     return Future(() => "");
   }
