@@ -62,7 +62,6 @@ class ClientApp {
     if (this.state.connector?.connected) {
       this.killSession();
 
-      notifyWallet({ event: "killSession" });
       setTimeout(() => this.initWalletConnect(uri, address, chainId), 300);
       return;
     }

@@ -1,30 +1,30 @@
 import { ApiProvider, BalanceData, Bridge, chains, FN, ChainName } from "@polkawallet/bridge";
-import { KusamaAdapter, PolkadotAdapter } from "@polkawallet/bridge/build/adapters/polkadot";
-import { AcalaAdapter, KaruraAdapter } from "@polkawallet/bridge/build/adapters/acala";
-import { StatemineAdapter } from "@polkawallet/bridge/build/adapters/statemint";
-import { AltairAdapter } from "@polkawallet/bridge/build/adapters/centrifuge";
-import { AstarAdapter, ShidenAdapter } from "@polkawallet/bridge/build/adapters/astar";
-import { BifrostAdapter } from "@polkawallet/bridge/build/adapters/bifrost";
-import { CalamariAdapter } from "@polkawallet/bridge/build/adapters/manta";
-import { ShadowAdapter } from "@polkawallet/bridge/build/adapters/crust";
-import { CrabAdapter } from "@polkawallet/bridge/build/adapters/darwinia";
-import { IntegriteeAdapter } from "@polkawallet/bridge/build/adapters/integritee";
-import { QuartzAdapter } from "@polkawallet/bridge/build/adapters/unique";
-import { KintsugiAdapter, InterlayAdapter } from "@polkawallet/bridge/build/adapters/interlay";
-import { KicoAdapter } from "@polkawallet/bridge/build/adapters/kico";
-import { PichiuAdapter } from "@polkawallet/bridge/build/adapters/kylin";
-import { TuringAdapter } from "@polkawallet/bridge/build/adapters/oak";
-import { ParallelAdapter, HeikoAdapter } from "@polkawallet/bridge/build/adapters/parallel";
-import { KhalaAdapter } from "@polkawallet/bridge/build/adapters/phala";
-import { BasiliskAdapter } from "@polkawallet/bridge/build/adapters/hydradx";
-import { ListenAdapter } from "@polkawallet/bridge/build/adapters/listen";
-import { MoonbeamAdapter, MoonriverAdapter } from "@polkawallet/bridge/build/adapters/moonbeam";
+import { KusamaAdapter, PolkadotAdapter } from "@polkawallet/bridge/adapters/polkadot";
+import { AcalaAdapter, KaruraAdapter } from "@polkawallet/bridge/adapters/acala";
+import { StatemineAdapter } from "@polkawallet/bridge/adapters/statemint";
+import { AltairAdapter } from "@polkawallet/bridge/adapters/centrifuge";
+import { AstarAdapter, ShidenAdapter } from "@polkawallet/bridge/adapters/astar";
+import { BifrostAdapter } from "@polkawallet/bridge/adapters/bifrost";
+import { CalamariAdapter } from "@polkawallet/bridge/adapters/manta";
+import { ShadowAdapter } from "@polkawallet/bridge/adapters/crust";
+import { CrabAdapter } from "@polkawallet/bridge/adapters/darwinia";
+import { IntegriteeAdapter } from "@polkawallet/bridge/adapters/integritee";
+import { QuartzAdapter } from "@polkawallet/bridge/adapters/unique";
+import { KintsugiAdapter, InterlayAdapter } from "@polkawallet/bridge/adapters/interlay";
+import { KicoAdapter } from "@polkawallet/bridge/adapters/kico";
+import { PichiuAdapter } from "@polkawallet/bridge/adapters/kylin";
+import { TuringAdapter } from "@polkawallet/bridge/adapters/oak";
+import { ParallelAdapter, HeikoAdapter } from "@polkawallet/bridge/adapters/parallel";
+import { KhalaAdapter } from "@polkawallet/bridge/adapters/phala";
+import { BasiliskAdapter } from "@polkawallet/bridge/adapters/hydradx";
+import { ListenAdapter } from "@polkawallet/bridge/adapters/listen";
+import { MoonbeamAdapter, MoonriverAdapter } from "@polkawallet/bridge/adapters/moonbeam";
 import { Observable, firstValueFrom, combineLatest } from "rxjs";
-import { BaseCrossChainAdapter } from "@polkawallet/bridge/build/base-chain-adapter";
+import { BaseCrossChainAdapter } from "@polkawallet/bridge/base-chain-adapter";
 import { subscribeMessage } from "./setting";
 
 import { Keyring } from "@polkadot/keyring";
-import { KeyringPair$Json, } from "@polkadot/keyring/types";
+import { KeyringPair$Json } from "@polkadot/keyring/types";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
 
 import { BN } from "@polkadot/util";
@@ -36,14 +36,14 @@ import axios from "axios";
 let keyring = new Keyring({ ss58Format: 0, type: "sr25519" });
 
 const _updateDisabledRoute = async () => {
-  const res = await axios.get('https://acala.polkawallet-cloud.com/config/bridge.json');
+  const res = await axios.get("https://acala.polkawallet-cloud.com/config/bridge.json");
 
   if (res.status !== 200) {
     throw new Error("fetch metadata error");
   }
 
   return res.data.disabledRoute;
-}
+};
 
 const provider = new ApiProvider();
 
@@ -87,7 +87,7 @@ const _initBridge = async () => {
 
     await bridge.isReady;
   }
-}
+};
 
 async function connectFromChains(chains: ChainName[], nodeList: Partial<Record<ChainName, string[]>> | undefined) {
   // connect all adapters
@@ -105,7 +105,7 @@ async function disconnectFromChains() {
 async function getFromChainsAll() {
   await _initBridge();
 
-  return Object.keys(availableAdapters).filter(e => e !== 'moonbeam' && e !== 'moonriver');
+  return Object.keys(availableAdapters).filter((e) => e !== "moonbeam" && e !== "moonriver");
 }
 
 async function getRoutes() {
@@ -123,9 +123,9 @@ async function getChainsInfo() {
 async function getNetworkProperties(chain: ChainName) {
   const props = await firstValueFrom(provider.getApi(chain).rpc.system.properties());
   return {
-      ss58Format: parseInt(props.ss58Format.toString()),
-      tokenDecimals: props.tokenDecimals.toJSON(),
-      tokenSymbol: props.tokenSymbol.toJSON(),
+    ss58Format: parseInt(props.ss58Format.toString()),
+    tokenDecimals: props.tokenDecimals.toJSON(),
+    tokenSymbol: props.tokenSymbol.toJSON(),
   };
 }
 
@@ -184,9 +184,9 @@ async function getInputConfig(from: ChainName, to: ChainName, token: string, add
     destFee: {
       token: res.destFee.token,
       amount: res.destFee.balance.toChainData().toString(),
-      decimals: res.destFee.balance.getPrecision()
+      decimals: res.destFee.balance.getPrecision(),
     },
-    estimateFee: res.estimateFee
+    estimateFee: res.estimateFee,
   };
 }
 
@@ -197,16 +197,16 @@ async function getTxParams(
   address: string,
   amount: string,
   decimals: number,
-  signer: string,
+  signer: string
 ) {
   const adapter = bridge.findAdapter(chainFrom);
   const tx = adapter.createTx({ to: chainTo, token, address, amount: FN.fromInner(amount, decimals), signer });
   return {
     module: tx.method.section,
     call: tx.method.method,
-    params: tx.args.map(e => e.toHuman()),
-    txHex: tx.toHex()
-  }
+    params: tx.args.map((e) => e.toHuman()),
+    txHex: tx.toHex(),
+  };
 }
 
 async function estimateTxFee(chainFrom: ChainName, txHex: string, sender: string) {
@@ -222,7 +222,6 @@ async function sendTx(chainFrom: ChainName, txInfo: any, password: string, msgId
     const tx = getApi(chainFrom).tx(txInfo.txHex);
 
     const onStatusChange = (result: SubmittableResult) => {
-
       if (result.status.isInBlock || result.status.isFinalized) {
         const { success, error } = _extractEvents(result);
         if (success) {
@@ -278,7 +277,6 @@ function _extractEvents(result: SubmittableResult) {
     });
   return { success, error };
 }
-
 
 function _getDispatchError(dispatchError: DispatchError): string {
   let message: string = dispatchError.type;
