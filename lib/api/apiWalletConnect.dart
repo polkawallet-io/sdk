@@ -16,7 +16,7 @@ class ApiWalletConnect {
     required Function(WCPeerMetaData) onPairing,
     required Function(Map) onPaired,
     required Function(WCCallRequestData) onCallRequest,
-    required Function() onDisconnect,
+    required Function(String) onDisconnect,
     Map? cachedSession,
   }) {
     service.initClient(uri, address, chainId, onPairing: (Map peerMeta) {
@@ -25,8 +25,8 @@ class ApiWalletConnect {
       onPaired(session);
     }, onCallRequest: (Map payload) {
       onCallRequest(WCCallRequestData.fromJson(payload));
-    }, onDisconnect: () {
-      onDisconnect();
+    }, onDisconnect: (uri) {
+      onDisconnect(uri);
     }, cachedSession: cachedSession);
   }
 

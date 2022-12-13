@@ -15,7 +15,7 @@ class ServiceWalletConnect {
     required Function(Map) onPairing,
     required Function(Map) onPaired,
     required Function(Map) onCallRequest,
-    required Function() onDisconnect,
+    required Function(String) onDisconnect,
     Map? cachedSession,
   }) {
     if (cachedSession != null) {
@@ -38,7 +38,7 @@ class ServiceWalletConnect {
           onCallRequest(data);
           break;
         case 'disconnect':
-          onDisconnect();
+          onDisconnect(uri);
           break;
       }
     });
