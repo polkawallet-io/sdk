@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_sdk/service/bridgeRunner.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 
@@ -15,13 +14,13 @@ class ServiceBridge {
   ///For multiple use at the same time
   int _retainCount = 0;
 
-  Future<void> init() async {
+  Future<void> init({String? jsCode}) async {
     final c = Completer();
     if (_runner == null) {
       _runner = BridgeRunner();
       await _runner?.launch(() {
         if (!c.isCompleted) c.complete();
-      });
+      }, jsCode: jsCode);
     } else {
       if (!c.isCompleted) c.complete();
     }

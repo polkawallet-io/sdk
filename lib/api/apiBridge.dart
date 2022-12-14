@@ -78,8 +78,8 @@ class ApiBridge {
     return BridgeTxParams.fromJson(Map<String, dynamic>.from(res));
   }
 
-  Future<void> init() async {
-    return await service.init();
+  Future<void> init({String? jsCode}) async {
+    return await service.init(jsCode: jsCode);
   }
 
   Future<void> dispose() async {
