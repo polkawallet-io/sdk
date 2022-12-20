@@ -1,3 +1,8 @@
+## [0.5。1] - 20221220
+
+* add EVM api
+* bump polkadot-js/api v9.10.3
+
 ## [0.4.9] - 20220808
 
 * add bridge api

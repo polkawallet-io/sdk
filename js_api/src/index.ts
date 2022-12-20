@@ -5,17 +5,17 @@ import { subscribeMessage, getNetworkConst, getNetworkProperties } from "./servi
 import keyring from "./service/keyring";
 import account from "./service/account";
 import staking from "./service/staking";
-import wc from "./service/walletconnect";
-import { renderEthereumRequests, signEthPayload } from "./service/walletconnect/v1/engines/ethereum";
+// import wc from "./service/walletconnect";
+// import { renderEthereumRequests, signEthPayload } from "./service/walletconnect/v1/engines/ethereum";
 import gov from "./service/gov";
 import parachain from "./service/parachain";
 import assets from "./service/assets";
 import { genLinks } from "./utils/config/config";
 
 // ethers APIs:
-import keyringETH from "./service/eth/keyring";
-import accountETH from "./service/eth/account";
-import { connect as connectEVM } from "./service/eth/settings";
+// import keyringETH from "./service/eth/keyring";
+// import accountETH from "./service/eth/account";
+// import { connect as connectEVM } from "./service/eth/settings";
 
 // console.log will send message to MsgChannel to App
 function send(path: string, data: any) {
@@ -49,6 +49,7 @@ async function connect(nodes: string[]) {
       });
       if (!(<any>window).api) {
         (<any>window).api = res;
+        // console.log(res);
         const url = nodes[(<any>res)._options.provider.__private_59_endpointIndex];
         send("log", `${url} wss connected success`);
         resolve(url);
@@ -89,13 +90,13 @@ const settings = {
 (<any>window).gov = gov;
 (<any>window).parachain = parachain;
 (<any>window).assets = assets;
-(<any>window).eth = {
-  settings: { connect: connectEVM },
-  keyring: { ...keyringETH, signEthRequest: signEthPayload, renderEthRequest: renderEthereumRequests },
-  account: accountETH,
-};
+// (<any>window).eth = {
+//   settings: { connect: connectEVM },
+//   keyring: { ...keyringETH, signEthRequest: signEthPayload, renderEthRequest: renderEthereumRequests },
+//   account: accountETH,
+// };
 
 // walletConnect supporting is not ready.
-(<any>window).walletConnect = wc;
+// (<any>window).walletConnect = wc;
 
 export default settings;

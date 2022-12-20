@@ -557,20 +557,19 @@ const _transfromEra = ({ activeEra, eraLength, sessionLength }: DeriveSessionInf
  */
 async function querySortedTargets(api: ApiPromise) {
  const data = await Promise.all([
-  api.query.staking.historyDepth(),
-  api.query.balances.totalIssuance(),
+  api.query.staking.historyDepth && api.query.staking.historyDepth(),
+  api.query.balances?.totalIssuance(),
   api.derive.staking.electedInfo({withExposure: true, withPrefs: true}),
   api.derive.staking.waitingInfo({withPrefs: true}),
   api.derive.session.info(),
   api.query.staking.minNominatorBond(),
-  api.query.staking.counterForNominators(),
-  api.derive.session.indexes().then(({ activeEra }) => activeEra.gt(BN_ZERO) ? activeEra.sub(BN_ONE) : undefined).then(lastEra => api.query.staking.erasValidatorReward([lastEra])),
+  api.query.staking.counterForNominators()
  ]);
  
  const partial = data[1] && data[2] && data[3] && data[4]
  ? _extractTargetsInfo(api, data[2], data[3], data[1] as any, _transfromEra(data[4]), data[0] as any)
  : {};
- return { inflation: { inflation: 0, stakedReturn: 0 }, medianComm: 0, ...partial, minNominatorBond: data[5], counterForNominators: data[6], lastReward: data[7] };
+ return { inflation: { inflation: 0, stakedReturn: 0 }, medianComm: 0, ...partial, minNominatorBond: data[5], counterForNominators: data[6] };
 }
 
 async function _getOwnStash(api: ApiPromise, accountId: string): Promise<[string, boolean]> {
