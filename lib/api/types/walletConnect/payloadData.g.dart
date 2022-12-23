@@ -40,7 +40,7 @@ WCCallRequestData _$WCCallRequestDataFromJson(Map<String, dynamic> json) {
     ..event = json['event'] as String?
     ..id = json['id'] as int?
     ..params = (json['params'] as List<dynamic>?)
-        ?.map((e) => WCCallRequestParamItem.fromJson(e as Map<String, dynamic>))
+        ?.map((e) => WCCallRequestParamItem.fromJson(e))
         .toList();
 }
 

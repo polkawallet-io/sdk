@@ -147,7 +147,7 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
     }
     print('Page loaded: $url');
 
-    print('Inject extension js code...');
+    print('Inject dapp js code...');
     final jsCode = await rootBundle.loadString(
         'packages/polkawallet_sdk/js_as_extension/dist/ethereum.js');
     await _controller.runJavascriptReturningResult(jsCode);

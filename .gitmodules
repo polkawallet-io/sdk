@@ -1,0 +1,3 @@
+[submodule "mobile-provider"]
+	path = mobile-provider
+	url = git@github.com:RomeroYang/mobile-provider.git
