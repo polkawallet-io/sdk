@@ -22,6 +22,7 @@ class ServiceBridge {
         if (!c.isCompleted) c.complete();
       }, jsCode: jsCode);
     } else {
+      await _runner?.reload();
       if (!c.isCompleted) c.complete();
     }
     _retainCount++;
