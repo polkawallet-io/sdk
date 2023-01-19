@@ -276,8 +276,7 @@ class _KeyringPageState extends State<KeyringPage> {
         await widget.sdk.api.keyring.changeName(widget.keyring, 'newName');
     widget.showResult(
       context,
-      'changeName',
-      res == null ? 'null' : JsonEncoder.withIndent('  ').convert(res.toJson()),
+      'changeName',  JsonEncoder.withIndent('  ').convert(res.toJson()),
     );
     setState(() {
       _submitting = false;

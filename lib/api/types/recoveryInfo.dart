@@ -1,9 +1,6 @@
 class RecoveryInfo extends _RecoveryInfo {
   static RecoveryInfo fromJson(Map<String, dynamic> json) {
-    RecoveryInfo info = RecoveryInfo();
-    if (json == null) {
-      return info;
-    }
+    final info = RecoveryInfo();
     info.address = json['address'];
     info.delayPeriod = json['delayPeriod'];
     info.threshold = json['threshold'];

@@ -86,7 +86,7 @@ async function fetchReferendums(api: ApiPromise, address: string) {
       ...parsedMeta,
       title: `${parsedMeta.section}.${parsedMeta.method}`,
       content: parsedMeta.meta?.documentation,
-      imageHash: imageHash.toHuman(),
+      imageHash: imageHash.toString(),
       changes: {
         changeAye: changes.changeAye.toString(),
         changeNay: changes.changeNay.toString(),

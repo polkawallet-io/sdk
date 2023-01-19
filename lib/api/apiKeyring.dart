@@ -78,7 +78,7 @@ class ApiKeyring {
     CryptoType cryptoType = CryptoType.sr25519,
     String derivePath = '',
   }) async {
-    final dynamic? acc = await service!.importAccount(
+    final acc = await service!.importAccount(
       keyType: keyType,
       key: key,
       name: name,
@@ -217,9 +217,7 @@ class ApiKeyring {
 
   /// delete account from storage
   Future<void> deleteAccount(Keyring keyring, KeyPairData account) async {
-    if (account != null) {
-      await keyring.store.deleteAccount(account.pubKey);
-    }
+    await keyring.store.deleteAccount(account.pubKey);
   }
 
   /// check password of account

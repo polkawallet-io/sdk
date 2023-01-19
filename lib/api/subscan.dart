@@ -145,17 +145,11 @@ class SubScanApi {
     });
     Response res =
         await post(Uri.parse(url), headers: post_headers, body: body);
-    if (res.body != null) {
-      final obj = await compute(jsonDecode, res.body);
-      if (params.sendPort != null) {
-        params.sendPort!.send(obj['data']);
-      }
-      return obj['data'];
-    }
+    final obj = await compute(jsonDecode, res.body);
     if (params.sendPort != null) {
-      params.sendPort!.send({});
+      params.sendPort!.send(obj['data']);
     }
-    return {};
+    return obj['data'];
   }
 
   static Future<Map?> fetchTxs(SubScanRequestParams para) async {
@@ -174,17 +168,11 @@ class SubScanApi {
     String body = jsonEncode(params);
     Response res =
         await post(Uri.parse(url), headers: post_headers, body: body);
-    if (res.body != null) {
-      final obj = await compute(jsonDecode, res.body);
-      if (para.sendPort != null) {
-        para.sendPort!.send(obj['data']);
-      }
-      return obj['data'];
-    }
+    final obj = await compute(jsonDecode, res.body);
     if (para.sendPort != null) {
-      para.sendPort!.send({});
+      para.sendPort!.send(obj['data']);
     }
-    return {};
+    return obj['data'];
   }
 
   static Future<Map?> fetchRewardTxs(SubScanRequestParams para) async {
@@ -197,16 +185,10 @@ class SubScanApi {
     String body = jsonEncode(params);
     Response res =
         await post(Uri.parse(url), headers: post_headers, body: body);
-    if (res.body != null) {
-      final obj = await compute(jsonDecode, res.body);
-      if (para.sendPort != null) {
-        para.sendPort!.send(obj['data']);
-      }
-      return obj['data'];
-    }
+    final obj = await compute(jsonDecode, res.body);
     if (para.sendPort != null) {
-      para.sendPort!.send({});
+      para.sendPort!.send(obj['data']);
     }
-    return {};
+    return obj['data'];
   }
 }

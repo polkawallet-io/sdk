@@ -170,9 +170,7 @@ class ApiEthers {
 
   /// delete account from storage
   Future<void> deleteAccount(KeyringEVM keyring, EthWalletData account) async {
-    if (account != null) {
-      await keyring.store.deleteAccount(account.address);
-    }
+    await keyring.store.deleteAccount(account.address);
   }
 
   /// check password of account

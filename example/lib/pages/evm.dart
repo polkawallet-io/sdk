@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/types/addressIconData.dart';
 import 'package:polkawallet_sdk/ethers/apiEthers.dart';
@@ -262,8 +261,7 @@ class _EVMPageState extends State<EVMPage> {
     final res = await widget.sdk.ethers.changeName(widget.keyring, 'newName');
     widget.showResult(
       context,
-      'changeName',
-      res == null ? 'null' : JsonEncoder.withIndent('  ').convert(res.toJson()),
+      'changeName', JsonEncoder.withIndent('  ').convert(res.toJson()),
     );
     setState(() {
       _submitting = false;
