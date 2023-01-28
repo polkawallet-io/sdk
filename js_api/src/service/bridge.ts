@@ -35,16 +35,6 @@ import axios from "axios";
 
 let keyring = new Keyring({ ss58Format: 0, type: "sr25519" });
 
-const _updateDisabledRoute = async () => {
-  const res = await axios.get("https://acala.polkawallet-cloud.com/config/bridge.json");
-
-  if (res.status !== 200) {
-    throw new Error("fetch metadata error");
-  }
-
-  return res.data.disabledRoute;
-};
-
 const provider = new ApiProvider();
 
 const availableAdapters: Record<string, BaseCrossChainAdapter> = {
@@ -79,10 +69,9 @@ let bridge: Bridge;
 
 const _initBridge = async () => {
   if (!bridge) {
-    const disabledRoute = await _updateDisabledRoute();
     bridge = new Bridge({
       adapters: Object.values(availableAdapters),
-      routersDisabled: disabledRoute,
+      disabledRouters: "https://acala.polkawallet-cloud.com/config/bridge.json",
     });
 
     await bridge.isReady;
