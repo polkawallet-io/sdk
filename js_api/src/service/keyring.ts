@@ -1,9 +1,6 @@
 import { keyExtractSuri, mnemonicGenerate, mnemonicValidate, cryptoWaitReady, signatureVerify, encodeAddress } from "@polkadot/util-crypto";
 import { hexToU8a, u8aToHex } from "@polkadot/util";
-import { parseQrCode, getSigner, makeTx, getSubmittable } from "../utils/QrSigner";
 import gov from "./gov";
-import metaDataMap from "../constants/networkMetadata";
-import { Metadata, TypeRegistry } from "@polkadot/types";
 import { wrapBytes } from "@polkadot/extension-dapp/wrapBytes";
 
 import { Keyring } from "@polkadot/keyring";
@@ -355,78 +352,6 @@ async function checkDerivePath(seed: string, derivePath: string, pairType: Keypa
 }
 
 /**
- * sign tx with QR
- */
-async function signAsync(chain: string, password: string) {
-  return new Promise((resolve) => {
-    const { unsignedData } = getSigner();
-    const keyPair = keyring.getPair(unsignedData.data.account);
-    try {
-      if (!keyPair.isLocked) {
-        keyPair.lock();
-      }
-      keyPair.decodePkcs8(password);
-
-      let payload: any;
-      if (!(<any>window).api) {
-        const registry = new TypeRegistry();
-        registry.setMetadata(new Metadata(registry, metaDataMap[chain]));
-        payload = registry.createType("ExtrinsicPayload", unsignedData.data.data, {
-          version: 4,
-        });
-      } else {
-        payload = (<any>window).api.registry.createType("ExtrinsicPayload", unsignedData.data.data, {
-          version: (<any>window).api.extrinsicVersion,
-        });
-      }
-
-      const signed = payload.sign(keyPair);
-      resolve(signed);
-    } catch (err) {
-      resolve({ error: err.message });
-    }
-  });
-}
-
-/**
- * send tx with signed data from QR
- */
-function addSignatureAndSend(api: ApiPromise, address: string, signed: string) {
-  return new Promise((resolve) => {
-    const { tx, payload } = getSubmittable();
-    if (!!tx.addSignature) {
-      tx.addSignature(address, `0x${signed}`, payload);
-
-      let unsub = () => {};
-      const onStatusChange = (result: SubmittableResult) => {
-        if (result.status.isInBlock || result.status.isFinalized) {
-          const { success, error } = _extractEvents(api, result);
-          if (success) {
-            resolve({ hash: tx.hash.toString(), blockHash: (result.status.asInBlock || result.status.asFinalized).toHex() });
-          }
-          if (error) {
-            resolve({ error });
-          }
-          unsub();
-        } else {
-          (<any>window).send("txStatusChange", result.status.type);
-        }
-      };
-
-      tx.send(onStatusChange)
-        .then((res) => {
-          unsub = res;
-        })
-        .catch((err) => {
-          resolve({ error: err.message });
-        });
-    } else {
-      resolve({ error: "invalid tx" });
-    }
-  });
-}
-
-/**
  * sign tx from dapp as extension
  */
 async function signTxAsExtension(password: string, json: any) {
@@ -438,13 +363,7 @@ async function signTxAsExtension(password: string, json: any) {
       }
       keyPair.decodePkcs8(password);
 
-      let registry: any;
-      if (!(<any>window).api) {
-        registry = new TypeRegistry();
-        registry.setMetadata(new Metadata(registry, metaDataMap["kusama"] as any));
-      } else {
-        registry = (<any>window).api.registry;
-      }
+      const registry = (<any>window).api.registry;
 
       registry.setSignedExtensions(json["signedExtensions"]);
       const payload = registry.createType("ExtrinsicPayload", json, {
@@ -494,10 +413,6 @@ export default {
   checkPassword,
   changePassword,
   checkDerivePath,
-  parseQrCode,
-  signAsync,
-  makeTx,
-  addSignatureAndSend,
   signTxAsExtension,
   signBytesAsExtension,
   verifySignature,

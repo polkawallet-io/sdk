@@ -3,8 +3,7 @@ import { DeriveCollectiveProposal, DeriveReferendumExt, DeriveCouncilVotes } fro
 import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { getTypeDef, Option, Bytes } from "@polkadot/types";
 import { OpenTip, AccountId } from "@polkadot/types/interfaces";
-import { stringToU8a, BN_ZERO, hexToString, BN_MILLION } from "@polkadot/util";
-import BN from "bn.js";
+import { stringToU8a, BN_ZERO, hexToString, BN_MILLION, BN } from "@polkadot/util";
 
 import { approxChanges } from "../utils/referendumApproxChanges";
 

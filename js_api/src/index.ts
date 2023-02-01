@@ -1,6 +1,4 @@
 import { WsProvider, ApiPromise } from "@polkadot/api";
-import { KUSAMA_GENESIS, POLKADOT_GENESIS, STATEMINE_GENESIS } from "./constants/networkSpect";
-import localMetadata from "./constants/networkMetadata";
 import { subscribeMessage, getNetworkConst, getNetworkProperties } from "./service/setting";
 import keyring from "./service/keyring";
 import account from "./service/account";
@@ -8,6 +6,7 @@ import staking from "./service/staking";
 import wc from "./service/walletconnect";
 import { renderEthereumRequests, signEthPayload } from "./service/walletconnect/v1/engines/ethereum";
 import gov from "./service/gov";
+import gov2 from "./service/gov2";
 import parachain from "./service/parachain";
 import assets from "./service/assets";
 import { genLinks } from "./utils/config/config";
@@ -41,21 +40,16 @@ async function connect(nodes: string[]) {
     try {
       const res = await ApiPromise.create({
         provider: wsProvider,
-        metadata: {
-          [`${KUSAMA_GENESIS}-9122`]: localMetadata["kusama"],
-          [`${POLKADOT_GENESIS}-9122`]: localMetadata["polkadot"],
-          [`${STATEMINE_GENESIS}-504`]: localMetadata["statemine"],
-        } as any,
       });
       if (!(<any>window).api) {
         (<any>window).api = res;
         // console.log(res);
-        const url = nodes[(<any>res)._options.provider.__private_59_endpointIndex];
+        const url = nodes[(<any>res)._options.provider.__private_44_endpointIndex];
         send("log", `${url} wss connected success`);
         resolve(url);
       } else {
         res.disconnect();
-        const url = nodes[(<any>res)._options.provider.__private_59_endpointIndex];
+        const url = nodes[(<any>res)._options.provider.__private_44_endpointIndex];
         send("log", `${url} wss success and disconnected`);
         resolve(url);
       }
@@ -88,6 +82,7 @@ const settings = {
 (<any>window).account = account;
 (<any>window).staking = staking;
 (<any>window).gov = gov;
+(<any>window).gov2 = gov2;
 (<any>window).parachain = parachain;
 (<any>window).assets = assets;
 (<any>window).eth = {
