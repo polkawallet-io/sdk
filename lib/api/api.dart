@@ -10,7 +10,6 @@ import 'package:polkawallet_sdk/api/apiRecovery.dart';
 import 'package:polkawallet_sdk/api/apiSetting.dart';
 import 'package:polkawallet_sdk/api/apiStaking.dart';
 import 'package:polkawallet_sdk/api/apiTx.dart';
-import 'package:polkawallet_sdk/api/apiUOS.dart';
 import 'package:polkawallet_sdk/api/apiWalletConnect.dart';
 import 'package:polkawallet_sdk/api/eth/index.dart';
 import 'package:polkawallet_sdk/api/subscan.dart';
@@ -39,7 +38,6 @@ class PolkawalletApi {
     parachain = ApiParachain(this, service.parachain);
     assets = ApiAssets(this, service.assets);
     bridge = ApiBridge(this, service.bridge);
-    uos = ApiUOS(this, service.uos);
     recovery = ApiRecovery(this, service.recovery);
 
     walletConnect = ApiWalletConnect(this, service.walletConnect);
@@ -60,7 +58,6 @@ class PolkawalletApi {
   late ApiParachain parachain;
   late ApiAssets assets;
   late ApiBridge bridge;
-  late ApiUOS uos;
   late ApiRecovery recovery;
 
   late ApiWalletConnect walletConnect;
