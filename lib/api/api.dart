@@ -4,6 +4,7 @@ import 'package:polkawallet_sdk/api/apiAccount.dart';
 import 'package:polkawallet_sdk/api/apiAssets.dart';
 import 'package:polkawallet_sdk/api/apiBridge.dart';
 import 'package:polkawallet_sdk/api/apiGov.dart';
+import 'package:polkawallet_sdk/api/apiGov2.dart';
 import 'package:polkawallet_sdk/api/apiKeyring.dart';
 import 'package:polkawallet_sdk/api/apiParachain.dart';
 import 'package:polkawallet_sdk/api/apiRecovery.dart';
@@ -24,7 +25,7 @@ import 'package:polkawallet_sdk/storage/keyring.dart';
 /// * [ApiAccount], for querying on-chain data of accounts, like balances or indices.
 /// * [ApiTx], sign and send tx.
 /// * [ApiStaking] and [ApiGov], the staking and governance module of substrate.
-/// * [ApiUOS], provides the offline-signature ability of polkawallet.
+/// * [ApiGov2], the new referenda module of substrate.
 /// * [ApiRecovery], the social-recovery module of Kusama network.
 class PolkawalletApi {
   PolkawalletApi(this.service) {
@@ -35,6 +36,7 @@ class PolkawalletApi {
 
     staking = ApiStaking(this, service.staking);
     gov = ApiGov(this, service.gov);
+    gov2 = ApiGov2(this, service.gov2);
     parachain = ApiParachain(this, service.parachain);
     assets = ApiAssets(this, service.assets);
     bridge = ApiBridge(this, service.bridge);
@@ -55,6 +57,7 @@ class PolkawalletApi {
 
   late ApiStaking staking;
   late ApiGov gov;
+  late ApiGov2 gov2;
   late ApiParachain parachain;
   late ApiAssets assets;
   late ApiBridge bridge;
