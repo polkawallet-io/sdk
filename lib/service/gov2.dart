@@ -16,16 +16,9 @@ class ServiceGov2 {
   }
 
   Future<List> queryReferendums() async {
-    final dynamic data =
-        await serviceRoot.webView!.evalJavascript('gov.queryReferendums(api)');
-    if (data != null) {
-      final List list = data['referendums'];
-      list.asMap().forEach((k, v) {
-        v['detail'] = data['details'][k];
-      });
-      return list;
-    }
-    return [];
+    final List res =
+        await serviceRoot.webView!.evalJavascript('gov2.queryReferendums(api)');
+    return res;
   }
 
   Future<List?> getDemocracyUnlocks(String address) async {

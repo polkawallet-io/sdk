@@ -5,10 +5,7 @@ function _shortName(name: string) {
   return `${name[0]}${name[name.length - 1]}`;
 }
 
-export async function genLinks(
-  api: ApiPromise,
-  { data, hash, type, withShort }
-) {
+export async function genLinks(api: ApiPromise, { data, hash, type, withShort }) {
   const systemChain = await api.rpc.system.chain();
   return Object.entries(linked)
     .map(([name, { chains, create, isActive, paths, url }]) => {

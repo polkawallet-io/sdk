@@ -1,14 +1,14 @@
 export default {
   chains: {
-    "Acala Mandala TC4": "acala-testnet",
+    Acala: "acala",
+    Karura: "karura",
     Kusama: "kusama",
     "Kusama CC3": "kusama",
     Polkadot: "polkadot",
     "Polkadot CC1": "polkadot-cc1",
     Westend: "westend",
   },
-  create: (chain: string, path: string, data: any) =>
-    `https://${chain}.subscan.io/${path}/${data.toString()}`,
+  create: (chain: string, path: string, data: any) => `https://${chain}.subscan.io/${path}/${data.toString()}`,
   isActive: true,
   paths: {
     address: "account",

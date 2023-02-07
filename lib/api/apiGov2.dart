@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/api/types/gov/genExternalLinksParams.dart';
+import 'package:polkawallet_sdk/api/types/gov/referendumV2Data.dart';
 import 'package:polkawallet_sdk/service/gov2.dart';
 
 class ApiGov2 {
@@ -12,6 +13,11 @@ class ApiGov2 {
 
   Future<bool> checkGovExist(int version) async {
     return service.checkGovExist(version);
+  }
+
+  Future<List<ReferendumGroup>> queryReferendums() async {
+    final List res = await service.queryReferendums();
+    return res.map((e) => ReferendumGroup.fromJson(e)).toList();
   }
 
   Future<List?> getDemocracyUnlocks(String address) async {

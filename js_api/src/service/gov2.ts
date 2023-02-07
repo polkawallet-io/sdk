@@ -21,7 +21,7 @@ function _isConvictionVote(info: any) {
   return info.isOngoing && _isConvictionTally(info.asOngoing.tally);
 }
 
-function _getTrackName(trackId: BN, { name }: any): string {
+function _getTrackName(trackId: BN, name: any): string {
   return `${formatNumber(trackId)} / ${name
     .replace(/_/g, " ")
     .split(" ")
@@ -364,16 +364,12 @@ async function _expandOngoing (api: ApiPromise, info: any, track?: any) {
 
   return {
     decisionDeposit: _unwrapDeposit(ongoing.decisionDeposit)?.toJSON(),
-    periods: {
-      confirmEnd,
-      decideEnd,
-      periodEnd: confirmEnd || decideEnd || prepareEnd,
-      prepareEnd
-    },
-    proposal : {
-      method: `${proposal.proposal?.section}.${proposal.proposal?.method}`,
-      doc: proposal.proposal?.meta && proposal.proposal.meta.docs?.toJSON()[0],
-    },
+    confirmEnd: confirmEnd?.toString(),
+    decideEnd: decideEnd?.toString(),
+    periodEnd: (confirmEnd || decideEnd || prepareEnd).toString(),
+    prepareEnd: prepareEnd?.toString(),
+    callMethod: `${proposal.proposal?.section}.${proposal.proposal?.method}`,
+    callDocs: proposal.proposal?.meta && proposal.proposal.meta.docs?.toJSON()[0],
     proposalHash: proposalHash.proposalHash,
     submissionDeposit: _unwrapDeposit(ongoing.submissionDeposit)?.toJSON(),
     tally: ongoing.tally,
@@ -451,9 +447,8 @@ async function _group(api: ApiPromise, tracks: any[], totalIssuance?: BN, refere
           key: `track:${ref.trackId.toString()}`,
           referenda: [ref],
           track: ref.track,
-          trackGraph: ref.trackGraph,
           trackId: ref.trackId,
-          trackName: _getTrackName(ref.trackId, ref.track),
+          trackName: _getTrackName(ref.trackId, ref.track.name),
         });
       } else {
         // existing group, just add the referendum
@@ -491,7 +486,7 @@ async function queryReferendums(api: ApiPromise) {
   const referendums = await api.query.referenda.referendumInfoFor.multi(ids);
   const referenda = (referendums as any)
     .map((o, i) => (o.isSome ? [ids[i], o.unwrap()] : null))
-    .filter((r) => !!r)
+    .filter((r) => !!r && !!r[1].isOngoing)
     .map(([id, info]) => ({
       id,
       info,

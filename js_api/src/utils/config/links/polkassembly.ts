@@ -1,17 +1,45 @@
-export default {
+export const PolkassemblyIo = {
   chains: {
+    Altair: "Altair",
+    Astar: "astar",
+    "Bifrost Polkadot": "bifrost",
+    Calamari: "calamari",
+    "Centrifuge Mainnet": "centrifuge",
+    Khala: "khala",
     Kusama: "kusama",
     "Kusama CC3": "kusama",
+    Parallel: "parallel",
+    "Parallel Heiko": "heiko",
+    "Pioneer Network": "pioneer",
+    Polkadex: "polkadex",
     Polkadot: "polkadot",
+    Robonomics: "robonomics",
+    Shibuya: "shibuya",
+    Shiden: "shiden",
   },
-  create: (chain: string, path: string, data: any) =>
-    `https://${chain}.polkassembly.io/${path}/${data.toString()}`,
+  create: (chain: string, path: string, data: any) => `https://${chain}.polkassembly.io/${path}/${data.toString()}`,
   isActive: true,
   paths: {
     council: "motion",
     proposal: "proposal",
     referendum: "referendum",
     treasury: "treasury",
+    referenda: "referenda",
   },
   url: "https://polkassembly.io/",
+};
+
+export const PolkassemblyNetwork = {
+  ...PolkassemblyIo,
+  chains: {
+    Bifrost: "bifrost",
+    "KILT Spiritnet": "kilt",
+    Karura: "karura",
+    "Khala Network": "khala",
+    "Moonbase Alpha": "moonbase",
+    Moonbeam: "moonbeam",
+    Moonriver: "moonriver",
+  },
+  create: (chain: string, path: string, data: any): string => `https://${chain}.polkassembly.network/${path}/${data.toString()}`,
+  url: "https://polkassembly.network/",
 };
