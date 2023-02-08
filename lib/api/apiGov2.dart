@@ -15,9 +15,13 @@ class ApiGov2 {
     return service.checkGovExist(version);
   }
 
-  Future<List<ReferendumGroup>> queryReferendums() async {
-    final List res = await service.queryReferendums();
-    return res.map((e) => ReferendumGroup.fromJson(e)).toList();
+  Future<ReferendumData> queryReferendums(String address) async {
+    final Map res = await service.queryReferendums(address);
+    final ongoing = List<ReferendumGroup>.from(
+        res['ongoing'].map((e) => ReferendumGroup.fromJson(e)));
+    final userVotes = List<ReferendumVote>.from(
+        res['userVotes'].map((e) => ReferendumVote.fromJson(e)));
+    return ReferendumData(ongoing: ongoing, userVotes: userVotes);
   }
 
   Future<List?> getDemocracyUnlocks(String address) async {

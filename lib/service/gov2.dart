@@ -15,9 +15,9 @@ class ServiceGov2 {
     return res ?? false;
   }
 
-  Future<List> queryReferendums() async {
-    final List res =
-        await serviceRoot.webView!.evalJavascript('gov2.queryReferendums(api)');
+  Future<Map> queryReferendums(String address) async {
+    final Map res = await serviceRoot.webView!
+        .evalJavascript('gov2.queryReferendums(api, "$address")');
     return res;
   }
 
@@ -35,7 +35,7 @@ class ServiceGov2 {
 
   Future<List?> getReferendumVoteConvictions() async {
     final dynamic res = await serviceRoot.webView!
-        .evalJavascript('gov.getReferendumVoteConvictions(api)');
+        .evalJavascript('gov2.getReferendumVoteConvictions(api)');
     return res;
   }
 }

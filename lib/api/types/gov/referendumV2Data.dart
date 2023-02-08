@@ -1,3 +1,9 @@
+class ReferendumData {
+  ReferendumData({required this.ongoing, required this.userVotes});
+  final List<ReferendumGroup> ongoing;
+  final List<ReferendumVote> userVotes;
+}
+
 class ReferendumGroup {
   const ReferendumGroup(
       {required this.key, required this.trackName, required this.referenda});
@@ -6,7 +12,7 @@ class ReferendumGroup {
   final List<ReferendumItem> referenda;
 
   static ReferendumGroup fromJson(Map<String, dynamic> json) {
-    ReferendumGroup info = ReferendumGroup(
+    final ReferendumGroup info = ReferendumGroup(
         key: json['key'],
         trackName: json['trackName'],
         referenda: List.of(json['referenda'])
@@ -19,6 +25,7 @@ class ReferendumGroup {
 class ReferendumItem {
   const ReferendumItem({
     required this.key,
+    required this.trackId,
     required this.callMethod,
     required this.callDocs,
     required this.proposalHash,
@@ -36,6 +43,7 @@ class ReferendumItem {
     required this.tallyTotal,
   });
   final String key;
+  final String trackId;
   final String callMethod;
   final String? callDocs;
   final String proposalHash;
@@ -60,6 +68,7 @@ class ReferendumItem {
   static ReferendumItem fromJson(Map<String, dynamic> json) {
     ReferendumItem info = ReferendumItem(
       key: json['key'],
+      trackId: json['trackId'],
       callMethod: json['expanded']['callMethod'],
       callDocs: json['expanded']['callDocs'],
       proposalHash: json['expanded']['proposalHash'],
@@ -79,6 +88,36 @@ class ReferendumItem {
       nays: json['expanded']['tally']['nays'].toString(),
       support: json['expanded']['tally']['support'].toString(),
       tallyTotal: json['expanded']['tallyTotal'].toString(),
+    );
+    return info;
+  }
+}
+
+class ReferendumVote {
+  const ReferendumVote({
+    required this.key,
+    required this.status,
+    required this.endBlock,
+    required this.isEnded,
+    required this.isRedeemable,
+    required this.vote,
+  });
+  final String key;
+  final String status;
+  final String endBlock;
+  final bool isEnded;
+  final bool isRedeemable;
+
+  final Map vote;
+
+  static ReferendumVote fromJson(Map<String, dynamic> json) {
+    final ReferendumVote info = ReferendumVote(
+      key: json['key'],
+      status: json['status'],
+      endBlock: json['endBlock'],
+      isEnded: json['isEnded'],
+      isRedeemable: json['redeemable'] ?? false,
+      vote: json['vote'],
     );
     return info;
   }

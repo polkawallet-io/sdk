@@ -1,10 +1,23 @@
 import { ApiPromise } from "@polkadot/api";
-import type {  Hash, Call } from '@polkadot/types/interfaces';
-import type { HexString } from '@polkadot/util/types';
-import type { Registry } from '@polkadot/types/types';
+import { Hash, Call } from "@polkadot/types/interfaces";
+import { HexString } from "@polkadot/util/types";
+import { Registry } from "@polkadot/types/types";
 
-import { Option, Bytes } from '@polkadot/types';
-import { BN_ZERO, BN_ONE, BN_BILLION, BN, bnMax, bnMin, stringPascalCase, formatNumber, isString, isU8a, u8aToHex, objectSpread } from "@polkadot/util";
+import { Option, Bytes } from "@polkadot/types";
+import {
+  BN_ZERO,
+  BN_ONE,
+  BN_BILLION,
+  BN,
+  bnMax,
+  bnMin,
+  stringPascalCase,
+  formatNumber,
+  isString,
+  isU8a,
+  u8aToHex,
+  objectSpread,
+} from "@polkadot/util";
 
 function checkGovExist(api: ApiPromise, version: number) {
   if (version === 1) {
@@ -121,13 +134,13 @@ interface PreimageStatus {
   status: any;
 }
 
- interface PreimageBytes {
+interface PreimageBytes {
   proposal?: Call | null;
   proposalError?: string | null;
   proposalWarning?: string | null;
 }
 
- interface Preimage extends PreimageBytes, PreimageStatus {
+interface Preimage extends PreimageBytes, PreimageStatus {
   // just the interfaces above
 }
 
@@ -138,48 +151,42 @@ interface StatusParams {
   resultPreimageHash?: PreimageStatus;
 }
 
-type BytesParamsType = [[proposalHash: HexString, proposalLength: BN]] | [proposalHash: HexString];
-
 interface BytesParams {
-  paramsBytes?: BytesParamsType;
+  paramsBytes?: any;
   resultPreimageFor?: PreimageStatus;
 }
 
-type Result = 'unknown' | 'hash' | 'hashAndLen';
+type Result = "unknown" | "hash" | "hashAndLen";
 
 /**
  * @internal Determine if we are working with current generation (H256,u32)
  * or previous generation H256 params to the preimageFor storage entry
  */
- function _getParamType (api: ApiPromise): Result {
-  if ((
-    api.query.preimage &&
-    api.query.preimage.preimageFor &&
-    api.query.preimage.preimageFor.creator.meta.type.isMap
-  )) {
+function _getParamType(api: ApiPromise): Result {
+  if (api.query.preimage && api.query.preimage.preimageFor && api.query.preimage.preimageFor.creator.meta.type.isMap) {
     const { type } = api.registry.lookup.getTypeDef(api.query.preimage.preimageFor.creator.meta.type.asMap.key);
 
-    if (type === 'H256') {
-      return 'hash';
-    } else if (type === '(H256,u32)') {
-      return 'hashAndLen';
+    if (type === "H256") {
+      return "hash";
+    } else if (type === "(H256,u32)") {
+      return "hashAndLen";
     } else {
       // we are clueless :()
     }
   }
 
-  return 'unknown';
+  return "unknown";
 }
 
 /** @internal Unwraps a passed preimage hash into components */
- function _getPreimageHash (api: ApiPromise, hashOrBounded: any): StatusParams {
-  let proposalHash: HexString | undefined;
+function _getPreimageHash(api: ApiPromise, hashOrBounded: any): StatusParams {
+  let proposalHash: any;
   let inlineData: Uint8Array | undefined;
 
   if (isString(hashOrBounded)) {
     proposalHash = hashOrBounded;
   } else if (isU8a(hashOrBounded)) {
-    proposalHash = hashOrBounded.toHex();
+    proposalHash = (hashOrBounded as any).toHex();
   } else {
     const bounded = hashOrBounded;
 
@@ -202,25 +209,21 @@ type Result = 'unknown' | 'hash' | 'hashAndLen';
     resultPreimageHash: proposalHash && {
       count: 0,
       isCompleted: false,
-      isHashParam: _getParamType(api) === 'hash',
+      isHashParam: _getParamType(api) === "hash",
       proposalHash,
       proposalLength: inlineData && new BN(inlineData.length),
       registry: api.registry,
-      status: null
-    }
+      status: null,
+    },
   };
 }
 
-function _unwrapDeposit (value: any | Option<any>) {
-  return value instanceof Option
-    ? value.unwrapOr(null)
-    : value;
+function _unwrapDeposit(value: any | Option<any>) {
+  return value instanceof Option ? value.unwrapOr(null) : value;
 }
 
-function _creatPreimageResult (interimResult: PreimageStatus, optBytes: Option<Bytes> | Uint8Array): Preimage {
-  const callData = isU8a(optBytes)
-    ? optBytes
-    : optBytes.unwrapOr(null);
+function _creatPreimageResult(interimResult: PreimageStatus, optBytes: Option<Bytes> | Uint8Array): Preimage {
+  const callData = isU8a(optBytes) ? optBytes : optBytes.unwrapOr(null);
   let proposal: Call | null = null;
   let proposalError: string | null = null;
   let proposalWarning: string | null = null;
@@ -228,7 +231,7 @@ function _creatPreimageResult (interimResult: PreimageStatus, optBytes: Option<B
 
   if (callData) {
     try {
-      proposal = interimResult.registry.createType('Call', callData);
+      proposal = interimResult.registry.createType("Call", callData);
 
       const callLength = proposal.encodedLength;
 
@@ -236,7 +239,9 @@ function _creatPreimageResult (interimResult: PreimageStatus, optBytes: Option<B
         const storeLength = interimResult.proposalLength.toNumber();
 
         if (callLength !== storeLength) {
-          proposalWarning = `Decoded call length does not match on-chain stored preimage length (${formatNumber(callLength)} bytes vs ${formatNumber(storeLength)} bytes)`;
+          proposalWarning = `Decoded call length does not match on-chain stored preimage length (${formatNumber(
+            callLength
+          )} bytes vs ${formatNumber(storeLength)} bytes)`;
         }
       } else {
         // for the old style, we set the actual length
@@ -245,10 +250,10 @@ function _creatPreimageResult (interimResult: PreimageStatus, optBytes: Option<B
     } catch (error) {
       console.error(error);
 
-      proposalError = 'Unable to decode preimage bytes into a valid Call';
+      proposalError = "Unable to decode preimage bytes into a valid Call";
     }
   } else {
-    proposalWarning = 'No preimage bytes found';
+    proposalWarning = "No preimage bytes found";
   }
 
   return objectSpread<Preimage>({}, interimResult, {
@@ -256,22 +261,22 @@ function _creatPreimageResult (interimResult: PreimageStatus, optBytes: Option<B
     proposal,
     proposalError,
     proposalLength: proposalLength || interimResult.proposalLength,
-    proposalWarning
+    proposalWarning,
   });
 }
 
-function _convertDeposit (deposit?: any): PreimageDeposit | undefined {
+function _convertDeposit(deposit?: any): PreimageDeposit | undefined {
   return deposit
     ? {
-      amount: deposit[1],
-      who: deposit[0].toString()
-    }
+        amount: deposit[1],
+        who: deposit[0].toString(),
+      }
     : undefined;
 }
 
-function _getBytesParams (interimResult: PreimageStatus, optStatus: Option<any>): BytesParams {
+function _getBytesParams(interimResult: PreimageStatus, optStatus: Option<any>): BytesParams {
   const result = objectSpread<PreimageStatus>({}, interimResult, {
-    status: optStatus.unwrapOr(null)
+    status: optStatus.unwrapOr(null),
   });
 
   if (result.status) {
@@ -308,37 +313,37 @@ function _getBytesParams (interimResult: PreimageStatus, optStatus: Option<any>)
   }
 
   return {
-    paramsBytes: result.isHashParam
-      ? [result.proposalHash]
-      : [[result.proposalHash, result.proposalLength || BN_ZERO]],
-    resultPreimageFor: result
+    paramsBytes: result.isHashParam ? [result.proposalHash] : [[result.proposalHash, result.proposalLength || BN_ZERO]],
+    resultPreimageFor: result,
   };
 }
 
-async function _parsePreimage (api: ApiPromise, preimageHash?: StatusParams): Promise<Preimage | undefined> {
-  const optStatus = !preimageHash.inlineData && preimageHash.paramsStatus && (await api.query.preimage?.statusFor(preimageHash.paramsStatus[0]))
+async function _parsePreimage(api: ApiPromise, preimageHash?: StatusParams): Promise<Preimage | undefined> {
+  const optStatus =
+    !preimageHash.inlineData && preimageHash.paramsStatus && (await api.query.preimage?.statusFor(preimageHash.paramsStatus[0]));
 
   // from the retrieved status (if any), get the on-chain stored bytes
-  const bytesParams = preimageHash.resultPreimageHash && optStatus ? _getBytesParams(preimageHash.resultPreimageHash, optStatus as any) : {};
+  const bytesParams =
+    preimageHash.resultPreimageHash && optStatus ? _getBytesParams(preimageHash.resultPreimageHash, optStatus as any) : {};
 
-  const optBytes = bytesParams.paramsBytes && (await api.query.preimage?.preimageFor(...bytesParams.paramsBytes))
+  const optBytes = bytesParams.paramsBytes && (await api.query.preimage?.preimageFor(...bytesParams.paramsBytes));
 
   // extract all the preimage info we have retrieved
   return bytesParams.resultPreimageFor
-  ? optBytes
-    ? _creatPreimageResult(bytesParams.resultPreimageFor, optBytes as any)
-    : bytesParams.resultPreimageFor
-  : preimageHash.resultPreimageHash
+    ? optBytes
+      ? _creatPreimageResult(bytesParams.resultPreimageFor, optBytes as any)
+      : bytesParams.resultPreimageFor
+    : preimageHash.resultPreimageHash
     ? preimageHash.inlineData
       ? _creatPreimageResult(preimageHash.resultPreimageHash, preimageHash.inlineData)
       : preimageHash.resultPreimageHash
     : undefined;
 }
 
-async function _expandOngoing (api: ApiPromise, info: any, track?: any) {
+async function _expandOngoing(api: ApiPromise, info: any, track?: any) {
   const ongoing = info.asOngoing;
-  const proposalHash = _getPreimageHash(api, ongoing.proposal || (ongoing as unknown as { proposalHash: Hash }).proposalHash);
-  const proposal= await _parsePreimage(api, proposalHash);
+  const proposalHash = _getPreimageHash(api, ongoing.proposal || ((ongoing as unknown) as { proposalHash: Hash }).proposalHash);
+  const proposal = await _parsePreimage(api, proposalHash);
   let prepareEnd: BN | null = null;
   let decideEnd: BN | null = null;
   let confirmEnd: BN | null = null;
@@ -373,7 +378,7 @@ async function _expandOngoing (api: ApiPromise, info: any, track?: any) {
     proposalHash: proposalHash.proposalHash,
     submissionDeposit: _unwrapDeposit(ongoing.submissionDeposit)?.toJSON(),
     tally: ongoing.tally,
-    tallyTotal: ongoing.tally.ayes.add(ongoing.tally.nays)
+    tallyTotal: ongoing.tally.ayes.add(ongoing.tally.nays),
   };
 }
 
@@ -478,7 +483,7 @@ async function _group(api: ApiPromise, tracks: any[], totalIssuance?: BN, refere
  * v2 gov
  * Query active referendums.
  */
-async function queryReferendums(api: ApiPromise) {
+async function queryReferendums(api: ApiPromise, address: string) {
   const totalIssuance = await api.query.balances.totalIssuance();
   const referendumKeys = await api.query.referenda.referendumInfoFor.keys();
   const tracks = (api.consts["referenda"].tracks as any).map(([id, info]) => ({ id, info }));
@@ -486,18 +491,81 @@ async function queryReferendums(api: ApiPromise) {
   const referendums = await api.query.referenda.referendumInfoFor.multi(ids);
   const referenda = (referendums as any)
     .map((o, i) => (o.isSome ? [ids[i], o.unwrap()] : null))
-    .filter((r) => !!r && !!r[1].isOngoing)
+    .filter((r) => !!r)
     .map(([id, info]) => ({
       id,
       info,
       isConvictionVote: _isConvictionVote(info),
       key: id.toString(),
     }));
-  return _group(api, tracks, totalIssuance, referenda);
+  const groups = await _group(api, tracks, totalIssuance, referenda);
+
+  const userVoted = await api.query.convictionVoting.votingFor.entries(address);
+  const bestNumber = await api.derive.chain.bestNumber();
+  const userVotes = userVoted.map((e) => {
+    const vote = e[1].toJSON()["casting"]["votes"][0];
+    let ref;
+    groups.forEach((g) => {
+      const trackId = g["key"];
+      const referendum = g["referenda"].find((r) => r.key === vote[0].toString());
+      if (!referendum) return;
+
+      if (trackId === "referenda") {
+        const period = (api.consts.convictionVoting.voteLockingPeriod as any).toNumber();
+        const info = referendum.info.toJSON();
+        let endBlock = Object.values(info)[0][0];
+        if (vote[1]["standard"]) {
+          if (vote[1]["standard"]["conviction"] != "None") {
+            const con = parseInt(vote[1]["standard"]["conviction"].substring(6, 7));
+            endBlock += con * period;
+          }
+        } else {
+          endBlock += period;
+        }
+        ref = {
+          key: vote[0].toString(),
+          vote: vote[1],
+          isEnded: true,
+          redeemable: bestNumber > endBlock,
+          status: Object.keys(info)[0],
+          endBlock,
+        };
+      } else {
+        ref = {
+          key: vote[0].toString(),
+          vote: vote[1],
+          isEnded: false,
+          status: referendum.expanded.confirmEnd ? "confirming" : referendum.expanded.decideEnd ? "deciding" : "preparing",
+          endBlock: referendum.expanded.periodEnd,
+        };
+      }
+    });
+    return ref;
+  });
+
+  return { ongoing: groups.filter((g) => g["key"] !== "referenda"), userVotes };
+}
+
+const CONVICTIONS = [1, 2, 4, 8, 16, 32].map((lock, index) => [index + 1, lock]);
+const SEC_DAY = 60 * 60 * 24;
+/**
+ * Query ReferendumVoteConvictions.
+ */
+async function getReferendumVoteConvictions(api: ApiPromise) {
+  const enact =
+    ((((api.consts.convictionVoting.voteLockingPeriod as any).toNumber() * api.consts.timestamp.minimumPeriod.toNumber()) / 1000) * 2) /
+    SEC_DAY;
+  const res = CONVICTIONS.map(([value, lock]) => ({
+    lock,
+    period: (enact * lock).toFixed(2),
+    value,
+  }));
+  return res;
 }
 
 export default {
   checkGovExist,
   // gov v2
   queryReferendums,
+  getReferendumVoteConvictions,
 };

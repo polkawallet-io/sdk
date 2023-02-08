@@ -53,7 +53,7 @@ function _transfromProposalMeta(proposal: any): {} {
  * Query active referendums and it's voting info of an address.
  */
 async function fetchReferendums(api: ApiPromise, address: string) {
-  const referendums: DeriveReferendumExt[] = await api.derive.democracy.referendums();
+  const referendums = await api.derive.democracy.referendums();
   const sqrtElectorate = await api.derive.democracy.sqrtElectorate();
   const details = referendums.map(({ image, imageHash, status, votedAye, votedNay, votedTotal, votes }) => {
     let proposalMeta: any = {};
