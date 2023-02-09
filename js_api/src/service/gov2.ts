@@ -502,46 +502,50 @@ async function queryReferendums(api: ApiPromise, address: string) {
 
   const userVoted = await api.query.convictionVoting.votingFor.entries(address);
   const bestNumber = await api.derive.chain.bestNumber();
-  const userVotes = userVoted.map((e) => {
-    const vote = e[1].toJSON()["casting"]["votes"][0];
-    let ref;
-    groups.forEach((g) => {
-      const trackId = g["key"];
-      const referendum = g["referenda"].find((r) => r.key === vote[0].toString());
-      if (!referendum) return;
+  const userVotes = userVoted
+    .filter((e) => e[1].toHuman()["Casting"]["votes"].length > 0)
+    .map((e) => {
+      const vote = e[1].toHuman()["Casting"]["votes"][0];
+      let ref;
+      groups.forEach((g) => {
+        const trackId = g["key"];
+        const referendum = g["referenda"].find((r) => r.key === vote[0].toString());
+        if (!referendum) return;
 
-      if (trackId === "referenda") {
-        const period = (api.consts.convictionVoting.voteLockingPeriod as any).toNumber();
-        const info = referendum.info.toJSON();
-        let endBlock = Object.values(info)[0][0];
-        if (vote[1]["standard"]) {
-          if (vote[1]["standard"]["conviction"] != "None") {
-            const con = parseInt(vote[1]["standard"]["conviction"].substring(6, 7));
-            endBlock += con * period;
+        if (trackId === "referenda") {
+          const period = (api.consts.convictionVoting.voteLockingPeriod as any).toNumber();
+          const info = referendum.info.toJSON();
+          let endBlock = Object.values(info)[0][0];
+          if (vote[1]["Standard"]) {
+            if (vote[1]["Standard"]["vote"]["conviction"] != "None") {
+              const con = parseInt(vote[1]["Standard"]["vote"]["conviction"].substring(6, 7));
+              endBlock += con * period;
+            }
+          } else {
+            endBlock += period;
           }
+          ref = {
+            trackId: referendum.trackId.toString(),
+            key: vote[0].toString(),
+            vote: vote[1],
+            isEnded: true,
+            redeemable: bestNumber > endBlock,
+            status: Object.keys(info)[0],
+            endBlock,
+          };
         } else {
-          endBlock += period;
+          ref = {
+            trackId: referendum.trackId.toString(),
+            key: vote[0].toString(),
+            vote: vote[1],
+            isEnded: false,
+            status: referendum.expanded.confirmEnd ? "confirming" : referendum.expanded.decideEnd ? "deciding" : "preparing",
+            endBlock: referendum.expanded.periodEnd,
+          };
         }
-        ref = {
-          key: vote[0].toString(),
-          vote: vote[1],
-          isEnded: true,
-          redeemable: bestNumber > endBlock,
-          status: Object.keys(info)[0],
-          endBlock,
-        };
-      } else {
-        ref = {
-          key: vote[0].toString(),
-          vote: vote[1],
-          isEnded: false,
-          status: referendum.expanded.confirmEnd ? "confirming" : referendum.expanded.decideEnd ? "deciding" : "preparing",
-          endBlock: referendum.expanded.periodEnd,
-        };
-      }
+      });
+      return ref;
     });
-    return ref;
-  });
 
   return { ongoing: groups.filter((g) => g["key"] !== "referenda"), userVotes };
 }

@@ -95,6 +95,7 @@ class ReferendumItem {
 
 class ReferendumVote {
   const ReferendumVote({
+    required this.trackId,
     required this.key,
     required this.status,
     required this.endBlock,
@@ -102,6 +103,7 @@ class ReferendumVote {
     required this.isRedeemable,
     required this.vote,
   });
+  final String trackId;
   final String key;
   final String status;
   final String endBlock;
@@ -112,6 +114,7 @@ class ReferendumVote {
 
   static ReferendumVote fromJson(Map<String, dynamic> json) {
     final ReferendumVote info = ReferendumVote(
+      trackId: json['trackId'],
       key: json['key'],
       status: json['status'],
       endBlock: json['endBlock'],
