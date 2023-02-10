@@ -117,7 +117,7 @@ class ReferendumVote {
       trackId: json['trackId'],
       key: json['key'],
       status: json['status'],
-      endBlock: json['endBlock'],
+      endBlock: json['endBlock'].toString(),
       isEnded: json['isEnded'],
       isRedeemable: json['redeemable'] ?? false,
       vote: json['vote'],

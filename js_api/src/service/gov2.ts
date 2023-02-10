@@ -525,7 +525,7 @@ async function queryReferendums(api: ApiPromise, address: string) {
             endBlock += period;
           }
           ref = {
-            trackId: referendum.trackId.toString(),
+            trackId: e[0].args[1].toString(),
             key: vote[0].toString(),
             vote: vote[1],
             isEnded: true,
@@ -535,7 +535,7 @@ async function queryReferendums(api: ApiPromise, address: string) {
           };
         } else {
           ref = {
-            trackId: referendum.trackId.toString(),
+            trackId: e[0].args[1].toString(),
             key: vote[0].toString(),
             vote: vote[1],
             isEnded: false,
