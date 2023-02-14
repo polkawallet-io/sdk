@@ -21,12 +21,6 @@ class ServiceGov2 {
     return res;
   }
 
-  Future<List?> getDemocracyUnlocks(String address) async {
-    final dynamic res = await serviceRoot.webView!
-        .evalJavascript('gov.getDemocracyUnlocks(api, "$address")');
-    return res;
-  }
-
   Future<List?> getExternalLinks(Map params) async {
     final dynamic res = await serviceRoot.webView!
         .evalJavascript('settings.genLinks(api, ${jsonEncode(params)})');

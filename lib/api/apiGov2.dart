@@ -24,11 +24,6 @@ class ApiGov2 {
     return ReferendumData(ongoing: ongoing, userVotes: userVotes);
   }
 
-  Future<List?> getDemocracyUnlocks(String address) async {
-    final List? res = await service.getDemocracyUnlocks(address);
-    return res;
-  }
-
   Future<List?> getExternalLinks(GenExternalLinksParams params) async {
     final List? res = await service.getExternalLinks(params.toJson());
     return res;

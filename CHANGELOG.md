@@ -1,3 +1,8 @@
+## [0.5.2] - 20230214
+
+* add new gov2 referenda api
+* bump polkadot-js/api v9.13.2
+
 ## [0.5.1] - 20221220
 
 * add EVM api
