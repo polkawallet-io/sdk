@@ -190,7 +190,7 @@ class KeyringPrivateStore {
     }
   }
 
-  Future<void> updateAccount(Map acc, {bool isExternal: false}) async {
+  Future<void> updateAccount(Map acc, {bool isExternal = false}) async {
     if (isExternal) {
       updateContact(acc);
     } else {
