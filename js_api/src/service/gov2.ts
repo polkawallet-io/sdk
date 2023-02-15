@@ -502,17 +502,18 @@ async function queryReferendums(api: ApiPromise, address: string) {
 
   const userVoted = await api.query.convictionVoting.votingFor.entries(address);
   const bestNumber = await api.derive.chain.bestNumber();
-  const userVotes = userVoted
-    .filter((e) => e[1].toHuman()["Casting"]["votes"].length > 0)
-    .map((e) => {
-      const vote = e[1].toHuman()["Casting"]["votes"][0];
-      let ref;
-      groups.forEach((g) => {
-        const trackId = g["key"];
+  const userVotes = [];
+  userVoted.forEach((e) => {
+    const trackId = e[0].args[1].toString();
+    const votes = e[1].toHuman()["Casting"]["votes"];
+
+    groups.forEach((g) => {
+      const trackKey = g["key"];
+      votes.forEach((vote) => {
         const referendum = g["referenda"].find((r) => r.key === vote[0].toString());
         if (!referendum) return;
 
-        if (trackId === "referenda") {
+        if (trackKey === "referenda") {
           const period = (api.consts.convictionVoting.voteLockingPeriod as any).toNumber();
           const info = referendum.info.toJSON();
           let endBlock = Object.values(info)[0][0];
@@ -524,28 +525,28 @@ async function queryReferendums(api: ApiPromise, address: string) {
           } else {
             endBlock += period;
           }
-          ref = {
-            trackId: e[0].args[1].toString(),
+          userVotes.push({
+            trackId,
             key: vote[0].toString(),
             vote: vote[1],
             isEnded: true,
             redeemable: bestNumber > endBlock,
             status: Object.keys(info)[0],
             endBlock,
-          };
+          });
         } else {
-          ref = {
-            trackId: e[0].args[1].toString(),
+          userVotes.push({
+            trackId,
             key: vote[0].toString(),
             vote: vote[1],
             isEnded: false,
             status: referendum.expanded.confirmEnd ? "confirming" : referendum.expanded.decideEnd ? "deciding" : "preparing",
             endBlock: referendum.expanded.periodEnd,
-          };
+          });
         }
       });
-      return ref;
     });
+  });
 
   return { ongoing: groups.filter((g) => g["key"] !== "referenda"), userVotes };
 }
