@@ -82,9 +82,9 @@ class Client2 {
     }
   };
 
-  public approveSession = async () => {
+  public approveSession = async (address: string) => {
     // console.log("ACTION", "approveSession");
-    const { proposal, address, connector } = this.state;
+    const { proposal, connector } = this.state;
     if (proposal) {
       const { id, params } = proposal;
       const { requiredNamespaces, relays } = params;
@@ -106,9 +106,9 @@ class Client2 {
         relayProtocol: relays[0].protocol,
         namespaces,
       });
-      await acknowledged();
+      const session = await acknowledged();
 
-      this.setState({ connected: true });
+      this.setState({ connected: true, address, topic: session.topic });
 
       notifyWallet({ event: "connect", session: { peerMeta: proposal.params.proposer.metadata } });
     }
@@ -153,7 +153,11 @@ class Client2 {
 
         this.setState({ proposal });
 
-        notifyWallet({ event: "session_proposal", peerMeta: proposal.params.proposer.metadata });
+        notifyWallet({
+          event: "session_proposal",
+          peerMeta: proposal.params.proposer.metadata,
+          uri: `wc:${proposal.params.pairingTopic}@2?relay-protocol=irn`,
+        });
       });
 
       connector.on("session_update", (data) => {
@@ -167,7 +171,7 @@ class Client2 {
         const { request } = params;
         // const requestSession = this.state.connector.session.get(topic);
 
-        await getRpcEngine().router(request, this.state, this.bindedSetState);
+        await getRpcEngine().router({ id, ...request }, this.state, this.bindedSetState);
 
         const paramsHuman = getRpcEngine().render(request);
         notifyWallet({ event: "call_request", id, params: paramsHuman });
@@ -198,14 +202,28 @@ class Client2 {
   };
 
   public updateSession = async (sessionParams: { chainId?: number; address?: string }) => {
-    const { connector, chainId, address } = this.state;
+    const { connector, proposal, chainId, address, topic } = this.state;
     const newChainId = sessionParams.chainId || chainId;
     const newAddress = sessionParams.address || address;
     if (connector) {
-      // connector.update({
-      //   chainId: newChainId,
-      //   accounts: [newAddress],
-      // });
+      const namespaces: SessionTypes.Namespaces = {};
+      Object.keys(proposal.params.requiredNamespaces).forEach((key) => {
+        const chains = [`eip155:${newChainId}`];
+        const accounts: string[] = [];
+        chains?.map((chain) => {
+          accounts.push(`${chain}:${newAddress}`);
+        });
+        namespaces[key] = {
+          accounts,
+          chains,
+          methods: proposal.params.requiredNamespaces[key].methods,
+          events: proposal.params.requiredNamespaces[key].events,
+        };
+      });
+      connector.update({
+        topic,
+        namespaces,
+      });
     }
     this.setState({
       connector,

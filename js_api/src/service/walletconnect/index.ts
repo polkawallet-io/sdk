@@ -6,7 +6,9 @@ import Client2 from "./v2/client";
 const wc = new ClientApp();
 
 const wc2 = new Client2();
-wc2.initWalletConnect();
+setTimeout(() => {
+  wc2.initWalletConnect();
+}, 500);
 
 async function initConnect(uri: string, address: string, chainId: number) {
   const { version } = parseUri(uri);
@@ -60,9 +62,9 @@ async function updateSession(sessionParams: { chainId?: number; address?: string
   wc.updateSession(sessionParams);
 }
 
-async function confirmConnectV2(approve: boolean) {
+async function confirmConnectV2(approve: boolean, address: string) {
   if (approve) {
-    wc2.approveSession();
+    wc2.approveSession(address);
   } else {
     wc2.rejectSession();
   }
@@ -81,6 +83,10 @@ async function confirmCallRequestV2(id: number, approve: boolean, pass: string, 
   });
 }
 
+async function updateSessionV2(sessionParams: { chainId?: number; address?: string }) {
+  wc2.updateSession(sessionParams);
+}
+
 export default {
   initConnect,
   reConnectSession,
@@ -92,6 +98,5 @@ export default {
   // wallet-connect v2:
   confirmConnectV2,
   confirmCallRequestV2,
-  // TODO:
-  // updateSessionV2,
+  updateSessionV2,
 };

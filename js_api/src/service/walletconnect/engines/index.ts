@@ -14,7 +14,7 @@ class RpcEngine implements IRpcEngine {
     return engine.filter(payload);
   }
 
-  public router(payload: any, state: IAppState, setState: any) {
+  public router(payload: any, state: IAppState | IAppState2, setState: any) {
     const engine = this.getEngine(payload);
     return engine.router(payload, state, setState);
   }

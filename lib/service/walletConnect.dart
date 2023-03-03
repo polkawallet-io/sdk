@@ -30,7 +30,7 @@ class ServiceWalletConnect {
       switch (event) {
         case 'session_request':
         case 'session_proposal':
-          onPairing(data['peerMeta']);
+          onPairing(data);
           break;
         case 'connect':
           onPaired(data['session']);
@@ -55,9 +55,9 @@ class ServiceWalletConnect {
         .evalJavascript('walletConnect.confirmConnect($approve)');
   }
 
-  Future<void> confirmPairingV2(bool approve) async {
+  Future<void> confirmPairingV2(bool approve, String address) async {
     await serviceRoot.webView!
-        .evalJavascript('walletConnect.confirmConnectV2($approve)');
+        .evalJavascript('walletConnect.confirmConnectV2($approve, "$address")');
   }
 
   Future<Map> confirmPayload(
@@ -79,8 +79,18 @@ class ServiceWalletConnect {
         .evalJavascript('walletConnect.updateSession({address: "$address"})');
   }
 
+  Future<void> changeAccountV2(String address) async {
+    await serviceRoot.webView!
+        .evalJavascript('walletConnect.updateSessionV2({address: "$address"})');
+  }
+
   Future<void> changeNetwork(int chainId, String address) async {
     await serviceRoot.webView!.evalJavascript(
         'walletConnect.updateSession({address: "$address", chainId: $chainId})');
+  }
+
+  Future<void> changeNetworkV2(int chainId, String address) async {
+    await serviceRoot.webView!.evalJavascript(
+        'walletConnect.updateSessionV2({address: "$address", chainId: $chainId})');
   }
 }

@@ -13,14 +13,14 @@ class ApiWalletConnect {
     String uri,
     String address,
     int chainId, {
-    required Function(WCPeerMetaData) onPairing,
+    required Function(WCPeerMetaData, String) onPairing,
     required Function(Map) onPaired,
     required Function(WCCallRequestData) onCallRequest,
     required Function(String) onDisconnect,
     Map? cachedSession,
   }) {
-    service.initClient(uri, address, chainId, onPairing: (Map peerMeta) {
-      onPairing(WCPeerMetaData.fromJson(peerMeta));
+    service.initClient(uri, address, chainId, onPairing: (Map proposal) {
+      onPairing(WCPeerMetaData.fromJson(proposal['peerMeta']), proposal['uri']);
     }, onPaired: (Map session) {
       onPaired(session);
     }, onCallRequest: (Map payload) {
@@ -38,8 +38,8 @@ class ApiWalletConnect {
     await service.confirmPairing(approve);
   }
 
-  Future<void> confirmPairingV2(bool approve) async {
-    await service.confirmPairingV2(approve);
+  Future<void> confirmPairingV2(bool approve, String address) async {
+    await service.confirmPairingV2(approve, address);
   }
 
   Future<WCCallRequestResult?> confirmPayload(
@@ -59,7 +59,15 @@ class ApiWalletConnect {
     await service.changeAccount(address);
   }
 
+  Future<void> changeAccountV2(String address) async {
+    await service.changeAccountV2(address);
+  }
+
   Future<void> changeNetwork(int chainId, String address) async {
     await service.changeNetwork(chainId, address);
+  }
+
+  Future<void> changeNetworkV2(int chainId, String address) async {
+    await service.changeNetworkV2(chainId, address);
   }
 }
