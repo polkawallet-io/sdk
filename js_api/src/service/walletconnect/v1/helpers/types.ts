@@ -1,5 +1,11 @@
-import { IJsonRpcRequest } from "@walletconnect/types";
+import { IAppState2 } from "../../v2/client";
 import { IAppState } from "../client";
+
+export interface IJsonRpcRequest {
+  id: number;
+  method: string;
+  params: any[];
+}
 
 export interface IAssetData {
   symbol: string;
@@ -140,9 +146,9 @@ export interface IRequestRenderParams {
 
 export interface IRpcEngine {
   filter: (payload: IJsonRpcRequest) => boolean;
-  router: (payload: IJsonRpcRequest, state: IAppState, setState: any) => Promise<void>;
+  router: (payload: IJsonRpcRequest, state: IAppState | IAppState2, setState: any) => Promise<void>;
   render: (payload: IJsonRpcRequest) => IRequestRenderParams[];
-  signer: (payload: IJsonRpcRequest, state: IAppState, setState: any, pass: string, gasOptions: any) => Promise<any>;
+  signer: (payload: IJsonRpcRequest, state: IAppState | IAppState2, pass: string, gasOptions: any) => Promise<any>;
 }
 
 export interface IAppEvents {

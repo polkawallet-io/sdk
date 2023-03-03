@@ -1,9 +1,25 @@
+import { parseUri } from "@walletconnect/utils";
+
 import ClientApp from "./v1/client";
+import Client2 from "./v2/client";
 
 const wc = new ClientApp();
 
+const wc2 = new Client2();
+wc2.initWalletConnect();
+
 async function initConnect(uri: string, address: string, chainId: number) {
-  wc.onURIReceive(uri, address, chainId);
+  const { version } = parseUri(uri);
+
+  // Route the provided URI to the v1 SignClient if URI version indicates it, else use v2.
+  if (version === 1) {
+    wc.onURIReceive(uri, address, chainId);
+  } else {
+    if (!wc2.state.connector) {
+      await wc2.initWalletConnect();
+    }
+    wc2.onURIReceive(uri, address);
+  }
 }
 
 async function reConnectSession(session: any) {
@@ -24,6 +40,7 @@ async function confirmConnect(approve: boolean) {
 
 async function disconnect() {
   wc.killSession();
+  wc2.killSession();
 }
 
 async function confirmCallRequest(id: number, approve: boolean, pass: string, gasOptions: any) {
@@ -43,6 +60,27 @@ async function updateSession(sessionParams: { chainId?: number; address?: string
   wc.updateSession(sessionParams);
 }
 
+async function confirmConnectV2(approve: boolean) {
+  if (approve) {
+    wc2.approveSession();
+  } else {
+    wc2.rejectSession();
+  }
+}
+
+async function confirmCallRequestV2(id: number, approve: boolean, pass: string, gasOptions: any) {
+  return new Promise((resolve) => {
+    if (approve) {
+      wc2.approveRequest(id, pass, gasOptions, (res: any) => {
+        resolve(res);
+      });
+    } else {
+      wc2.rejectRequest(id);
+      resolve({});
+    }
+  });
+}
+
 export default {
   initConnect,
   reConnectSession,
@@ -50,4 +88,10 @@ export default {
   updateSession,
   disconnect,
   confirmCallRequest,
+
+  // wallet-connect v2:
+  confirmConnectV2,
+  confirmCallRequestV2,
+  // TODO:
+  // updateSessionV2,
 };

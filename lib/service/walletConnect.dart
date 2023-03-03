@@ -29,6 +29,7 @@ class ServiceWalletConnect {
       final event = data['event'];
       switch (event) {
         case 'session_request':
+        case 'session_proposal':
           onPairing(data['peerMeta']);
           break;
         case 'connect':
@@ -54,10 +55,22 @@ class ServiceWalletConnect {
         .evalJavascript('walletConnect.confirmConnect($approve)');
   }
 
+  Future<void> confirmPairingV2(bool approve) async {
+    await serviceRoot.webView!
+        .evalJavascript('walletConnect.confirmConnectV2($approve)');
+  }
+
   Future<Map> confirmPayload(
       int id, bool approve, String password, Map gasOptions) async {
     final Map? res = await serviceRoot.webView!.evalJavascript(
         'walletConnect.confirmCallRequest($id, $approve, "$password", ${jsonEncode(gasOptions)})');
+    return res ?? {};
+  }
+
+  Future<Map> confirmPayloadV2(
+      int id, bool approve, String password, Map gasOptions) async {
+    final Map? res = await serviceRoot.webView!.evalJavascript(
+        'walletConnect.confirmCallRequestV2($id, $approve, "$password", ${jsonEncode(gasOptions)})');
     return res ?? {};
   }
 

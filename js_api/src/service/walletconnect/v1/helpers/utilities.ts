@@ -1,4 +1,4 @@
-import { convertHexToUtf8 } from "@walletconnect/utils";
+import { hexToString } from "@polkadot/util";
 import { IChainData } from "./types";
 import { SUPPORTED_CHAINS } from "../constants";
 
@@ -142,7 +142,7 @@ export function getViewportDimensions() {
 
 export function convertHexToUtf8IfPossible(hex: string) {
   try {
-    return convertHexToUtf8(hex);
+    return hexToString(hex);
   } catch (e) {
     return hex;
   }

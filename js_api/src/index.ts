@@ -4,7 +4,7 @@ import keyring from "./service/keyring";
 import account from "./service/account";
 import staking from "./service/staking";
 import wc from "./service/walletconnect";
-import { renderEthereumRequests, signEthPayload } from "./service/walletconnect/v1/engines/ethereum";
+import { renderEthereumRequests, signEthPayload } from "./service/walletconnect/engines/ethereum";
 import gov from "./service/gov";
 import gov2 from "./service/gov2";
 import parachain from "./service/parachain";

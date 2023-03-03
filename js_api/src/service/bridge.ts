@@ -31,7 +31,6 @@ import { BN } from "@polkadot/util";
 import { ITuple } from "@polkadot/types/types";
 import { DispatchError } from "@polkadot/types/interfaces";
 import { SubmittableResult } from "@polkadot/api/submittable";
-import axios from "axios";
 
 let keyring = new Keyring({ ss58Format: 0, type: "sr25519" });
 

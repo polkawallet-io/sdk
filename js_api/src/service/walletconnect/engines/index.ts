@@ -1,5 +1,6 @@
-import { IRpcEngine } from "../helpers/types";
-import { IAppState } from "../client";
+import { IRpcEngine } from "../v1/helpers/types";
+import { IAppState } from "../v1/client";
+import { IAppState2 } from "../v2/client";
 import ethereum from "./ethereum";
 
 class RpcEngine implements IRpcEngine {
@@ -23,9 +24,9 @@ class RpcEngine implements IRpcEngine {
     return engine.render(payload);
   }
 
-  public signer(payload: any, state: IAppState, setState: any, pass: string, gasOptions: any) {
+  public signer(payload: any, state: IAppState | IAppState2, pass: string, gasOptions: any) {
     const engine = this.getEngine(payload);
-    return engine.signer(payload, state, setState, pass, gasOptions);
+    return engine.signer(payload, state, pass, gasOptions);
   }
 
   private getEngine(payload: any) {

@@ -38,9 +38,20 @@ class ApiWalletConnect {
     await service.confirmPairing(approve);
   }
 
+  Future<void> confirmPairingV2(bool approve) async {
+    await service.confirmPairingV2(approve);
+  }
+
   Future<WCCallRequestResult?> confirmPayload(
       int id, bool approve, String password, Map gasOptions) async {
     final res = await service.confirmPayload(id, approve, password, gasOptions);
+    return WCCallRequestResult.fromJson(res);
+  }
+
+  Future<WCCallRequestResult?> confirmPayloadV2(
+      int id, bool approve, String password, Map gasOptions) async {
+    final res =
+        await service.confirmPayloadV2(id, approve, password, gasOptions);
     return WCCallRequestResult.fromJson(res);
   }
 

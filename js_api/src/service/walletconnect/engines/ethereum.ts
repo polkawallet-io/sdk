@@ -1,12 +1,25 @@
-import { signingMethods, convertHexToNumber, convertNumberToHex } from "@walletconnect/utils";
-import { IJsonRpcRequest } from "@walletconnect/types";
+import { IAppState } from "../v1/client";
+import { IAppState2 } from "../v2/client";
+import { apiGetCustomRequest } from "../v1/helpers/api";
+import { convertHexToUtf8IfPossible } from "../v1/helpers/utilities";
+import { IRequestRenderParams, IRpcEngine, IJsonRpcRequest } from "../v1/helpers/types";
 
-import { IAppState } from "../client";
-import { apiGetCustomRequest } from "../helpers/api";
-import { convertHexToUtf8IfPossible } from "../helpers/utilities";
-import { IRequestRenderParams, IRpcEngine } from "../helpers/types";
+import ethKeyring from "../../eth/keyring";
+import { SignClient } from "@walletconnect/sign-client/dist/types/client";
+import WalletConnect from "@walletconnect/client";
 
-import ethKeyring from "../../../eth/keyring";
+export function formatJsonRpcResult(id: number, result: any) {
+  return { id, jsonrpc: "2.0", result };
+}
+export function formatJsonRpcError(id: number, error: any) {
+  return { id, jsonrpc: "2.0", error };
+}
+export function convertNumberToHex(num: number) {
+  return `0x${num.toString(16)}`;
+}
+export function convertHexToNumber(hex: string) {
+  return parseInt(hex);
+}
 
 export function filterEthereumRequests(payload: any) {
   return (
@@ -18,7 +31,26 @@ export function filterEthereumRequests(payload: any) {
   );
 }
 
-export async function routeEthereumRequests(payload: IJsonRpcRequest, state: IAppState, setState: any) {
+const signingMethods = [
+  "eth_sendTransaction",
+  "eth_signTransaction",
+  "eth_sign",
+  "eth_signTypedData",
+  "eth_signTypedData_v1",
+  "eth_signTypedData_v2",
+  "eth_signTypedData_v3",
+  "eth_signTypedData_v4",
+  "personal_sign",
+  "wallet_addEthereumChain",
+  "wallet_switchEthereumChain",
+  "wallet_getPermissions",
+  "wallet_requestPermissions",
+  "wallet_registerOnboarding",
+  "wallet_watchAsset",
+  "wallet_scanQRCode",
+];
+
+export async function routeEthereumRequests(payload: IJsonRpcRequest, state: IAppState | IAppState2, setState: any) {
   if (!state.connector) {
     return;
   }
@@ -33,15 +65,29 @@ export async function routeEthereumRequests(payload: IJsonRpcRequest, state: IAp
   if (!signingMethods.includes(payload.method)) {
     try {
       const result = await apiGetCustomRequest(chainId, payload);
-      connector.approveRequest({
-        id: payload.id,
-        result,
-      });
+      if (!!(state as IAppState2).topic) {
+        (connector as SignClient).respond({
+          topic: (state as IAppState2).topic,
+          response: formatJsonRpcResult(payload.id, result),
+        });
+      } else {
+        (connector as WalletConnect).approveRequest({
+          id: payload.id,
+          result,
+        });
+      }
     } catch (error) {
-      return connector.rejectRequest({
-        id: payload.id,
-        error: { message: "JSON RPC method not supported" },
-      });
+      if (!!(state as IAppState2).topic) {
+        (connector as SignClient).respond({
+          topic: (state as IAppState2).topic,
+          response: formatJsonRpcError(payload.id, { message: "JSON RPC method not supported" }),
+        });
+      } else {
+        (connector as WalletConnect).rejectRequest({
+          id: payload.id,
+          error: { message: "JSON RPC method not supported" },
+        });
+      }
     }
   } else {
     const requests = state.requests;
@@ -207,7 +253,7 @@ export async function signEthPayload(payload: any, address: string, pass: string
   return { id: payload.id, result, error: errorMsg };
 }
 
-export async function signEthereumRequests(payload: any, state: IAppState, setState: any, pass: string, gasOptions: any) {
+export async function signEthereumRequests(payload: any, state: IAppState | IAppState2, pass: string, gasOptions: any) {
   const { connector, address, chainId } = state;
 
   let errorMsg = "";
@@ -219,15 +265,26 @@ export async function signEthereumRequests(payload: any, state: IAppState, setSt
     errorMsg = res.error;
 
     if (result) {
-      connector.approveRequest({
-        id: payload.id,
-        result,
-      });
+      if (!!(state as IAppState2).topic) {
+        (connector as SignClient).respond({ topic: (state as IAppState2).topic, response: formatJsonRpcResult(payload.id, result) });
+      } else {
+        (connector as WalletConnect).approveRequest({
+          id: payload.id,
+          result,
+        });
+      }
     } else {
-      connector.rejectRequest({
-        id: payload.id,
-        error: { message: errorMsg },
-      });
+      if (!!(state as IAppState2).topic) {
+        (connector as SignClient).respond({
+          topic: (state as IAppState2).topic,
+          response: formatJsonRpcError(payload.id, { message: errorMsg }),
+        });
+      } else {
+        (connector as WalletConnect).rejectRequest({
+          id: payload.id,
+          error: { message: errorMsg },
+        });
+      }
     }
   }
   return { result, error: errorMsg };

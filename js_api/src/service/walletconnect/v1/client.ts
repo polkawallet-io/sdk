@@ -1,6 +1,6 @@
 import WalletConnect from "@walletconnect/client";
 import { DEFAULT_CHAIN_ID, DEFAULT_WALLET_CLIENT } from "./constants";
-import { getRpcEngine } from "./engines";
+import { getRpcEngine } from "../engines";
 import { notifyWallet } from "./helpers/wallet";
 
 import ethKeyring from "../../eth/keyring";
@@ -264,7 +264,7 @@ class ClientApp {
     }
 
     try {
-      const result = await getRpcEngine().signer(payload, this.state, this.bindedSetState, pass, gasOptions);
+      const result = await getRpcEngine().signer(payload, this.state, pass, gasOptions);
       callback(result);
     } catch (error) {
       console.error(error);
