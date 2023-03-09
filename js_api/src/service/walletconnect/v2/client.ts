@@ -3,11 +3,14 @@ import { DEFAULT_CHAIN_ID } from "../v1/constants";
 import { getRpcEngine } from "../engines";
 import { notifyWallet } from "../v1/helpers/wallet";
 
+import keyring from "../../keyring";
 import ethKeyring from "../../eth/keyring";
 import { REGIONALIZED_RELAYER_ENDPOINTS } from "./data/RelayerRegions";
 import { SessionTypes, SignClientTypes } from "@walletconnect/types";
 import { getSdkError, parseUri } from "@walletconnect/utils";
 import { formatJsonRpcError } from "../engines/ethereum";
+import { EIP155_CHAINS, EIP155_MAINNET_CHAINS } from "./data/EIP155Data";
+import { POLKADOT_MAINNET_CHAINS } from "./data/PolkadotData";
 
 export interface IAppState2 {
   loading: boolean;
@@ -16,7 +19,7 @@ export interface IAppState2 {
   uri: string;
   proposal: SignClientTypes.EventArguments["session_proposal"];
   connected: boolean;
-  chainId: number;
+  chainId: string;
   address: string;
   requests: any[];
   results: any[];
@@ -29,7 +32,7 @@ export const INITIAL_STATE: IAppState2 = {
   uri: "",
   proposal: null,
   connected: false,
-  chainId: DEFAULT_CHAIN_ID,
+  chainId: DEFAULT_CHAIN_ID.toString(),
   address: "",
   requests: [],
   results: [],
@@ -89,16 +92,34 @@ class Client2 {
       const { id, params } = proposal;
       const { requiredNamespaces, relays } = params;
       const namespaces: SessionTypes.Namespaces = {};
+
+      const isEthAddress = address.startsWith("0x");
+      // approve eip155 if address starts with '0x',
+      // otherwise approve substrate
       Object.keys(requiredNamespaces).forEach((key) => {
         const accounts: string[] = [];
-        requiredNamespaces[key].chains?.map((chain) => {
-          accounts.push(`${chain}:${address}`);
-        });
-        namespaces[key] = {
-          accounts,
-          methods: requiredNamespaces[key].methods,
-          events: requiredNamespaces[key].events,
-        };
+        if (isEthAddress && key === "eip155") {
+          requiredNamespaces[key].chains?.map((chain) => {
+            // TODO: remove testnet
+            // if (Object.keys(EIP155_MAINNET_CHAINS).includes(chain)) {
+            if (Object.keys(EIP155_CHAINS).includes(chain)) {
+              accounts.push(`${chain}:${address}`);
+            }
+          });
+        } else if (!isEthAddress && key === "polkadot") {
+          requiredNamespaces[key].chains?.map((chain) => {
+            if (Object.keys(POLKADOT_MAINNET_CHAINS).includes(chain)) {
+              accounts.push(`${chain}:${address}`);
+            }
+          });
+        }
+        if (accounts.length > 0) {
+          namespaces[key] = {
+            accounts,
+            methods: requiredNamespaces[key].methods,
+            events: requiredNamespaces[key].events,
+          };
+        }
       });
 
       const { acknowledged } = await connector.approve({
@@ -155,7 +176,7 @@ class Client2 {
 
         notifyWallet({
           event: "session_proposal",
-          peerMeta: proposal.params.proposer.metadata,
+          proposal: proposal,
           uri: `wc:${proposal.params.pairingTopic}@2?relay-protocol=irn`,
         });
       });
@@ -201,14 +222,14 @@ class Client2 {
     }
   };
 
-  public updateSession = async (sessionParams: { chainId?: number; address?: string }) => {
+  public updateSession = async (sessionParams: { chainId?: string; address?: string }) => {
     const { connector, proposal, chainId, address, topic } = this.state;
     const newChainId = sessionParams.chainId || chainId;
     const newAddress = sessionParams.address || address;
     if (connector) {
       const namespaces: SessionTypes.Namespaces = {};
       Object.keys(proposal.params.requiredNamespaces).forEach((key) => {
-        const chains = [`eip155:${newChainId}`];
+        const chains = [`${address.startsWith("0x") ? "eip155" : "polkadot"}:${newChainId}`];
         const accounts: string[] = [];
         chains?.map((chain) => {
           accounts.push(`${chain}:${newAddress}`);
@@ -233,7 +254,7 @@ class Client2 {
   };
 
   public updateChain = async (chainId: number | string) => {
-    await this.updateSession({ chainId: Number(chainId) });
+    await this.updateSession({ chainId: chainId.toString() });
   };
 
   public onURIReceive = async (data: any, address: string) => {
@@ -267,7 +288,8 @@ class Client2 {
       return;
     }
 
-    const checkPass = await ethKeyring.checkPassword(address, pass);
+    const isSubstrate = payload.method.startsWith("polkadot_");
+    const checkPass: any = await (isSubstrate ? keyring : ethKeyring).checkPassword(address, pass);
     if (!checkPass.success) {
       console.error("invalid password.");
 

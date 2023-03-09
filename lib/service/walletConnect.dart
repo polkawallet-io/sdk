@@ -84,13 +84,13 @@ class ServiceWalletConnect {
         .evalJavascript('walletConnect.updateSessionV2({address: "$address"})');
   }
 
-  Future<void> changeNetwork(int chainId, String address) async {
+  Future<void> changeNetwork(String chainId, String address) async {
     await serviceRoot.webView!.evalJavascript(
         'walletConnect.updateSession({address: "$address", chainId: $chainId})');
   }
 
-  Future<void> changeNetworkV2(int chainId, String address) async {
+  Future<void> changeNetworkV2(String chainId, String address) async {
     await serviceRoot.webView!.evalJavascript(
-        'walletConnect.updateSessionV2({address: "$address", chainId: $chainId})');
+        'walletConnect.updateSessionV2({address: "$address", chainId: "$chainId"})');
   }
 }

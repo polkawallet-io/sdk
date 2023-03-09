@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from "axios";
-import { IJsonRpcRequest } from "@walletconnect/types";
+import { IJsonRpcRequest } from "./types";
 import { IAssetData, IGasPrices, IParsedTx } from "./types";
 import { payloadId, getChainData } from "./utilities";
 

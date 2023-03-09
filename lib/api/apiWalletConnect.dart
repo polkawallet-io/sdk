@@ -13,14 +13,20 @@ class ApiWalletConnect {
     String uri,
     String address,
     int chainId, {
-    required Function(WCPeerMetaData, String) onPairing,
+    required Function(WCPairingData?, WCProposerMeta?, String?) onPairing,
     required Function(Map) onPaired,
     required Function(WCCallRequestData) onCallRequest,
     required Function(String) onDisconnect,
     Map? cachedSession,
   }) {
     service.initClient(uri, address, chainId, onPairing: (Map proposal) {
-      onPairing(WCPeerMetaData.fromJson(proposal['peerMeta']), proposal['uri']);
+      final wcVersion2 = proposal['uri'] != null;
+      if (wcVersion2) {
+        final prop = WCPairingData.fromJson(proposal['proposal']);
+        onPairing(prop, prop.params?.proposer?.metadata, proposal['uri']);
+      } else {
+        onPairing(null, WCProposerMeta.fromJson(proposal['peerMeta']), null);
+      }
     }, onPaired: (Map session) {
       onPaired(session);
     }, onCallRequest: (Map payload) {
@@ -63,11 +69,11 @@ class ApiWalletConnect {
     await service.changeAccountV2(address);
   }
 
-  Future<void> changeNetwork(int chainId, String address) async {
+  Future<void> changeNetwork(String chainId, String address) async {
     await service.changeNetwork(chainId, address);
   }
 
-  Future<void> changeNetworkV2(int chainId, String address) async {
+  Future<void> changeNetworkV2(String chainId, String address) async {
     await service.changeNetworkV2(chainId, address);
   }
 }

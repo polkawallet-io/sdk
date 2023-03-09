@@ -83,7 +83,7 @@ async function confirmCallRequestV2(id: number, approve: boolean, pass: string, 
   });
 }
 
-async function updateSessionV2(sessionParams: { chainId?: number; address?: string }) {
+async function updateSessionV2(sessionParams: { chainId?: string; address?: string }) {
   wc2.updateSession(sessionParams);
 }
 

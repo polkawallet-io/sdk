@@ -72,7 +72,7 @@ class ClientApp {
       const connector = new WalletConnect({ uri, clientMeta: DEFAULT_WALLET_CLIENT });
 
       if (!connector.connected) {
-        await connector.createSession({ chainId });
+        await connector.createSession({ chainId: Number(chainId) });
       }
 
       this.setState({

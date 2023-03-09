@@ -11,7 +11,6 @@ class WCPairingData extends _WCPairingData {
 
 abstract class _WCPairingData {
   int? id;
-  String? topic;
   WCPairingParamsData? params;
 }
 
@@ -44,22 +43,6 @@ abstract class _WCRelayProtocol {
 }
 
 @JsonSerializable(explicitToJson: true)
-class WCPairedData extends _WCPairedData {
-  static WCPairedData fromJson(Map json) =>
-      _$WCPairedDataFromJson(json as Map<String, dynamic>);
-  Map toJson() => _$WCPairedDataToJson(this);
-}
-
-abstract class _WCPairedData {
-  String? topic;
-  Map? relay;
-  WCProposerInfo? peer;
-  WCPermissionData? permissions;
-  Map? state;
-  int? expiry;
-}
-
-@JsonSerializable(explicitToJson: true)
 class WCProposerInfo extends _WCProposerInfo {
   static WCProposerInfo fromJson(Map json) =>
       _$WCProposerInfoFromJson(json as Map<String, dynamic>);
@@ -82,32 +65,5 @@ abstract class _WCProposerMeta {
   String? name;
   String? description;
   String? url;
-  List<String>? icons;
-}
-
-@JsonSerializable()
-class WCPermissionData extends _WCPermissionData {
-  static WCPermissionData fromJson(Map json) =>
-      _$WCPermissionDataFromJson(json as Map<String, dynamic>);
-  Map toJson() => _$WCPermissionDataToJson(this);
-}
-
-abstract class _WCPermissionData {
-  Map? blockchain;
-  Map? jsonrpc;
-  Map? notifications;
-}
-
-@JsonSerializable()
-class WCPeerMetaData extends _WCPeerMetaData {
-  static WCPeerMetaData fromJson(Map json) =>
-      _$WCPeerMetaDataFromJson(json as Map<String, dynamic>);
-  Map toJson() => _$WCPeerMetaDataToJson(this);
-}
-
-abstract class _WCPeerMetaData {
-  String? name;
-  String? url;
-  String? description;
   List<String>? icons;
 }

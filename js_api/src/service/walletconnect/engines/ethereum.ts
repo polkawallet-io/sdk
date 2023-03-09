@@ -64,7 +64,7 @@ export async function routeEthereumRequests(payload: IJsonRpcRequest, state: IAp
   const { chainId, connector } = state;
   if (!signingMethods.includes(payload.method)) {
     try {
-      const result = await apiGetCustomRequest(chainId, payload);
+      const result = await apiGetCustomRequest(Number(chainId), payload);
       if (!!(state as IAppState2).topic) {
         (connector as SignClient).respond({
           topic: (state as IAppState2).topic,
@@ -92,7 +92,7 @@ export async function routeEthereumRequests(payload: IJsonRpcRequest, state: IAp
   } else {
     const requests = state.requests;
     requests.push(payload);
-    await setState({ requests });
+    setState({ requests });
   }
 }
 

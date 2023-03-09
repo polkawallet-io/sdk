@@ -2,6 +2,7 @@ import { IRpcEngine } from "../v1/helpers/types";
 import { IAppState } from "../v1/client";
 import { IAppState2 } from "../v2/client";
 import ethereum from "./ethereum";
+import polkadot from "./polkadot";
 
 class RpcEngine implements IRpcEngine {
   public engines: IRpcEngine[];
@@ -39,5 +40,5 @@ class RpcEngine implements IRpcEngine {
 }
 
 export function getRpcEngine() {
-  return new RpcEngine([ethereum]);
+  return new RpcEngine([ethereum, polkadot]);
 }
