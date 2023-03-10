@@ -8,3 +8,5 @@
 !.yarn/versions
 
 *.log
+
+src/config.local.ts

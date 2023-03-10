@@ -7,10 +7,11 @@ import keyring from "../../keyring";
 import ethKeyring from "../../eth/keyring";
 import { REGIONALIZED_RELAYER_ENDPOINTS } from "./data/RelayerRegions";
 import { SessionTypes, SignClientTypes } from "@walletconnect/types";
-import { getSdkError, parseUri } from "@walletconnect/utils";
+import { getSdkError } from "@walletconnect/utils";
 import { formatJsonRpcError } from "../engines/ethereum";
 import { EIP155_CHAINS, EIP155_MAINNET_CHAINS } from "./data/EIP155Data";
 import { POLKADOT_MAINNET_CHAINS } from "./data/PolkadotData";
+import { WC_PROJECT_ID } from "../../../config.local";
 
 export interface IAppState2 {
   loading: boolean;
@@ -61,8 +62,7 @@ class Client2 {
 
     try {
       const signClient = await SignClient.init({
-        logger: "debug",
-        projectId: "45587a9eca50f3e95b99ef96a0a898f2",
+        projectId: WC_PROJECT_ID,
         relayUrl: REGIONALIZED_RELAYER_ENDPOINTS[0].value,
         metadata: {
           name: "Polkawallet",
@@ -72,12 +72,9 @@ class Client2 {
         },
       });
 
-      this.setState({
-        loading: false,
-        connector: signClient,
-      });
+      this.subscribeToEvents(signClient);
 
-      this.subscribeToEvents();
+      this.setState({ loading: false });
     } catch (error) {
       this.setState({ loading: false });
 
@@ -163,9 +160,8 @@ class Client2 {
     this.setState({ ...INITIAL_STATE });
   };
 
-  public subscribeToEvents = () => {
+  public subscribeToEvents = (connector: SignClient) => {
     // console.log("ACTION", "subscribeToEvents");
-    const { connector } = this.state;
 
     if (connector) {
       connector.on("session_proposal", (proposal: SignClientTypes.EventArguments["session_proposal"]) => {
@@ -205,18 +201,6 @@ class Client2 {
 
         this.resetApp();
       });
-
-      // connector.on("disconnect", (error, payload) => {
-      //   // console.log("EVENT", "disconnect");
-
-      //   if (error) {
-      //     throw error;
-      //   }
-
-      //   notifyWallet({ event: "disconnect" });
-
-      //   this.resetApp();
-      // });
 
       this.setState({ connector });
     }
@@ -289,7 +273,7 @@ class Client2 {
     }
 
     const isSubstrate = payload.method.startsWith("polkadot_");
-    const checkPass: any = await (isSubstrate ? keyring : ethKeyring).checkPassword(address, pass);
+    const checkPass: any = await (isSubstrate ? keyring.checkPasswordByAddress(address, pass) : ethKeyring.checkPassword(address, pass));
     if (!checkPass.success) {
       console.error("invalid password.");
 

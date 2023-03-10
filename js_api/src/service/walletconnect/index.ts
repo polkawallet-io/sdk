@@ -6,9 +6,7 @@ import Client2 from "./v2/client";
 const wc = new ClientApp();
 
 const wc2 = new Client2();
-setTimeout(() => {
-  wc2.initWalletConnect();
-}, 500);
+wc2.initWalletConnect();
 
 async function initConnect(uri: string, address: string, chainId: number) {
   const { version } = parseUri(uri);

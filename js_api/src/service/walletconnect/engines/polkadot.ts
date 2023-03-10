@@ -106,7 +106,7 @@ export async function signPolkadotRequests(payload: any, state: IAppState2, pass
     errorMsg = res.error;
 
     if (result) {
-      connector.respond({ topic: state.topic, response: formatJsonRpcResult(payload.id, result) });
+      connector.respond({ topic: state.topic, response: formatJsonRpcResult(payload.id, { signature: result }) });
     } else {
       connector.respond({
         topic: state.topic,

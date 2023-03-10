@@ -1,4 +1,12 @@
-import { keyExtractSuri, mnemonicGenerate, mnemonicValidate, cryptoWaitReady, signatureVerify, encodeAddress } from "@polkadot/util-crypto";
+import {
+  keyExtractSuri,
+  mnemonicGenerate,
+  mnemonicValidate,
+  cryptoWaitReady,
+  signatureVerify,
+  encodeAddress,
+  decodeAddress,
+} from "@polkadot/util-crypto";
 import { hexToU8a, u8aToHex } from "@polkadot/util";
 import gov from "./gov";
 import { wrapBytes } from "@polkadot/extension-dapp/wrapBytes";
@@ -309,6 +317,21 @@ function checkPassword(pubKey: string, pass: string) {
   });
 }
 
+function checkPasswordByAddress(address: string, pass: string) {
+  return new Promise((resolve) => {
+    const keyPair = keyring.getPair(decodeAddress(address));
+    try {
+      if (!keyPair.isLocked) {
+        keyPair.lock();
+      }
+      keyPair.decodePkcs8(pass);
+    } catch (err) {
+      resolve(null);
+    }
+    resolve({ success: true });
+  });
+}
+
 /**
  * change password of an account.
  */
@@ -412,6 +435,7 @@ export default {
   sendTx,
   checkPassword,
   changePassword,
+  checkPasswordByAddress,
   checkDerivePath,
   signTxAsExtension,
   signBytesAsExtension,
