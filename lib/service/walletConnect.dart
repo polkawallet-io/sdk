@@ -12,10 +12,6 @@ class ServiceWalletConnect {
     String uri,
     String address,
     int chainId, {
-    required Function(Map) onPairing,
-    required Function(Map) onPaired,
-    required Function(Map) onCallRequest,
-    required Function(String) onDisconnect,
     Map? cachedSession,
   }) {
     if (cachedSession != null) {
@@ -25,12 +21,23 @@ class ServiceWalletConnect {
       serviceRoot.webView!.evalJavascript(
           'walletConnect.initConnect("$uri", "$address", $chainId)');
     }
+  }
+
+  void subscribeEvents({
+    required Function(Map) onPairing,
+    required Function(Map) onPaired,
+    required Function(Map) onCallRequest,
+    required Function(String) onDisconnect,
+    String? uri,
+  }) {
+    String? pairingUri = uri;
     serviceRoot.webView!.addMsgHandler("wallet_connect_message", (data) {
       final event = data['event'];
       switch (event) {
         case 'session_request':
         case 'session_proposal':
           onPairing(data);
+          pairingUri = data['uri'];
           break;
         case 'connect':
           onPaired(data['session']);
@@ -39,7 +46,7 @@ class ServiceWalletConnect {
           onCallRequest(data);
           break;
         case 'disconnect':
-          onDisconnect(uri);
+          onDisconnect(uri == null ? data['topic'] : uri);
           break;
       }
     });
@@ -47,7 +54,6 @@ class ServiceWalletConnect {
 
   Future<void> disconnect() async {
     await serviceRoot.webView!.evalJavascript('walletConnect.disconnect()');
-    serviceRoot.webView!.removeMsgHandler("wallet_connect_message");
   }
 
   Future<void> confirmPairing(bool approve) async {
@@ -92,5 +98,20 @@ class ServiceWalletConnect {
   Future<void> changeNetworkV2(String chainId, String address) async {
     await serviceRoot.webView!.evalJavascript(
         'walletConnect.updateSessionV2({address: "$address", chainId: "$chainId"})');
+  }
+
+  Future<void> injectCacheDataV2(Map cache, String address) async {
+    await serviceRoot.webView!.evalJavascript(
+        'walletConnect.injectCacheDataV2(${jsonEncode(cache)}, "$address")');
+  }
+
+  Future<void> deletePairingV2(String topic) async {
+    await serviceRoot.webView!
+        .evalJavascript('walletConnect.deletePairingV2("$topic")');
+  }
+
+  Future<void> disconnectV2(String topic) async {
+    await serviceRoot.webView!
+        .evalJavascript('walletConnect.disconnectV2("$topic")');
   }
 }

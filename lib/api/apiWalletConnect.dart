@@ -13,27 +13,39 @@ class ApiWalletConnect {
     String uri,
     String address,
     int chainId, {
+    Map? cachedSession,
+  }) {
+    service.initClient(uri, address, chainId, cachedSession: cachedSession);
+  }
+
+  void subscribeEvents({
     required Function(WCPairingData?, WCProposerMeta?, String?) onPairing,
     required Function(Map) onPaired,
     required Function(WCCallRequestData) onCallRequest,
     required Function(String) onDisconnect,
-    Map? cachedSession,
+    String? uri,
   }) {
-    service.initClient(uri, address, chainId, onPairing: (Map proposal) {
-      final wcVersion2 = proposal['uri'] != null;
-      if (wcVersion2) {
-        final prop = WCPairingData.fromJson(proposal['proposal']);
-        onPairing(prop, prop.params?.proposer?.metadata, proposal['uri']);
-      } else {
-        onPairing(null, WCProposerMeta.fromJson(proposal['peerMeta']), null);
-      }
-    }, onPaired: (Map session) {
-      onPaired(session);
-    }, onCallRequest: (Map payload) {
-      onCallRequest(WCCallRequestData.fromJson(payload));
-    }, onDisconnect: (uri) {
-      onDisconnect(uri);
-    }, cachedSession: cachedSession);
+    service.subscribeEvents(
+        onPairing: (Map proposal) {
+          final wcVersion2 = proposal['uri'] != null;
+          if (wcVersion2) {
+            final prop = WCPairingData.fromJson(proposal['proposal']);
+            onPairing(prop, prop.params?.proposer?.metadata, proposal['uri']);
+          } else {
+            onPairing(
+                null, WCProposerMeta.fromJson(proposal['peerMeta']), null);
+          }
+        },
+        onPaired: (Map session) {
+          onPaired(session);
+        },
+        onCallRequest: (Map payload) {
+          onCallRequest(WCCallRequestData.fromJson(payload));
+        },
+        onDisconnect: (uri) {
+          onDisconnect(uri);
+        },
+        uri: uri);
   }
 
   Future<void> disconnect() async {
@@ -75,5 +87,17 @@ class ApiWalletConnect {
 
   Future<void> changeNetworkV2(String chainId, String address) async {
     await service.changeNetworkV2(chainId, address);
+  }
+
+  Future<void> injectCacheDataV2(Map cache, String address) async {
+    await service.injectCacheDataV2(cache, address);
+  }
+
+  Future<void> deletePairingV2(String topic) async {
+    await service.deletePairingV2(topic);
+  }
+
+  Future<void> disconnectV2(String topic) async {
+    await service.disconnectV2(topic);
   }
 }

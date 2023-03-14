@@ -67,3 +67,15 @@ abstract class _WCProposerMeta {
   String? url;
   List<String>? icons;
 }
+
+@JsonSerializable()
+class WCSessionDataV2 extends _WCSessionDataV2 {
+  static WCSessionDataV2 fromJson(Map json) =>
+      _$WCSessionDataV2FromJson(json as Map<String, dynamic>);
+  Map toJson() => _$WCSessionDataV2ToJson(this);
+}
+
+abstract class _WCSessionDataV2 {
+  String? topic;
+  WCProposerMeta? peerMeta;
+}

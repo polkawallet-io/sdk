@@ -87,3 +87,17 @@ Map<String, dynamic> _$WCProposerMetaToJson(WCProposerMeta instance) =>
       'url': instance.url,
       'icons': instance.icons,
     };
+
+WCSessionDataV2 _$WCSessionDataV2FromJson(Map<String, dynamic> json) {
+  return WCSessionDataV2()
+    ..topic = json['topic'] as String?
+    ..peerMeta = json['peerMeta'] == null
+        ? null
+        : WCProposerMeta.fromJson(json['peerMeta'] as Map<String, dynamic>);
+}
+
+Map<String, dynamic> _$WCSessionDataV2ToJson(WCSessionDataV2 instance) =>
+    <String, dynamic>{
+      'topic': instance.topic,
+      'peerMeta': instance.peerMeta?.toJson(),
+    };

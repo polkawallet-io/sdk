@@ -37,6 +37,7 @@ class WCCallRequestData extends _WCCallRequestData {
 
 abstract class _WCCallRequestData {
   String? event;
+  String? topic;
   int? id;
   List<WCCallRequestParamItem>? params;
 }

@@ -38,6 +38,7 @@ Map<String, dynamic> _$WCPayloadToJson(WCPayload instance) => <String, dynamic>{
 WCCallRequestData _$WCCallRequestDataFromJson(Map<String, dynamic> json) {
   return WCCallRequestData()
     ..event = json['event'] as String?
+    ..topic = json['topic'] as String?
     ..id = json['id'] as int?
     ..params = (json['params'] as List<dynamic>?)
         ?.map((e) => WCCallRequestParamItem.fromJson(e))
@@ -47,6 +48,7 @@ WCCallRequestData _$WCCallRequestDataFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$WCCallRequestDataToJson(WCCallRequestData instance) =>
     <String, dynamic>{
       'event': instance.event,
+      'topic': instance.topic,
       'id': instance.id,
       'params': instance.params,
     };

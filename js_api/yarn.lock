@@ -3218,9 +3218,9 @@ __metadata:
     "@polkadot/ui-shared": ^2.2.1
     "@polkawallet/bridge": ^0.0.5-21
     "@walletconnect/client": ^1.8.0
-    "@walletconnect/sign-client": ^2.4.8
+    "@walletconnect/sign-client": ^2.4.9
     "@walletconnect/types": ^2.4.6
-    "@walletconnect/utils": ^2.4.8
+    "@walletconnect/utils": ^2.4.9
     assert: ^2.0.0
     axios: ^0.27.2
     babel-loader: ^8.0.6
@@ -3776,27 +3776,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/core@npm:2.4.8":
-  version: 2.4.8
-  resolution: "@walletconnect/core@npm:2.4.8"
+"@walletconnect/core@npm:2.4.10":
+  version: 2.4.10
+  resolution: "@walletconnect/core@npm:2.4.10"
   dependencies:
     "@walletconnect/heartbeat": 1.2.0
-    "@walletconnect/jsonrpc-provider": ^1.0.6
+    "@walletconnect/jsonrpc-provider": 1.0.9
     "@walletconnect/jsonrpc-utils": ^1.0.4
-    "@walletconnect/jsonrpc-ws-connection": ^1.0.7
+    "@walletconnect/jsonrpc-ws-connection": 1.0.10
     "@walletconnect/keyvaluestorage": ^1.0.2
     "@walletconnect/logger": ^2.0.1
     "@walletconnect/relay-api": ^1.0.9
     "@walletconnect/relay-auth": ^1.0.4
     "@walletconnect/safe-json": ^1.0.1
     "@walletconnect/time": ^1.0.2
-    "@walletconnect/types": 2.4.8
-    "@walletconnect/utils": 2.4.8
+    "@walletconnect/types": 2.4.10
+    "@walletconnect/utils": 2.4.10
     events: ^3.3.0
     lodash.isequal: 4.5.0
     pino: 7.11.0
     uint8arrays: ^3.1.0
-  checksum: 2130658dfefc7db98dc48c65c345960fb609645dabeb1b26939bec332aa43c95105ce890686b1617561309357ce089ff82e063117cdf2efe2d580f3167bd0b4b
+  checksum: 794b5adc8fc88bccb153ed32226a6e57bfc384a605688036ded60e87fdda7189780b8328df2260351606c214b0d695146412bd96af5ddcaf830b2b0de968c331
   languageName: node
   linkType: hard
 
@@ -3880,14 +3880,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/jsonrpc-provider@npm:^1.0.6":
-  version: 1.0.8
-  resolution: "@walletconnect/jsonrpc-provider@npm:1.0.8"
+"@walletconnect/jsonrpc-provider@npm:1.0.9":
+  version: 1.0.9
+  resolution: "@walletconnect/jsonrpc-provider@npm:1.0.9"
   dependencies:
     "@walletconnect/jsonrpc-utils": ^1.0.6
     "@walletconnect/safe-json": ^1.0.1
     tslib: 1.14.1
-  checksum: b166070ee10dc84dfa806d75b9aea4b4dd10ab18e3ce924e3f00c9df5cf32d796847bdea69738ae97d642846c63e18a97909724d6b15452dcf87ddd7120bec96
+  checksum: 50e8a67606632a66b6b596d1f1304524d9f461a6741263dc67329986a93306c093da54724c30a88f1af2468e2d62d51821e5053765c68ad201a8c16176ca56da
   languageName: node
   linkType: hard
 
@@ -3923,16 +3923,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/jsonrpc-ws-connection@npm:^1.0.7":
-  version: 1.0.9
-  resolution: "@walletconnect/jsonrpc-ws-connection@npm:1.0.9"
+"@walletconnect/jsonrpc-ws-connection@npm:1.0.10":
+  version: 1.0.10
+  resolution: "@walletconnect/jsonrpc-ws-connection@npm:1.0.10"
   dependencies:
     "@walletconnect/jsonrpc-utils": ^1.0.6
     "@walletconnect/safe-json": ^1.0.1
     events: ^3.3.0
     tslib: 1.14.1
     ws: ^7.5.1
-  checksum: 1ead9fa221373e88726fee177794f30b790d78c32c961e15bfabef8a24bbfb78dfd428169427e52c39e9a6bf2281ffa9382c830d4303ddbc264d5f9fc3cadc9f
+  checksum: 15d8d513596fcdb5a93445f1dd80937edc7f44634baf77a7d60e06fae0ea22cda1a65350f5f3e25bf18826b0d8c8cd821ac83ac545913436e577e6c2c61e1e22
   languageName: node
   linkType: hard
 
@@ -4016,22 +4016,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/sign-client@npm:^2.4.8":
-  version: 2.4.8
-  resolution: "@walletconnect/sign-client@npm:2.4.8"
+"@walletconnect/sign-client@npm:^2.4.9":
+  version: 2.4.10
+  resolution: "@walletconnect/sign-client@npm:2.4.10"
   dependencies:
-    "@walletconnect/core": 2.4.8
+    "@walletconnect/core": 2.4.10
     "@walletconnect/events": ^1.0.1
     "@walletconnect/heartbeat": 1.2.0
-    "@walletconnect/jsonrpc-provider": ^1.0.6
     "@walletconnect/jsonrpc-utils": ^1.0.4
     "@walletconnect/logger": ^2.0.1
     "@walletconnect/time": ^1.0.2
-    "@walletconnect/types": 2.4.8
-    "@walletconnect/utils": 2.4.8
+    "@walletconnect/types": 2.4.10
+    "@walletconnect/utils": 2.4.10
     events: ^3.3.0
     pino: 7.11.0
-  checksum: a46e53e1dd4514f1330ed7620e0bf673b6528a2bc1712c5acba87f21eb612465f7fd8986ca011419b8ac58608827f7be666938df6d0887e3576b788c926ec129
+  checksum: a271c2ec3484cfd279498913243c5300c1d68040f4bc21d26ed09f2e17517f5655f1481385b7b938e5e4fb22050c0aed5579d8830593d17474787e5683f18fb5
   languageName: node
   linkType: hard
 
@@ -4055,9 +4054,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/types@npm:2.4.8":
-  version: 2.4.8
-  resolution: "@walletconnect/types@npm:2.4.8"
+"@walletconnect/types@npm:2.4.10":
+  version: 2.4.10
+  resolution: "@walletconnect/types@npm:2.4.10"
   dependencies:
     "@walletconnect/events": ^1.0.1
     "@walletconnect/heartbeat": 1.2.0
@@ -4065,7 +4064,7 @@ __metadata:
     "@walletconnect/keyvaluestorage": ^1.0.2
     "@walletconnect/logger": ^2.0.1
     events: ^3.3.0
-  checksum: 6ea9be3921e013664a51ca1bc188f11f8dfaae0b295161b5d812b8593ec835cfe70c6d9d0b8d44466125b54016f03fa5862c4bf06cafe028fb75f7c6a6aa0089
+  checksum: d446a7edab28132e7a22a24dd9e56e99102652b1531113e2be6078d04c2c9444839fd9c8449b0f134c9859ac2da94be4584bd755eff155c527030cefa0073a22
   languageName: node
   linkType: hard
 
@@ -4090,9 +4089,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@walletconnect/utils@npm:2.4.8, @walletconnect/utils@npm:^2.4.8":
-  version: 2.4.8
-  resolution: "@walletconnect/utils@npm:2.4.8"
+"@walletconnect/utils@npm:2.4.10, @walletconnect/utils@npm:^2.4.9":
+  version: 2.4.10
+  resolution: "@walletconnect/utils@npm:2.4.10"
   dependencies:
     "@stablelib/chacha20poly1305": 1.0.1
     "@stablelib/hkdf": 1.0.1
@@ -4103,13 +4102,13 @@ __metadata:
     "@walletconnect/relay-api": ^1.0.9
     "@walletconnect/safe-json": ^1.0.1
     "@walletconnect/time": ^1.0.2
-    "@walletconnect/types": 2.4.8
+    "@walletconnect/types": 2.4.10
     "@walletconnect/window-getters": ^1.0.1
     "@walletconnect/window-metadata": ^1.0.1
     detect-browser: 5.3.0
     query-string: 7.1.1
     uint8arrays: ^3.1.0
-  checksum: eccce0a05df545dd6a37e6367241aedf682e30c23c1b558d6a882c4e51c0f0a81d6036e62a661cc22f7f9c9b412ec220beb52e9ef4f043ff5b3457f926baeb49
+  checksum: d2d35f8a67f573d3977f0eaadb53ad192ff714869be138d9ef65f3c309a3e256c29714487ce8e5a8eba4abbd72a80152dfbddcc26e7bb56bc88b430decf51d74
   languageName: node
   linkType: hard
 

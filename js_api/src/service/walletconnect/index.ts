@@ -6,7 +6,6 @@ import Client2 from "./v2/client";
 const wc = new ClientApp();
 
 const wc2 = new Client2();
-wc2.initWalletConnect();
 
 async function initConnect(uri: string, address: string, chainId: number) {
   const { version } = parseUri(uri);
@@ -40,7 +39,6 @@ async function confirmConnect(approve: boolean) {
 
 async function disconnect() {
   wc.killSession();
-  wc2.killSession();
 }
 
 async function confirmCallRequest(id: number, approve: boolean, pass: string, gasOptions: any) {
@@ -85,6 +83,38 @@ async function updateSessionV2(sessionParams: { chainId?: string; address?: stri
   wc2.updateSession(sessionParams);
 }
 
+async function injectCacheDataV2(cache: { pairing: string; session: string; subscription: string; keychain: string }, address: string) {
+  if (cache.keychain) {
+    localStorage.setItem("wc@2:core:0.3//keychain", cache.keychain);
+  }
+  if (cache.subscription) {
+    localStorage.setItem("wc@2:core:0.3//subscription", cache.subscription);
+  }
+  if (cache.pairing) {
+    localStorage.setItem("wc@2:core:0.3//pairing", cache.pairing);
+  }
+
+  let sessionTopic: string;
+  if (cache.session && JSON.parse(cache.session).length > 0) {
+    localStorage.setItem("wc@2:client:0.3//session", cache.session);
+    sessionTopic = JSON.parse(cache.session)[0].topic;
+  }
+
+  wc2.initWalletConnect();
+
+  if (sessionTopic) {
+    wc2.restoreFromCache(sessionTopic, address);
+  }
+}
+
+async function deletePairingV2(pairingTopic: string) {
+  wc2.killSession(pairingTopic);
+}
+
+async function disconnectV2(sessionTopic: string) {
+  wc2.killSession(sessionTopic);
+}
+
 export default {
   initConnect,
   reConnectSession,
@@ -97,4 +127,7 @@ export default {
   confirmConnectV2,
   confirmCallRequestV2,
   updateSessionV2,
+  injectCacheDataV2,
+  deletePairingV2,
+  disconnectV2,
 };

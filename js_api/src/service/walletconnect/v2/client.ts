@@ -74,7 +74,7 @@ class Client2 {
 
       this.subscribeToEvents(signClient);
 
-      this.setState({ loading: false });
+      this.setState({ connector: signClient, loading: false });
     } catch (error) {
       this.setState({ loading: false });
 
@@ -128,7 +128,19 @@ class Client2 {
 
       this.setState({ connected: true, address, topic: session.topic });
 
-      notifyWallet({ event: "connect", session: { peerMeta: proposal.params.proposer.metadata } });
+      notifyWallet({
+        event: "connect",
+        session: {
+          topic: session.topic,
+          peerMeta: proposal.params.proposer.metadata,
+          storage: {
+            pairing: localStorage.getItem("wc@2:core:0.3//pairing"),
+            session: localStorage.getItem("wc@2:client:0.3//session"),
+            subscription: localStorage.getItem("wc@2:core:0.3//subscription"),
+            keychain: localStorage.getItem("wc@2:core:0.3//keychain"),
+          },
+        },
+      });
     }
   };
 
@@ -144,16 +156,15 @@ class Client2 {
     }
   };
 
-  public killSession = () => {
+  public killSession = (pairingTopic?: string) => {
     // console.log("ACTION", "killSession");
-    const { proposal, connector } = this.state;
-    if (proposal && connector) {
+    const { connector, topic } = this.state;
+    if (connector) {
       connector.disconnect({
-        topic: proposal.params.pairingTopic,
+        topic: pairingTopic || topic,
         reason: getSdkError("USER_DISCONNECTED"),
       });
     }
-    this.resetApp();
   };
 
   public resetApp = async () => {
@@ -191,18 +202,16 @@ class Client2 {
         await getRpcEngine().router({ id, ...request }, this.state, this.bindedSetState);
 
         const paramsHuman = getRpcEngine().render(request);
-        notifyWallet({ event: "call_request", id, params: paramsHuman });
+        notifyWallet({ event: "call_request", id, topic: this.state.topic, params: paramsHuman });
       });
 
-      connector.on("session_delete", (_) => {
+      connector.on("session_delete", ({ topic }) => {
         // console.log("EVENT", "session_delete");
 
-        notifyWallet({ event: "disconnect" });
+        notifyWallet({ event: "disconnect", topic });
 
         this.resetApp();
       });
-
-      this.setState({ connector });
     }
   };
 
@@ -247,6 +256,10 @@ class Client2 {
       this.setState({ address });
       await this.state.connector.pair({ uri });
     }
+  };
+
+  public restoreFromCache = async (sessionTopic: string, address: string) => {
+    this.setState({ address, topic: sessionTopic });
   };
 
   public onQRCodeError = (error: Error) => {

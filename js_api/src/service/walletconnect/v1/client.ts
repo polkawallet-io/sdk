@@ -199,8 +199,6 @@ class ClientApp {
 
         this.resetApp();
       });
-
-      this.setState({ connector });
     }
   };
 
