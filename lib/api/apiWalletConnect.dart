@@ -77,16 +77,16 @@ class ApiWalletConnect {
     await service.changeAccount(address);
   }
 
-  Future<void> changeAccountV2(String address) async {
-    await service.changeAccountV2(address);
+  Future<Map> changeAccountV2(String address) async {
+    return service.changeAccountV2(address);
   }
 
   Future<void> changeNetwork(String chainId, String address) async {
     await service.changeNetwork(chainId, address);
   }
 
-  Future<void> changeNetworkV2(String chainId, String address) async {
-    await service.changeNetworkV2(chainId, address);
+  Future<Map> changeNetworkV2(String chainId, String address) async {
+    return service.changeNetworkV2(chainId, address);
   }
 
   Future<void> injectCacheDataV2(Map cache, String address) async {

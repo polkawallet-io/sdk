@@ -85,9 +85,10 @@ class ServiceWalletConnect {
         .evalJavascript('walletConnect.updateSession({address: "$address"})');
   }
 
-  Future<void> changeAccountV2(String address) async {
-    await serviceRoot.webView!
+  Future<Map> changeAccountV2(String address) async {
+    final Map res = await serviceRoot.webView!
         .evalJavascript('walletConnect.updateSessionV2({address: "$address"})');
+    return res;
   }
 
   Future<void> changeNetwork(String chainId, String address) async {
@@ -95,9 +96,10 @@ class ServiceWalletConnect {
         'walletConnect.updateSession({address: "$address", chainId: $chainId})');
   }
 
-  Future<void> changeNetworkV2(String chainId, String address) async {
-    await serviceRoot.webView!.evalJavascript(
+  Future<Map> changeNetworkV2(String chainId, String address) async {
+    final Map res = await serviceRoot.webView!.evalJavascript(
         'walletConnect.updateSessionV2({address: "$address", chainId: "$chainId"})');
+    return res;
   }
 
   Future<void> injectCacheDataV2(Map cache, String address) async {

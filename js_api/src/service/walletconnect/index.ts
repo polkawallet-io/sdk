@@ -80,7 +80,7 @@ async function confirmCallRequestV2(id: number, approve: boolean, pass: string, 
 }
 
 async function updateSessionV2(sessionParams: { chainId?: string; address?: string }) {
-  wc2.updateSession(sessionParams);
+  return wc2.updateSession(sessionParams);
 }
 
 async function injectCacheDataV2(cache: { pairing: string; session: string; subscription: string; keychain: string }, address: string) {

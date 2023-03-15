@@ -110,13 +110,12 @@ class Client2 {
             }
           });
         }
-        if (accounts.length > 0) {
-          namespaces[key] = {
-            accounts,
-            methods: requiredNamespaces[key].methods,
-            events: requiredNamespaces[key].events,
-          };
-        }
+
+        namespaces[key] = {
+          accounts,
+          methods: requiredNamespaces[key].methods,
+          events: requiredNamespaces[key].events,
+        };
       });
 
       const { acknowledged } = await connector.approve({
@@ -152,7 +151,6 @@ class Client2 {
         id: proposal.id,
         reason: getSdkError("USER_REJECTED_METHODS"),
       });
-      this.resetApp();
     }
   };
 
@@ -165,10 +163,6 @@ class Client2 {
         reason: getSdkError("USER_DISCONNECTED"),
       });
     }
-  };
-
-  public resetApp = async () => {
-    this.setState({ ...INITIAL_STATE });
   };
 
   public subscribeToEvents = (connector: SignClient) => {
@@ -197,7 +191,6 @@ class Client2 {
         // console.log("session_request", requestEvent);
         const { params, id } = requestEvent;
         const { request } = params;
-        // const requestSession = this.state.connector.session.get(topic);
 
         await getRpcEngine().router({ id, ...request }, this.state, this.bindedSetState);
 
@@ -209,19 +202,18 @@ class Client2 {
         // console.log("EVENT", "session_delete");
 
         notifyWallet({ event: "disconnect", topic });
-
-        this.resetApp();
       });
     }
   };
 
   public updateSession = async (sessionParams: { chainId?: string; address?: string }) => {
-    const { connector, proposal, chainId, address, topic } = this.state;
+    const { connector, chainId, address, topic } = this.state;
     const newChainId = sessionParams.chainId || chainId;
     const newAddress = sessionParams.address || address;
     if (connector) {
+      const session = connector.session.get(topic);
       const namespaces: SessionTypes.Namespaces = {};
-      Object.keys(proposal.params.requiredNamespaces).forEach((key) => {
+      Object.keys(session.requiredNamespaces).forEach((key) => {
         const chains = [`${address.startsWith("0x") ? "eip155" : "polkadot"}:${newChainId}`];
         const accounts: string[] = [];
         chains?.map((chain) => {
@@ -230,20 +222,27 @@ class Client2 {
         namespaces[key] = {
           accounts,
           chains,
-          methods: proposal.params.requiredNamespaces[key].methods,
-          events: proposal.params.requiredNamespaces[key].events,
+          methods: session.requiredNamespaces[key].methods,
+          events: session.requiredNamespaces[key].events,
         };
       });
-      connector.update({
+      await connector.update({
         topic,
         namespaces,
       });
+      this.setState({
+        connector,
+        address: newAddress,
+        chainId: newChainId,
+      });
+      return {
+        pairing: localStorage.getItem("wc@2:core:0.3//pairing"),
+        session: localStorage.getItem("wc@2:client:0.3//session"),
+        subscription: localStorage.getItem("wc@2:core:0.3//subscription"),
+        keychain: localStorage.getItem("wc@2:core:0.3//keychain"),
+      };
     }
-    this.setState({
-      connector,
-      address: newAddress,
-      chainId: newChainId,
-    });
+    throw new Error("wallet-connect: no connector found.");
   };
 
   public updateChain = async (chainId: number | string) => {
