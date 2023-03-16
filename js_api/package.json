@@ -38,11 +38,13 @@
     "ethers": "^5.6.8"
   },
   "dependencies": {
+    "@acala-network/eth-providers": "^2.6.2",
+    "@acala-network/sdk": "^4.1.8-13",
     "@metamask/jazzicon": "^2.0.0",
     "@polkadot/api": "^9.14.2",
     "@polkadot/extension-dapp": "^0.43.2",
     "@polkadot/ui-shared": "^2.2.1",
-    "@polkawallet/bridge": "^0.0.5-21",
+    "@polkawallet/bridge": "^0.0.6-3",
     "@walletconnect/client": "^1.8.0",
     "@walletconnect/sign-client": "^2.4.9",
     "@walletconnect/utils": "^2.4.9",

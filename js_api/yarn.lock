@@ -5,6 +5,18 @@ __metadata:
   version: 6
   cacheKey: 8
 
+"@acala-network/api-derive@npm:4.1.8-13":
+  version: 4.1.8-13
+  resolution: "@acala-network/api-derive@npm:4.1.8-13"
+  dependencies:
+    "@acala-network/types": 4.1.8-13
+    "@babel/runtime": ^7.10.2
+    "@open-web3/orml-types": ^1.1.4
+    "@polkadot/api-derive": ^8.5.1
+  checksum: c2f02cb9784fce4994c6a26d135a9784fac293e46eafae2c267b6f6bbbd589341644fcd95ecb46ca6c5250a06c681b74ec50c48700f281762aa86ce35c639790
+  languageName: node
+  linkType: hard
+
 "@acala-network/api-derive@npm:4.1.8-7":
   version: 4.1.8-7
   resolution: "@acala-network/api-derive@npm:4.1.8-7"
@@ -26,6 +38,23 @@ __metadata:
     "@open-web3/orml-types": ^1.1.4
     "@polkadot/api-derive": ^8.5.1
   checksum: d3db4a310b64b488b9b7dd06cb07d0521e84369a81c0b76a6fc39cb7b77906801b86d603bde7d578e229f09b13355f7a5ed71c838530e7185ed7333d3772353b
+  languageName: node
+  linkType: hard
+
+"@acala-network/api@npm:4.1.8-13, @acala-network/api@npm:~4.1.8-9":
+  version: 4.1.8-13
+  resolution: "@acala-network/api@npm:4.1.8-13"
+  dependencies:
+    "@acala-network/api-derive": 4.1.8-13
+    "@acala-network/types": 4.1.8-13
+    "@babel/runtime": ^7.10.2
+    "@open-web3/orml-api-derive": ^1.1.4
+    "@polkadot/api": ^9.9.1
+    "@polkadot/rpc-core": ^9.9.1
+  peerDependencies:
+    "@polkadot/api": ">=9"
+    "@polkadot/types": ">=9"
+  checksum: d534043866ff69e56cf25eb8906317858c3c803e984ca8a24abfeac0b078d614795bfffc620ac51a92e37ec6f85b2ed33bbe6b8692c8d726629df844beda98b6
   languageName: node
   linkType: hard
 
@@ -105,6 +134,42 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@acala-network/eth-providers@npm:^2.5.9, @acala-network/eth-providers@npm:^2.6.2":
+  version: 2.6.2
+  resolution: "@acala-network/eth-providers@npm:2.6.2"
+  dependencies:
+    "@acala-network/api": ~4.1.8-9
+    "@acala-network/contracts": ~4.3.4
+    "@acala-network/eth-transactions": 2.6.2
+    "@acala-network/types": ~4.1.8-9
+    "@ethersproject/abstract-provider": ~5.7.0
+    "@ethersproject/address": ~5.7.0
+    "@ethersproject/bignumber": ~5.7.0
+    "@ethersproject/bytes": ~5.7.0
+    "@ethersproject/contracts": ~5.7.0
+    "@ethersproject/keccak256": ~5.7.0
+    "@ethersproject/logger": ~5.7.0
+    "@ethersproject/networks": ~5.7.0
+    "@ethersproject/properties": ~5.7.0
+    "@ethersproject/providers": ~5.7.0
+    "@ethersproject/transactions": ~5.7.0
+    "@ethersproject/wallet": ~5.7.0
+    "@polkadot/api": 9.10.3
+    "@polkadot/api-augment": 9.10.3
+    "@polkadot/api-derive": 9.10.3
+    "@polkadot/keyring": ^10.2.1
+    "@polkadot/types": 9.10.3
+    "@polkadot/util": ^10.2.1
+    "@polkadot/util-crypto": ^10.2.1
+    bn.js: ~5.2.0
+    ethers: ~5.7.0
+    graphql: ~16.0.1
+    graphql-request: ~3.6.1
+    lru-cache: ~7.8.2
+  checksum: 926e0eb777c48e6ad7e6727ac5fc61a315072b5c0b25a8a48c6d43db7c7bccae75496a6c6bc83b30a6d12cd28ef2dc2f23e844bc56835d3cd4c6586af267a272
+  languageName: node
+  linkType: hard
+
 "@acala-network/eth-transactions@npm:2.5.4":
   version: 2.5.4
   resolution: "@acala-network/eth-transactions@npm:2.5.4"
@@ -120,6 +185,24 @@ __metadata:
     "@ethersproject/wallet": ~5.7.0
     "@polkadot/util-crypto": ^9.0.1
   checksum: 174cad4994666be36129691090b595d914e4e434adb160d340534e9651608a0d7afdac3416227f0b3257c1a37f4b7c71110693e8c50cf2bcd433bfe2a1216631
+  languageName: node
+  linkType: hard
+
+"@acala-network/eth-transactions@npm:2.6.2":
+  version: 2.6.2
+  resolution: "@acala-network/eth-transactions@npm:2.6.2"
+  dependencies:
+    "@ethersproject/address": ~5.7.0
+    "@ethersproject/bignumber": ~5.7.0
+    "@ethersproject/bytes": ~5.7.0
+    "@ethersproject/constants": ~5.7.0
+    "@ethersproject/hash": ~5.7.0
+    "@ethersproject/logger": ~5.7.0
+    "@ethersproject/rlp": ~5.7.0
+    "@ethersproject/transactions": ~5.7.0
+    "@ethersproject/wallet": ~5.7.0
+    "@polkadot/util-crypto": ^10.2.1
+  checksum: 03b295455b2df008e57c61b00329fe34315823ff53cc95536fa6bc85511e508dae98ef6dcee514076d3264df1f7218f877ff1fb9fe442869ec8af92ffada7203
   languageName: node
   linkType: hard
 
@@ -162,6 +245,40 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@acala-network/sdk@npm:^4.1.8-13":
+  version: 4.1.8-13
+  resolution: "@acala-network/sdk@npm:4.1.8-13"
+  dependencies:
+    "@acala-network/api": 4.1.8-13
+    "@acala-network/eth-providers": ^2.5.9
+    "@acala-network/type-definitions": 4.1.8-13
+    "@ethersproject/bignumber": ^5.7.0
+    "@polkadot/api": ^9.9.1
+    "@polkadot/types": ^9.9.1
+    "@types/events": ^3.0.0
+    axios: ^0.24.0
+    bignumber.js: ^9.0.0
+    cross-fetch: ^3.1.4
+    ethers: ^5.6.2
+    events: ^3.2.0
+    graphql: ^16.3.0
+    graphql-request: ^4.1.0
+    lodash: ^4.17.20
+    lru-cache: ^7.14.1
+    rxjs: ^7.5.7
+  checksum: 78293e75012f9cd532aa442ebc6eaaaee6c48557cf09d5de90af2ef9f640a6aa34cd078ec03eb5808897385d53064c32c0ec21812d699b5d142762ef6b3eda36
+  languageName: node
+  linkType: hard
+
+"@acala-network/type-definitions@npm:4.1.8-13":
+  version: 4.1.8-13
+  resolution: "@acala-network/type-definitions@npm:4.1.8-13"
+  dependencies:
+    "@open-web3/orml-type-definitions": ^1.1.4
+  checksum: 9da751fbe40f8672c307bf1e2fe961ac95ab87fbb2be87a62973cb90233858b09234188f039aab36539492f6cf1381d29c0f0146664fdab191677648f685745f
+  languageName: node
+  linkType: hard
+
 "@acala-network/type-definitions@npm:4.1.8-7":
   version: 4.1.8-7
   resolution: "@acala-network/type-definitions@npm:4.1.8-7"
@@ -186,6 +303,20 @@ __metadata:
   dependencies:
     "@open-web3/orml-type-definitions": ^1.1.4
   checksum: 1d3247a48bc24fd4692965fef3cb2cb08a6143222986b8d1d80be4679c4f11c5e71b074608b72d3d7eacce85dea6a58570bc192f9afcf8302d7bca1b1d0c5c2a
+  languageName: node
+  linkType: hard
+
+"@acala-network/types@npm:4.1.8-13, @acala-network/types@npm:~4.1.8-9":
+  version: 4.1.8-13
+  resolution: "@acala-network/types@npm:4.1.8-13"
+  dependencies:
+    "@acala-network/type-definitions": 4.1.8-13
+    "@babel/runtime": ^7.10.2
+    "@open-web3/api-mobx": ^1.1.4
+    "@open-web3/orml-types": ^1.1.4
+  peerDependencies:
+    "@polkadot/api": ">=8"
+  checksum: a9696cf38295ae58997bf85c951ec7511d39b592ae3f39bb29a2b3e8a5f6a10984d24b0d650d3fb943239a71d5480eb5c7d68155a6ee0f8eb54c560acb1f7649
   languageName: node
   linkType: hard
 
@@ -2446,6 +2577,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@polkadot/api-derive@npm:9.10.3, @polkadot/api-derive@npm:^9.9.1":
+  version: 9.10.3
+  resolution: "@polkadot/api-derive@npm:9.10.3"
+  dependencies:
+    "@babel/runtime": ^7.20.6
+    "@polkadot/api": 9.10.3
+    "@polkadot/api-augment": 9.10.3
+    "@polkadot/api-base": 9.10.3
+    "@polkadot/rpc-core": 9.10.3
+    "@polkadot/types": 9.10.3
+    "@polkadot/types-codec": 9.10.3
+    "@polkadot/util": ^10.2.1
+    "@polkadot/util-crypto": ^10.2.1
+    rxjs: ^7.8.0
+  checksum: ebc9fd63d00dcf67ecc3813047a4185a9055e0a97123941e0374fac992df58f73d546c82de401b66a402c2da2220527a977ad80757a6abd1c2bcfbcc2ada2635
+  languageName: node
+  linkType: hard
+
 "@polkadot/api-derive@npm:9.14.2":
   version: 9.14.2
   resolution: "@polkadot/api-derive@npm:9.14.2"
@@ -2497,24 +2646,6 @@ __metadata:
     "@polkadot/util-crypto": ^10.2.3
     rxjs: ^7.8.0
   checksum: f8b04fc67a8261df37ac6cb4a1d6285caddbde27fb68ccb439c8d34ab34ac69b50cdef88b36378cd68441a7acc1b6b8d0c2043fff2c8d04c1da0a19881a9612c
-  languageName: node
-  linkType: hard
-
-"@polkadot/api-derive@npm:^9.9.1":
-  version: 9.10.3
-  resolution: "@polkadot/api-derive@npm:9.10.3"
-  dependencies:
-    "@babel/runtime": ^7.20.6
-    "@polkadot/api": 9.10.3
-    "@polkadot/api-augment": 9.10.3
-    "@polkadot/api-base": 9.10.3
-    "@polkadot/rpc-core": 9.10.3
-    "@polkadot/types": 9.10.3
-    "@polkadot/types-codec": 9.10.3
-    "@polkadot/util": ^10.2.1
-    "@polkadot/util-crypto": ^10.2.1
-    rxjs: ^7.8.0
-  checksum: ebc9fd63d00dcf67ecc3813047a4185a9055e0a97123941e0374fac992df58f73d546c82de401b66a402c2da2220527a977ad80757a6abd1c2bcfbcc2ada2635
   languageName: node
   linkType: hard
 
@@ -3185,9 +3316,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkawallet/bridge@npm:^0.0.5-21":
-  version: 0.0.5-21
-  resolution: "@polkawallet/bridge@npm:0.0.5-21"
+"@polkawallet/bridge@npm:^0.0.6-3":
+  version: 0.0.6-3
+  resolution: "@polkawallet/bridge@npm:0.0.6-3"
   dependencies:
     "@acala-network/api": 4.1.8-7
     "@acala-network/sdk": 4.1.8-7
@@ -3200,7 +3331,7 @@ __metadata:
     lodash: ^4.17.20
   peerDependencies:
     "@polkadot/api": ">9"
-  checksum: acd99c89eaeaf688876823f6c06e27b9bd1ccf17282cc64bf19e8d0c884d1fd1560ebc362f28a0952fde14722600e2958244e72f098e38bdd71a4d0b0048d336
+  checksum: 2fa6c824f46b80cc8ae0b92f4855d421e135c2e664e023ea5fd6efce06b9c2bbb74a6ebd1d8414bf5435fcf11eca5bb5ca4aae32688f3981fa912df47a613811
   languageName: node
   linkType: hard
 
@@ -3208,6 +3339,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@polkawallet/js-api@workspace:."
   dependencies:
+    "@acala-network/eth-providers": ^2.6.2
+    "@acala-network/sdk": ^4.1.8-13
     "@babel/core": ^7.14.8
     "@babel/plugin-transform-runtime": ^7.14.5
     "@babel/preset-env": ^7.14.8
@@ -3216,7 +3349,7 @@ __metadata:
     "@polkadot/api": ^9.14.2
     "@polkadot/extension-dapp": ^0.43.2
     "@polkadot/ui-shared": ^2.2.1
-    "@polkawallet/bridge": ^0.0.5-21
+    "@polkawallet/bridge": ^0.0.6-3
     "@walletconnect/client": ^1.8.0
     "@walletconnect/sign-client": ^2.4.9
     "@walletconnect/types": ^2.4.6

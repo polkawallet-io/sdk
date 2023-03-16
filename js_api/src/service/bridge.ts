@@ -1,4 +1,4 @@
-import { ApiProvider, BalanceData, Bridge, chains, FN, ChainName } from "@polkawallet/bridge";
+import { ApiProvider, BalanceData, Bridge, chains, FN, ChainId } from "@polkawallet/bridge";
 import { KusamaAdapter, PolkadotAdapter } from "@polkawallet/bridge/adapters/polkadot";
 import { AcalaAdapter, KaruraAdapter } from "@polkawallet/bridge/adapters/acala";
 import { StatemineAdapter } from "@polkawallet/bridge/adapters/statemint";
@@ -19,6 +19,7 @@ import { KhalaAdapter } from "@polkawallet/bridge/adapters/phala";
 import { BasiliskAdapter } from "@polkawallet/bridge/adapters/hydradx";
 import { ListenAdapter } from "@polkawallet/bridge/adapters/listen";
 import { MoonbeamAdapter, MoonriverAdapter } from "@polkawallet/bridge/adapters/moonbeam";
+import { HydraAdapter } from "@polkawallet/bridge/adapters/hydradx";
 import { Observable, firstValueFrom, combineLatest } from "rxjs";
 import { BaseCrossChainAdapter } from "@polkawallet/bridge/base-chain-adapter";
 import { subscribeMessage } from "./setting";
@@ -31,6 +32,9 @@ import { BN } from "@polkadot/util";
 import { ITuple } from "@polkadot/types/types";
 import { DispatchError } from "@polkadot/types/interfaces";
 import { SubmittableResult } from "@polkadot/api/submittable";
+
+import { EvmRpcProvider } from "@acala-network/eth-providers";
+import { Wallet } from "@acala-network/sdk";
 
 let keyring = new Keyring({ ss58Format: 0, type: "sr25519" });
 
@@ -48,6 +52,7 @@ const availableAdapters: Record<string, BaseCrossChainAdapter> = {
   calamari: new CalamariAdapter(),
   crab: new CrabAdapter(),
   heiko: new HeikoAdapter(),
+  hydra: new HydraAdapter(),
   integritee: new IntegriteeAdapter(),
   interlay: new InterlayAdapter(),
   khala: new KhalaAdapter(),
@@ -77,16 +82,40 @@ const _initBridge = async () => {
   }
 };
 
-async function connectFromChains(chains: ChainName[], nodeList: Partial<Record<ChainName, string[]>> | undefined) {
+async function connectFromChains(chains: ChainId[], nodeList: Partial<Record<ChainId, string[]>> | undefined) {
+  nodeList = {
+    ...nodeList,
+    acala: [
+      "wss://acala-rpc.dwellir.com",
+      "wss://acala.api.onfinality.io/public-ws",
+      // "wss://acala.polkawallet.io",
+    ],
+    karura: [
+      "wss://karura-rpc.dwellir.com",
+      "wss://karura.api.onfinality.io/public-ws",
+      // "wss://karura.polkawallet.io",
+    ],
+  };
   // connect all adapters
   const connected = await firstValueFrom(provider.connectFromChain(chains, nodeList));
 
-  await Promise.all(chains.map((chain) => availableAdapters[chain].setApi(provider.getApi(chain))));
+  await Promise.all(
+    chains.map((chain) => {
+      const api = provider.getApiPromise(chain);
+      if (chain === "acala" || chain === "karura") {
+        const evmProvider = new EvmRpcProvider(nodeList[chain][0]);
+        const wallet = new Wallet(api, { evmProvider });
+        return availableAdapters[chain].init(api, wallet);
+      }
+
+      return availableAdapters[chain].init(api);
+    })
+  );
   return connected;
 }
 
 async function disconnectFromChains() {
-  const fromChains = Object.keys(availableAdapters) as ChainName[];
+  const fromChains = Object.keys(availableAdapters) as ChainId[];
   fromChains.forEach((e) => provider.disconnect(e));
 }
 
@@ -108,7 +137,7 @@ async function getChainsInfo() {
   return chains;
 }
 
-async function getNetworkProperties(chain: ChainName) {
+async function getNetworkProperties(chain: ChainId) {
   const props = await firstValueFrom(provider.getApi(chain).rpc.system.properties());
   return {
     ss58Format: parseInt(props.ss58Format.toString()),
@@ -117,7 +146,7 @@ async function getNetworkProperties(chain: ChainName) {
   };
 }
 
-async function subscribeBalancesInner(chain: ChainName, address: string, callback: Function) {
+async function subscribeBalancesInner(chain: ChainId, address: string, callback: Function) {
   await _initBridge();
 
   const adapter = bridge.findAdapter(chain);
@@ -150,17 +179,17 @@ async function subscribeBalancesInner(chain: ChainName, address: string, callbac
   return () => sub.unsubscribe();
 }
 
-async function subscribeBalances(chain: ChainName, address: string, msgChannel: string) {
+async function subscribeBalances(chain: ChainId, address: string, msgChannel: string) {
   subscribeMessage((<any>window).bridge.subscribeBalancesInner, [chain, address], msgChannel, undefined);
   return;
 }
 
-async function getInputConfig(from: ChainName, to: ChainName, token: string, address: string, signer: string) {
+async function getInputConfig(from: ChainId, to: ChainId, token: string, address: string, signer: string) {
   await _initBridge();
 
   const adapter = bridge.findAdapter(from);
 
-  const res = await firstValueFrom(adapter.subscribeInputConfigs({ to, token, address, signer }));
+  const res = await firstValueFrom(adapter.subscribeInputConfig({ to, token, address, signer }));
   return {
     from,
     to,
@@ -179,8 +208,8 @@ async function getInputConfig(from: ChainName, to: ChainName, token: string, add
 }
 
 async function getTxParams(
-  chainFrom: ChainName,
-  chainTo: ChainName,
+  chainFrom: ChainId,
+  chainTo: ChainId,
   token: string,
   address: string,
   amount: string,
@@ -197,7 +226,7 @@ async function getTxParams(
   };
 }
 
-async function estimateTxFee(chainFrom: ChainName, txHex: string, sender: string) {
+async function estimateTxFee(chainFrom: ChainId, txHex: string, sender: string) {
   const tx = getApi(chainFrom).tx(txHex);
 
   const feeData = await tx.paymentInfo(sender);
@@ -205,7 +234,7 @@ async function estimateTxFee(chainFrom: ChainName, txHex: string, sender: string
   return feeData.partialFee.toString();
 }
 
-async function sendTx(chainFrom: ChainName, txInfo: any, password: string, msgId: string, keyPairJson: KeyringPair$Json) {
+async function sendTx(chainFrom: ChainId, txInfo: any, password: string, msgId: string, keyPairJson: KeyringPair$Json) {
   return new Promise(async (resolve) => {
     const tx = getApi(chainFrom).tx(txInfo.txHex);
 
@@ -300,7 +329,7 @@ function checkPassword(keyPairJson: KeyringPair$Json, pubKey: string, pass: stri
   });
 }
 
-function getApi(chainName: ChainName) {
+function getApi(chainName: ChainId) {
   return provider.getApiPromise(chainName);
 }
 
