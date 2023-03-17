@@ -6,16 +6,15 @@ part of 'bridgeTokenBalance.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-BridgeTokenBalance _$BridgeTokenBalanceFromJson(Map<String, dynamic> json) {
-  return BridgeTokenBalance(
-    token: json['token'] as String,
-    free: json['free'] as String,
-    available: json['available'] as String,
-    locked: json['locked'] as String,
-    reserved: json['reserved'] as String,
-    decimals: json['decimals'] as int,
-  );
-}
+BridgeTokenBalance _$BridgeTokenBalanceFromJson(Map<String, dynamic> json) =>
+    BridgeTokenBalance(
+      token: json['token'] as String,
+      free: json['free'] as String,
+      available: json['available'] as String,
+      locked: json['locked'] as String,
+      reserved: json['reserved'] as String,
+      decimals: json['decimals'] as int,
+    );
 
 Map<String, dynamic> _$BridgeTokenBalanceToJson(BridgeTokenBalance instance) =>
     <String, dynamic>{
@@ -28,19 +27,18 @@ Map<String, dynamic> _$BridgeTokenBalanceToJson(BridgeTokenBalance instance) =>
     };
 
 BridgeAmountInputConfig _$BridgeAmountInputConfigFromJson(
-    Map<String, dynamic> json) {
-  return BridgeAmountInputConfig(
-    token: json['token'] as String,
-    from: json['from'] as String,
-    to: json['to'] as String,
-    address: json['address'] as String,
-    minInput: json['minInput'] as String,
-    maxInput: json['maxInput'] as String,
-    destFee:
-        BridgeDestFeeData.fromJson(json['destFee'] as Map<String, dynamic>),
-    estimateFee: json['estimateFee'] as String,
-  );
-}
+        Map<String, dynamic> json) =>
+    BridgeAmountInputConfig(
+      token: json['token'] as String,
+      from: json['from'] as String,
+      to: json['to'] as String,
+      address: json['address'] as String,
+      minInput: json['minInput'] as String,
+      maxInput: json['maxInput'] as String,
+      destFee:
+          BridgeDestFeeData.fromJson(json['destFee'] as Map<String, dynamic>),
+      estimateFee: json['estimateFee'] as String,
+    );
 
 Map<String, dynamic> _$BridgeAmountInputConfigToJson(
         BridgeAmountInputConfig instance) =>
@@ -55,13 +53,12 @@ Map<String, dynamic> _$BridgeAmountInputConfigToJson(
       'estimateFee': instance.estimateFee,
     };
 
-BridgeDestFeeData _$BridgeDestFeeDataFromJson(Map<String, dynamic> json) {
-  return BridgeDestFeeData(
-    token: json['token'] as String,
-    amount: json['amount'] as String,
-    decimals: json['decimals'] as int,
-  );
-}
+BridgeDestFeeData _$BridgeDestFeeDataFromJson(Map<String, dynamic> json) =>
+    BridgeDestFeeData(
+      token: json['token'] as String,
+      amount: json['amount'] as String,
+      decimals: json['decimals'] as int,
+    );
 
 Map<String, dynamic> _$BridgeDestFeeDataToJson(BridgeDestFeeData instance) =>
     <String, dynamic>{

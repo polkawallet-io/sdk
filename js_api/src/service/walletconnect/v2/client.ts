@@ -90,6 +90,7 @@ class Client2 {
       const { requiredNamespaces, relays } = params;
       const namespaces: SessionTypes.Namespaces = {};
 
+      let chainId: string;
       const isEthAddress = address.startsWith("0x");
       // approve eip155 if address starts with '0x',
       // otherwise approve substrate
@@ -100,12 +101,14 @@ class Client2 {
             // TODO: remove testnet
             // if (Object.keys(EIP155_MAINNET_CHAINS).includes(chain)) {
             if (Object.keys(EIP155_CHAINS).includes(chain)) {
+              chainId = EIP155_CHAINS[chain].chainId.toString();
               accounts.push(`${chain}:${address}`);
             }
           });
         } else if (!isEthAddress && key === "polkadot") {
           requiredNamespaces[key].chains?.map((chain) => {
             if (Object.keys(POLKADOT_MAINNET_CHAINS).includes(chain)) {
+              chainId = POLKADOT_MAINNET_CHAINS[chain].chainId;
               accounts.push(`${chain}:${address}`);
             }
           });
@@ -125,13 +128,15 @@ class Client2 {
       });
       const session = await acknowledged();
 
-      this.setState({ connected: true, address, topic: session.topic });
+      this.setState({ connected: true, address, chainId, topic: session.topic });
 
       notifyWallet({
         event: "connect",
         session: {
           topic: session.topic,
           peerMeta: proposal.params.proposer.metadata,
+          namespaces: session.namespaces,
+          expiry: session.expiry,
           storage: {
             pairing: localStorage.getItem("wc@2:core:0.3//pairing"),
             session: localStorage.getItem("wc@2:client:0.3//session"),

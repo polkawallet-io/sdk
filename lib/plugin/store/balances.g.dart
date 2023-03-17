@@ -6,10 +6,11 @@ part of 'balances.dart';
 // StoreGenerator
 // **************************************************************************
 
-// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$BalancesStore on BalancesStoreBase, Store {
-  final _$nativeAtom = Atom(name: 'BalancesStoreBase.native');
+  late final _$nativeAtom =
+      Atom(name: 'BalancesStoreBase.native', context: context);
 
   @override
   BalanceData? get native {
@@ -24,7 +25,8 @@ mixin _$BalancesStore on BalancesStoreBase, Store {
     });
   }
 
-  final _$tokensAtom = Atom(name: 'BalancesStoreBase.tokens');
+  late final _$tokensAtom =
+      Atom(name: 'BalancesStoreBase.tokens', context: context);
 
   @override
   List<TokenBalanceData> get tokens {
@@ -39,8 +41,8 @@ mixin _$BalancesStore on BalancesStoreBase, Store {
     });
   }
 
-  final _$isTokensFromCacheAtom =
-      Atom(name: 'BalancesStoreBase.isTokensFromCache');
+  late final _$isTokensFromCacheAtom =
+      Atom(name: 'BalancesStoreBase.isTokensFromCache', context: context);
 
   @override
   bool get isTokensFromCache {
@@ -55,7 +57,8 @@ mixin _$BalancesStore on BalancesStoreBase, Store {
     });
   }
 
-  final _$extraTokensAtom = Atom(name: 'BalancesStoreBase.extraTokens');
+  late final _$extraTokensAtom =
+      Atom(name: 'BalancesStoreBase.extraTokens', context: context);
 
   @override
   List<ExtraTokenData>? get extraTokens {
@@ -70,8 +73,8 @@ mixin _$BalancesStore on BalancesStoreBase, Store {
     });
   }
 
-  final _$BalancesStoreBaseActionController =
-      ActionController(name: 'BalancesStoreBase');
+  late final _$BalancesStoreBaseActionController =
+      ActionController(name: 'BalancesStoreBase', context: context);
 
   @override
   void setBalance(BalanceData data) {

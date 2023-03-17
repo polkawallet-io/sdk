@@ -6,14 +6,13 @@ part of 'bridgeTxParams.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-BridgeTxParams _$BridgeTxParamsFromJson(Map<String, dynamic> json) {
-  return BridgeTxParams(
-    module: json['module'] as String,
-    call: json['call'] as String,
-    params: json['params'] as List<dynamic>,
-    txHex: json['txHex'] as String,
-  );
-}
+BridgeTxParams _$BridgeTxParamsFromJson(Map<String, dynamic> json) =>
+    BridgeTxParams(
+      module: json['module'] as String,
+      call: json['call'] as String,
+      params: json['params'] as List<dynamic>,
+      txHex: json['txHex'] as String,
+    );
 
 Map<String, dynamic> _$BridgeTxParamsToJson(BridgeTxParams instance) =>
     <String, dynamic>{

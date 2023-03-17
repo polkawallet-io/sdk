@@ -26,7 +26,7 @@ abstract class _WCPairingParamsData {
   int? expiry;
   List<WCRelayProtocol>? relays;
   WCProposerInfo? proposer;
-  Map? requiredNamespaces;
+  Map<String, WCPermissionNamespaces>? requiredNamespaces;
   String? pairingTopic;
 }
 
@@ -78,4 +78,20 @@ class WCSessionDataV2 extends _WCSessionDataV2 {
 abstract class _WCSessionDataV2 {
   String? topic;
   WCProposerMeta? peerMeta;
+  Map<String, WCPermissionNamespaces>? namespaces;
+  int? expiry;
+}
+
+@JsonSerializable()
+class WCPermissionNamespaces extends _WCPermissionNamespaces {
+  static WCPermissionNamespaces fromJson(Map json) =>
+      _$WCPermissionNamespacesFromJson(json as Map<String, dynamic>);
+  Map toJson() => _$WCPermissionNamespacesToJson(this);
+}
+
+abstract class _WCPermissionNamespaces {
+  List<String>? chains;
+  List<String>? accounts;
+  List<String>? methods;
+  List<String>? events;
 }

@@ -55,8 +55,6 @@ export async function signPolkadotPayload(payload: any, address: string, pass: s
   let errorMsg = "";
   let result = null;
 
-  let dataToSign = null;
-
   switch (payload.method) {
     case "polkadot_signTransaction":
       if (address === payload.params.address) {
@@ -71,7 +69,6 @@ export async function signPolkadotPayload(payload: any, address: string, pass: s
       }
       break;
     case "polkadot_signMessage":
-      dataToSign = payload.params[1];
       if (address === payload.params.address) {
         const res: any = await keyring.signBytesAsExtension(pass, { address, data: payload.params.message });
         if (res.error) {
