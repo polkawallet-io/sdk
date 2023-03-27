@@ -43,8 +43,7 @@ class ApiStaking {
   }
 
   Future<OwnStashInfoData> queryOwnStashInfo(String accountId) async {
-    final Map data = await (service.queryOwnStashInfo(accountId)
-        as FutureOr<Map<dynamic, dynamic>>);
+    final Map data = await (service.queryOwnStashInfo(accountId));
     return OwnStashInfoData.fromJson(
         Map<String, dynamic>.of(data as Map<String, dynamic>));
   }
