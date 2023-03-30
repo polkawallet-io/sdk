@@ -12,7 +12,10 @@ class ApiAssets {
   final ServiceAssets service;
 
   Future<List<TokenBalanceData>> getAssetsAll() async {
-    final List res = await (service.getAssetsAll() as FutureOr<List<dynamic>>);
+    final List? res = await (service.getAssetsAll());
+    if (res == null) {
+      return [];
+    }
     return res
         .map((e) => TokenBalanceData(
               id: e['id'].toString(),
