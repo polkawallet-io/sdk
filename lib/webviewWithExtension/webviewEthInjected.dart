@@ -46,14 +46,14 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
   bool _loadingFinished = false;
   bool _signing = false;
 
-  Future<String> _respondToDApp(Map msg, Map res) async {
+  Future<dynamic> _respondToDApp(Map msg, Map res) async {
     print('respond ${msg['name']} to dapp:');
     print(res);
-    return _controller.runJavascriptReturningResult(
+    return _controller.runJavaScriptReturningResult(
         'msgFromPolkawallet({name: "${msg['name']}", data: ${jsonEncode(res)}})');
   }
 
-  Future<String> _msgHandler(Map msg) async {
+  Future<dynamic> _msgHandler(Map msg) async {
     final res = {...(msg['data'] as Map)};
     res.remove('toNative');
 
@@ -150,7 +150,7 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
     print('Inject dapp js code...');
     final jsCode = await rootBundle.loadString(
         'packages/polkawallet_sdk/js_as_extension/dist/ethereum.js');
-    await _controller.runJavascriptReturningResult(jsCode);
+    await _controller.runJavaScriptReturningResult(jsCode);
     print('js code injected');
     // final List temp = jsonDecode(
     //     await _controller.runJavascriptReturningResult('Object.keys(window);'));
@@ -176,48 +176,45 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return WebView(
-      initialUrl: widget.initialUrl,
-      javascriptMode: JavascriptMode.unrestricted,
-      onWebViewCreated: (WebViewController webViewController) {
-        if (widget.onWebViewCreated != null) {
-          widget.onWebViewCreated!(webViewController);
-        }
-        setState(() {
-          _controller = webViewController;
-        });
-      },
-      javascriptChannels: <JavascriptChannel>[
-        JavascriptChannel(
-          name: 'Extension',
-          onMessageReceived: (JavascriptMessage message) {
-            print('msg from dapp: ${message.message}');
-            final msg = jsonDecode(message.message);
-            if (msg['path'] != 'extensionRequest') return;
-            _msgHandler(msg['data']);
+  void initState() {
+    super.initState();
+
+    final WebViewController controller =
+        WebViewController.fromPlatformCreationParams(
+            const PlatformWebViewControllerCreationParams());
+
+    controller
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageFinished: (String url) {
+            _onFinishLoad(url);
+          },
+          onNavigationRequest: (NavigationRequest request) {
+            if (request.url.startsWith('wc:')) {
+              _launchWalletConnectLink(Uri.parse(request.url));
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
           },
         ),
-      ].toSet(),
-      // onPageStarted: (String url) {
-      //   if (Platform.isAndroid) {
-      //     _onFinishLoad(url);
-      //   }
-      // },
-      onPageFinished: (String url) {
-        _onFinishLoad(url);
-        // if (Platform.isIOS) {
-        //   _onFinishLoad(url);
-        // }
-      },
-      gestureNavigationEnabled: true,
-      navigationDelegate: (NavigationRequest request) {
-        if (request.url.startsWith('wc:')) {
-          _launchWalletConnectLink(Uri.parse(request.url));
-          return NavigationDecision.prevent;
-        }
-        return NavigationDecision.navigate;
-      },
-    );
+      )
+      ..addJavaScriptChannel(
+        'Extension',
+        onMessageReceived: (JavaScriptMessage message) {
+          print('msg from dapp: ${message.message}');
+          final msg = jsonDecode(message.message);
+          if (msg['path'] != 'extensionRequest') return;
+          _msgHandler(msg['data']);
+        },
+      )
+      ..loadRequest(Uri.parse(widget.initialUrl));
+
+    _controller = controller;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WebViewWidget(controller: _controller);
   }
 }

@@ -49,19 +49,19 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
   bool _loadingFinished = false;
   bool _signing = false;
 
-  Future<String> _msgHandler(Map msg) async {
+  Future<dynamic> _msgHandler(Map msg) async {
     final uri = Uri.parse(msg['url']);
     if (msg['msgType'] != 'pub(authorize.tab)' &&
         widget.checkAuth != null &&
         !widget.checkAuth!(uri.host)) {
-      return _controller.runJavascriptReturningResult(
+      return _controller.runJavaScriptReturningResult(
           'walletExtension.onAppResponse("${msg['msgType']}${msg['id']}", null, new Error("Rejected"))');
     }
 
     switch (msg['msgType']) {
       case 'pub(authorize.tab)':
         if (widget.onConnectRequest == null) {
-          return _controller.runJavascriptReturningResult(
+          return _controller.runJavaScriptReturningResult(
               'walletExtension.onAppResponse("${msg['msgType']}${msg['id']}", true)');
         }
         if (_signing) break;
@@ -69,7 +69,7 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
         final accept = await widget.onConnectRequest!(
             DAppConnectParam.fromJson({'id': msg['id'], 'url': msg['url']}));
         _signing = false;
-        return _controller.runJavascriptReturningResult(
+        return _controller.runJavaScriptReturningResult(
             'walletExtension.onAppResponse("${msg['msgType']}${msg['id']}", ${accept ?? false}, null)');
       case 'pub(accounts.list)':
       case 'pub(accounts.subscribe)':
@@ -82,7 +82,7 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
             'genesisHash': '',
           };
         }).toList();
-        return _controller.runJavascriptReturningResult(
+        return _controller.runJavaScriptReturningResult(
             'walletExtension.onAppResponse("${msg['msgType']}${msg['id']}", ${jsonEncode(res)})');
       case 'pub(bytes.sign)':
         if (_signing) break;
@@ -93,10 +93,10 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
         _signing = false;
         if (res == null || res.signature == null) {
           // cancelled
-          return _controller.runJavascriptReturningResult(
+          return _controller.runJavaScriptReturningResult(
               'walletExtension.onAppResponse("${param.msgType}${msg['id']}", null, new Error("Rejected"))');
         }
-        return _controller.runJavascriptReturningResult(
+        return _controller.runJavaScriptReturningResult(
             'walletExtension.onAppResponse("${param.msgType}${msg['id']}", ${jsonEncode(res.toJson())})');
       case 'pub(extrinsic.sign)':
         if (_signing) break;
@@ -107,10 +107,10 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
         _signing = false;
         if (result == null || result.signature == null) {
           // cancelled
-          return _controller.runJavascriptReturningResult(
+          return _controller.runJavaScriptReturningResult(
               'walletExtension.onAppResponse("${params.msgType}${msg['id']}", null, new Error("Rejected"))');
         }
-        return _controller.runJavascriptReturningResult(
+        return _controller.runJavaScriptReturningResult(
             'walletExtension.onAppResponse("${params.msgType}${msg['id']}", ${jsonEncode(result.toJson())})');
       default:
         print('Unknown message from dapp: ${msg['msgType']}');
@@ -133,7 +133,7 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
     print('Inject extension js code...');
     final jsCode = await rootBundle
         .loadString('packages/polkawallet_sdk/js_as_extension/dist/main.js');
-    _controller.runJavascriptReturningResult(jsCode);
+    _controller.runJavaScriptReturningResult(jsCode);
     print('js code injected');
     if (widget.onExtensionReady != null) {
       widget.onExtensionReady!();
@@ -155,47 +155,52 @@ class _WebViewWithExtensionState extends State<WebViewWithExtension> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return WebView(
-      initialUrl: widget.initialUrl,
-      javascriptMode: JavascriptMode.unrestricted,
-      onWebViewCreated: (WebViewController webViewController) {
-        if (widget.onWebViewCreated != null) {
-          widget.onWebViewCreated!(webViewController);
-        }
-        setState(() {
-          _controller = webViewController;
-        });
-      },
-      javascriptChannels: <JavascriptChannel>[
-        JavascriptChannel(
-          name: 'Extension',
-          onMessageReceived: (JavascriptMessage message) {
-            print('msg from dapp: ${message.message}');
-            final msg = jsonDecode(message.message);
-            if (msg['path'] != 'extensionRequest') return;
-            _msgHandler(msg['data']);
+  void initState() {
+    super.initState();
+
+    final WebViewController controller =
+        WebViewController.fromPlatformCreationParams(
+            const PlatformWebViewControllerCreationParams());
+
+    controller
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (String url) {
+            if (Platform.isAndroid) {
+              _onFinishLoad(url);
+            }
+          },
+          onPageFinished: (String url) {
+            if (Platform.isIOS) {
+              _onFinishLoad(url);
+            }
+          },
+          onNavigationRequest: (NavigationRequest request) {
+            if (request.url.startsWith('wc:')) {
+              _launchWalletConnectLink(Uri.parse(request.url));
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
           },
         ),
-      ].toSet(),
-      onPageStarted: (String url) {
-        if (Platform.isAndroid) {
-          _onFinishLoad(url);
-        }
-      },
-      onPageFinished: (String url) {
-        if (Platform.isIOS) {
-          _onFinishLoad(url);
-        }
-      },
-      gestureNavigationEnabled: true,
-      navigationDelegate: (NavigationRequest request) {
-        if (request.url.startsWith('wc:')) {
-          _launchWalletConnectLink(Uri.parse(request.url));
-          return NavigationDecision.prevent;
-        }
-        return NavigationDecision.navigate;
-      },
-    );
+      )
+      ..addJavaScriptChannel(
+        'Extension',
+        onMessageReceived: (JavaScriptMessage message) {
+          print('msg from dapp: ${message.message}');
+          final msg = jsonDecode(message.message);
+          if (msg['path'] != 'extensionRequest') return;
+          _msgHandler(msg['data']);
+        },
+      )
+      ..loadRequest(Uri.parse(widget.initialUrl));
+
+    _controller = controller;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return WebViewWidget(controller: _controller);
   }
 }
