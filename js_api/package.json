@@ -34,6 +34,7 @@
     "@polkadot/util": "^10.4.2",
     "@polkadot/util-crypto": "^10.4.2",
     "@polkadot/keyring": "^10.4.2",
+    "@polkawallet/bridge": "0.0.6-14",
     "bn.js": "4.12.0",
     "ethers": "^5.6.8"
   },
@@ -44,7 +45,7 @@
     "@polkadot/api": "^9.14.2",
     "@polkadot/extension-dapp": "^0.43.2",
     "@polkadot/ui-shared": "^2.2.1",
-    "@polkawallet/bridge": "^0.0.6-12",
+    "@polkawallet/bridge": "^0.0.6-14",
     "@walletconnect/client": "^1.8.0",
     "@walletconnect/sign-client": "^2.5.2",
     "@walletconnect/utils": "^2.5.2",

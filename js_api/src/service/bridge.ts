@@ -9,17 +9,16 @@ import { CalamariAdapter } from "@polkawallet/bridge/adapters/manta";
 import { ShadowAdapter } from "@polkawallet/bridge/adapters/crust";
 import { CrabAdapter } from "@polkawallet/bridge/adapters/darwinia";
 import { IntegriteeAdapter } from "@polkawallet/bridge/adapters/integritee";
-import { QuartzAdapter } from "@polkawallet/bridge/adapters/unique";
+import { QuartzAdapter, UniqueAdapter } from "@polkawallet/bridge/adapters/unique";
 import { KintsugiAdapter, InterlayAdapter } from "@polkawallet/bridge/adapters/interlay";
 import { KicoAdapter } from "@polkawallet/bridge/adapters/kico";
 import { PichiuAdapter } from "@polkawallet/bridge/adapters/kylin";
 import { TuringAdapter } from "@polkawallet/bridge/adapters/oak";
 import { ParallelAdapter, HeikoAdapter } from "@polkawallet/bridge/adapters/parallel";
 import { KhalaAdapter } from "@polkawallet/bridge/adapters/phala";
-import { BasiliskAdapter } from "@polkawallet/bridge/adapters/hydradx";
+import { BasiliskAdapter, HydraAdapter } from "@polkawallet/bridge/adapters/hydradx";
 import { ListenAdapter } from "@polkawallet/bridge/adapters/listen";
 import { MoonbeamAdapter, MoonriverAdapter } from "@polkawallet/bridge/adapters/moonbeam";
-import { HydraAdapter } from "@polkawallet/bridge/adapters/hydradx";
 import { Observable, firstValueFrom, combineLatest } from "rxjs";
 import { BaseCrossChainAdapter } from "@polkawallet/bridge/base-chain-adapter";
 import { subscribeMessage } from "./setting";
@@ -68,6 +67,7 @@ const availableAdapters: Record<string, BaseCrossChainAdapter> = {
   shiden: new ShidenAdapter(),
   statemine: new StatemineAdapter(),
   turing: new TuringAdapter(),
+  unique: new UniqueAdapter(),
 };
 let bridge: Bridge;
 
