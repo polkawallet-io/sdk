@@ -53,10 +53,10 @@ packages:
     dependency: transitive
     description:
       name: convert
-      sha256: "196284f26f69444b7f5c50692b55ec25da86d9e500451dc09333bf2e3ad69259"
+      sha256: "0f08b14755d163f6e2134cb58222dd25ea2a2ee8a195e53983d57c075324d592"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.2"
+    version: "3.1.1"
   crypto:
     dependency: transitive
     description:
@@ -321,7 +321,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.5.2"
+    version: "0.5.3"
   process:
     dependency: transitive
     description:

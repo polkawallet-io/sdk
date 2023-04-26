@@ -30,14 +30,12 @@ class ServiceWalletConnect {
     required Function(String) onDisconnect,
     String? uri,
   }) {
-    String? pairingUri = uri;
     serviceRoot.webView!.addMsgHandler("wallet_connect_message", (data) {
       final event = data['event'];
       switch (event) {
         case 'session_request':
         case 'session_proposal':
           onPairing(data);
-          pairingUri = data['uri'];
           break;
         case 'connect':
           onPaired(data['session']);

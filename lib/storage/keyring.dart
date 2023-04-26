@@ -249,7 +249,7 @@ class KeyringPrivateStore {
     final String? encrypted = await FlutterAesEcbPkcs5.encryptString(seed, key);
 
     // read old data from storage-old
-    final Map stored = await (_storageOld.getSeeds(seedType)) ?? {};
+    final Map stored = await (_storageOld.getSeeds(seedType));
     stored[pubKey] = encrypted;
     // and save to new storage
     if (seedType == KeyType.mnemonic.toString().split('.')[1]) {
@@ -315,15 +315,15 @@ class KeyringPrivateStore {
       _storageOld.getSeeds('mnemonic'),
       _storageOld.getSeeds('rawSeed'),
     ]);
-    if (res[0]!.keys.length > 0) {
+    if (res[0].keys.length > 0) {
       final mnemonics = Map.of(_storage.encryptedMnemonics.val);
-      mnemonics.addAll(res[0]!);
+      mnemonics.addAll(res[0]);
       _storage.encryptedMnemonics.val = mnemonics;
       _storageOld.setSeeds('mnemonic', {});
     }
-    if (res[1]!.keys.length > 0) {
+    if (res[1].keys.length > 0) {
       final seeds = Map.of(_storage.encryptedRawSeeds.val);
-      seeds.addAll(res[1]!);
+      seeds.addAll(res[1]);
       _storage.encryptedRawSeeds.val = seeds;
       _storageOld.setSeeds('rawSeed', {});
     }

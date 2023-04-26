@@ -17,6 +17,7 @@ dependencies:
   get_storage: ^2.1.1
   json_annotation: ^4.8.0
   flutter_aes_ecb_pkcs5: ^0.1.2
+  convert: ^3.1.1
   mobx: ^2.1.4
   bip39: ^1.0.6
   web3dart: ^2.3.5
