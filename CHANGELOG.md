@@ -1,3 +1,9 @@
+## [0.5.3] - 20230426
+
+* add wallet-connect 2.0 api
+* bump polkadot-js/api v9.14.2
+* update polkawallet/bridge sdk
+
 ## [0.5.2] - 20230214
 
 * add new gov2 referenda api
