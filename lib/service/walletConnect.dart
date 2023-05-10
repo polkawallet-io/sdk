@@ -29,8 +29,10 @@ class ServiceWalletConnect {
     required Function(Map) onCallRequest,
     required Function(String) onDisconnect,
     String? uri,
+    bool isV2 = false,
   }) {
-    serviceRoot.webView!.addMsgHandler("wallet_connect_message", (data) {
+    serviceRoot.webView!
+        .addMsgHandler("wallet_connect_message${isV2 ? '_v2' : ''}", (data) {
       final event = data['event'];
       switch (event) {
         case 'session_request':

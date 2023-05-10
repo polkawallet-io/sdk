@@ -1,7 +1,7 @@
 import SignClient from "@walletconnect/sign-client";
 import { DEFAULT_CHAIN_ID } from "../v1/constants";
 import { getRpcEngine } from "../engines";
-import { notifyWallet } from "../v1/helpers/wallet";
+import { notifyWallet } from "./helpers/wallet";
 
 import keyring from "../../keyring";
 import ethKeyring from "../../eth/keyring";

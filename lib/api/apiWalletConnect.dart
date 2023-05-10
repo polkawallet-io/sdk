@@ -27,14 +27,7 @@ class ApiWalletConnect {
   }) {
     service.subscribeEvents(
         onPairing: (Map proposal) {
-          final wcVersion2 = proposal['uri'] != null;
-          if (wcVersion2) {
-            final prop = WCPairingData.fromJson(proposal['proposal']);
-            onPairing(prop, prop.params?.proposer?.metadata, proposal['uri']);
-          } else {
-            onPairing(
-                null, WCProposerMeta.fromJson(proposal['peerMeta']), null);
-          }
+          onPairing(null, WCProposerMeta.fromJson(proposal['peerMeta']), null);
         },
         onPaired: (Map session) {
           onPaired(session);
@@ -46,6 +39,31 @@ class ApiWalletConnect {
           onDisconnect(uri);
         },
         uri: uri);
+  }
+
+  void subscribeEventsV2({
+    required Function(WCPairingData?, WCProposerMeta?, String?) onPairing,
+    required Function(Map) onPaired,
+    required Function(WCCallRequestData) onCallRequest,
+    required Function(String) onDisconnect,
+    String? uri,
+  }) {
+    service.subscribeEvents(
+        onPairing: (Map proposal) {
+          final prop = WCPairingData.fromJson(proposal['proposal']);
+          onPairing(prop, prop.params?.proposer?.metadata, proposal['uri']);
+        },
+        onPaired: (Map session) {
+          onPaired(session);
+        },
+        onCallRequest: (Map payload) {
+          onCallRequest(WCCallRequestData.fromJson(payload));
+        },
+        onDisconnect: (uri) {
+          onDisconnect(uri);
+        },
+        uri: uri,
+        isV2: true);
   }
 
   Future<void> disconnect() async {
