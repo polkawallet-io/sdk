@@ -44,12 +44,12 @@ async function connect(nodes: string[]) {
       if (!(<any>window).api) {
         (<any>window).api = res;
         // console.log(res);
-        const url = nodes[(<any>res)._options.provider.__private_44_endpointIndex];
+        const url = (<any>res)._options.provider.__internal__endpoints[0];
         send("log", `${url} wss connected success`);
         resolve(url);
       } else {
         res.disconnect();
-        const url = nodes[(<any>res)._options.provider.__private_44_endpointIndex];
+        const url = (<any>res)._options.provider.__internal__endpoints[0];
         send("log", `${url} wss success and disconnected`);
         resolve(url);
       }

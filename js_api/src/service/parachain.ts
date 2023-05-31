@@ -1,10 +1,8 @@
 import { ApiPromise } from '@polkadot/api';
 import type { TrieIndex, BlockNumber } from '@polkadot/types/interfaces';
-import {  u8aConcat, u8aToHex, BN_ZERO, BN_ONE, u8aEq, stringToU8a } from '@polkadot/util';
+import {  u8aConcat, u8aToHex, BN, BN_ZERO, BN_ONE, u8aEq, stringToU8a } from '@polkadot/util';
 
-import { blake2AsU8a } from '@polkadot/util-crypto';
 import type { u32 } from '@polkadot/types';
-import BN from 'bn.js';
 
 const CROWD_PREFIX = stringToU8a('modlpy/cfund');
 const RANGES_DEFAULT: [number, number][] = [

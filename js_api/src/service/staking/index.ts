@@ -6,9 +6,8 @@ import {
   DeriveStakingWaiting
 } from "@polkadot/api-derive/types";
 import type { Option, StorageKey } from '@polkadot/types';
-import { u8aConcat, u8aToHex, BN_ZERO, BN_MILLION, BN_ONE, formatBalance, isFunction, arrayFlatten } from '@polkadot/util';
+import { u8aConcat, u8aToHex, BN, BN_ZERO, BN_MILLION, BN_ONE, formatBalance, isFunction, arrayFlatten } from '@polkadot/util';
 import {  Nominations } from "@polkadot/types/interfaces";
-import BN from "bn.js";
 
 import { getInflationParams, Inflation } from './inflation';
 

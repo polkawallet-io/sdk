@@ -3,8 +3,8 @@ const webpack = require("webpack");
 
 const config = {
   entry: {
-    index: './src/index.ts',
-    bridge: './src/bridge.ts',
+    index: "./src/index.ts",
+    bridge: "./src/bridge.ts",
   },
   output: {
     publicPath: path.resolve(__dirname, ""),
@@ -13,12 +13,17 @@ const config = {
   },
   resolve: {
     extensions: [".ts", ".js", ".mjs", ".cjs", ".json"],
-    fallback: { crypto: require.resolve("crypto-browserify"), stream: require.resolve("stream-browserify"), "assert": require.resolve("assert"), buffer: require.resolve('buffer'), },
+    fallback: {
+      crypto: require.resolve("crypto-browserify"),
+      stream: require.resolve("stream-browserify"),
+      assert: require.resolve("assert"),
+      buffer: require.resolve("buffer"),
+    },
   },
   plugins: [
     new webpack.ProvidePlugin({
       process: "process/browser.js",
-      Buffer: ['buffer', 'Buffer'],
+      Buffer: ["buffer", "Buffer"],
     }),
   ],
   module: {
@@ -27,16 +32,6 @@ const config = {
         test: /\.ts$/,
         use: "babel-loader",
         exclude: /node_modules/,
-      },
-      {
-        test: /\.mjs$/,
-        include: /node_modules/,
-        type: "javascript/auto",
-      },
-      {
-        test: /\.cjs$/,
-        include: path.resolve(__dirname, "node_modules/@polkadot/"),
-        use: "babel-loader",
       },
       {
         test: /\.js$/,
