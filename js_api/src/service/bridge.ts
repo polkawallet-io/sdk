@@ -176,11 +176,13 @@ async function subscribeBalances(chain: ChainId, address: string, msgChannel: st
   return;
 }
 
-async function getInputConfig(from: ChainId, to: ChainId, token: string, address: string, signer: string) {
+async function getInputConfig(from: ChainId, to: ChainId, token: string, addressInput: string, signer: string) {
   await _initBridge();
 
   const adapter = bridge.findAdapter(from);
 
+  const address =
+    to === "moonbeam" || to === "moonriver" ? addressInput || "0x0000000000000000000000000000000000000000" : addressInput || signer;
   const res = await firstValueFrom(adapter.subscribeInputConfig({ to, token, address, signer }));
   return {
     from,
