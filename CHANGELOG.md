@@ -1,3 +1,7 @@
+## [0.5.4] - 20230607
+
+* bump polkawallet/bridge 0.0.8-2
+
 ## [0.5.3] - 20230426
 
 * add wallet-connect 2.0 api
