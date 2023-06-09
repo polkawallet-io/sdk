@@ -19,6 +19,7 @@ import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ITuple } from "@polkadot/types/types";
 import { DispatchError } from "@polkadot/types/interfaces";
 import account from "./account";
+import { makeTx, getSubmittable } from "../utils/QrSigner";
 let keyring = new Keyring({ ss58Format: 0, type: "sr25519" });
 
 /**
@@ -375,6 +376,44 @@ async function checkDerivePath(seed: string, derivePath: string, pairType: Keypa
 }
 
 /**
+ * send tx with signed data from QR
+ */
+function addSignatureAndSend(api: ApiPromise, address: string, signed: string) {
+  return new Promise((resolve) => {
+    const { tx, payload } = getSubmittable();
+    if (!!tx.addSignature) {
+      tx.addSignature(address, `0x${signed}`, payload);
+
+      let unsub = () => {};
+      const onStatusChange = (result: SubmittableResult) => {
+        if (result.status.isInBlock || result.status.isFinalized) {
+          const { success, error } = _extractEvents(api, result);
+          if (success) {
+            resolve({ hash: tx.hash.toString(), blockHash: (result.status.asInBlock || result.status.asFinalized).toHex() });
+          }
+          if (error) {
+            resolve({ error });
+          }
+          unsub();
+        } else {
+          (<any>window).send("txStatusChange", result.status.type);
+        }
+      };
+
+      tx.send(onStatusChange)
+        .then((res) => {
+          unsub = res;
+        })
+        .catch((err) => {
+          resolve({ error: err.message });
+        });
+    } else {
+      resolve({ error: "invalid tx" });
+    }
+  });
+}
+
+/**
  * sign tx from dapp as extension
  */
 async function signTxAsExtension(password: string, json: any) {
@@ -437,6 +476,12 @@ export default {
   changePassword,
   checkPasswordByAddress,
   checkDerivePath,
+
+  // uos support as hot wallet
+  makeTx,
+  addSignatureAndSend,
+
+  // sign as extension
   signTxAsExtension,
   signBytesAsExtension,
   verifySignature,

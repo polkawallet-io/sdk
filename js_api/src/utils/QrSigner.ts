@@ -289,7 +289,7 @@ export function makeTx(api: ApiPromise, txInfo: any, paramList: any[], ss58: num
         } else if (txInfo.txName == "treasury.rejectProposal") {
           tx = await gov.makeTreasuryProposalSubmission(api, paramList[0], true);
         } else {
-          tx = api.tx[txInfo.module][txInfo.call](...paramList);
+          tx = !!txInfo.txHex ? api.tx(txInfo.txHex) : api.tx[txInfo.module][txInfo.call](...paramList);
         }
         // wrap tx with recovery.asRecovered for proxy tx
         if (txInfo.proxy) {
