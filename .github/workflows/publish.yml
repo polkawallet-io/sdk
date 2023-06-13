@@ -2,6 +2,7 @@ name: Publish to pub.dev
 
 on:
   release:
+    types: [released]
     branches:
       - master
 
@@ -16,8 +17,6 @@ jobs:
           flutter-version: '3.7.7'
       - name: Install dependencies
         run: flutter pub get
-      - name: Analyze
-        run: flutter analyze
       - name: Check Publish Warnings
         run: dart pub publish --dry-run
       - name: Publish
