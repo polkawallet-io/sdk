@@ -6,6 +6,7 @@ part 'treasuryTipData.g.dart';
 class TreasuryTipData extends _TreasuryTipData {
   static TreasuryTipData fromJson(Map<String, dynamic> json) =>
       _$TreasuryTipDataFromJson(json);
+  Map<String, dynamic> toJson() => _$TreasuryTipDataToJson(this);
 }
 
 abstract class _TreasuryTipData {
@@ -22,6 +23,7 @@ abstract class _TreasuryTipData {
 class TreasuryTipItemData extends _TreasuryTipItemData {
   static TreasuryTipItemData fromJson(Map<String, dynamic> json) =>
       _$TreasuryTipItemDataFromJson(json);
+  Map<String, dynamic> toJson() => _$TreasuryTipItemDataToJson(this);
 }
 
 abstract class _TreasuryTipItemData {

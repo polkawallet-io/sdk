@@ -6,6 +6,7 @@ part 'ownStashInfo.g.dart';
 class OwnStashInfoData extends _OwnStashInfoData {
   static OwnStashInfoData fromJson(Map<String, dynamic> json) =>
       _$OwnStashInfoDataFromJson(json);
+  Map<String, dynamic> toJson() => _$OwnStashInfoDataToJson(this);
 }
 
 abstract class _OwnStashInfoData {
@@ -33,6 +34,7 @@ abstract class _OwnStashInfoData {
 class NomineesInfoData extends _NomineesInfoData {
   static NomineesInfoData fromJson(Map<String, dynamic> json) =>
       _$NomineesInfoDataFromJson(json);
+  Map<String, dynamic> toJson() => _$NomineesInfoDataToJson(this);
 }
 
 abstract class _NomineesInfoData {
@@ -47,6 +49,7 @@ abstract class _NomineesInfoData {
 class LedgerInfoData extends _LedgerInfoData {
   static LedgerInfoData fromJson(Map<String, dynamic> json) =>
       _$LedgerInfoDataFromJson(json);
+  Map<String, dynamic> toJson() => _$LedgerInfoDataToJson(this);
 }
 
 abstract class _LedgerInfoData {
@@ -63,6 +66,7 @@ abstract class _LedgerInfoData {
 class UnbondingInfoData extends _UnbondingInfoData {
   static UnbondingInfoData fromJson(Map<String, dynamic> json) =>
       _$UnbondingInfoDataFromJson(json);
+  Map<String, dynamic> toJson() => _$UnbondingInfoDataToJson(this);
 }
 
 abstract class _UnbondingInfoData {

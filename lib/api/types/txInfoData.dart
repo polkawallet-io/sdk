@@ -32,6 +32,8 @@ class TxInfoData {
   /// txName for calling treasury.approveProposal & treasury.rejectProposal
   String? txName;
 
+  static TxInfoData fromJson(Map<String, dynamic> json) =>
+      _$TxInfoDataFromJson(json);
   Map<String, dynamic> toJson() => _$TxInfoDataToJson(this);
 }
 

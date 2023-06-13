@@ -7,6 +7,7 @@ part 'proposalInfoData.g.dart';
 class ProposalInfoData extends _ProposalInfoData {
   static ProposalInfoData fromJson(Map<String, dynamic> json) =>
       _$ProposalInfoDataFromJson(json);
+  Map<String, dynamic> toJson() => _$ProposalInfoDataToJson(this);
 }
 
 abstract class _ProposalInfoData {
@@ -22,6 +23,7 @@ abstract class _ProposalInfoData {
 class ProposalImageData extends _ProposalImageData {
   static ProposalImageData fromJson(Map<String, dynamic> json) =>
       _$ProposalImageDataFromJson(json);
+  Map<String, dynamic> toJson() => _$ProposalImageDataToJson(this);
 }
 
 abstract class _ProposalImageData {

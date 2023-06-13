@@ -6,6 +6,7 @@ part 'treasuryOverviewData.g.dart';
 class TreasuryOverviewData extends _TreasuryOverviewData {
   static TreasuryOverviewData fromJson(Map<String, dynamic> json) =>
       _$TreasuryOverviewDataFromJson(json);
+  Map<String, dynamic> toJson() => _$TreasuryOverviewDataToJson(this);
 }
 
 abstract class _TreasuryOverviewData {
@@ -22,6 +23,7 @@ abstract class _TreasuryOverviewData {
 class SpendProposalData extends _SpendProposalData {
   static SpendProposalData fromJson(Map<String, dynamic> json) =>
       _$SpendProposalDataFromJson(json);
+  Map<String, dynamic> toJson() => _$SpendProposalDataToJson(this);
 }
 
 abstract class _SpendProposalData {
@@ -35,6 +37,7 @@ abstract class _SpendProposalData {
 class CouncilMotionData extends _CouncilMotionData {
   static CouncilMotionData fromJson(Map<String, dynamic> json) =>
       _$CouncilMotionDataFromJson(json);
+  Map<String, dynamic> toJson() => _$CouncilMotionDataToJson(this);
 }
 
 abstract class _CouncilMotionData {
@@ -47,6 +50,7 @@ abstract class _CouncilMotionData {
 class CouncilProposalData extends _CouncilProposalData {
   static CouncilProposalData fromJson(Map<String, dynamic> json) =>
       _$CouncilProposalDataFromJson(json);
+  Map<String, dynamic> toJson() => _$CouncilProposalDataToJson(this);
 }
 
 abstract class _CouncilProposalData {
@@ -61,6 +65,7 @@ abstract class _CouncilProposalData {
 class ProposalMetaData extends _ProposalMetaData {
   static ProposalMetaData fromJson(Map<String, dynamic> json) =>
       _$ProposalMetaDataFromJson(json);
+  Map<String, dynamic> toJson() => _$ProposalMetaDataToJson(this);
 }
 
 abstract class _ProposalMetaData {
@@ -73,6 +78,7 @@ abstract class _ProposalMetaData {
 class ProposalArgsItemData extends _ProposalArgsItemData {
   static ProposalArgsItemData fromJson(Map<String, dynamic> json) =>
       _$ProposalArgsItemDataFromJson(json);
+  Map<String, dynamic> toJson() => _$ProposalArgsItemDataToJson(this);
 }
 
 abstract class _ProposalArgsItemData {
@@ -84,6 +90,7 @@ abstract class _ProposalArgsItemData {
 class CouncilProposalVotesData extends _CouncilProposalVotesData {
   static CouncilProposalVotesData fromJson(Map<String, dynamic> json) =>
       _$CouncilProposalVotesDataFromJson(json);
+  Map<String, dynamic> toJson() => _$CouncilProposalVotesDataToJson(this);
 }
 
 abstract class _CouncilProposalVotesData {
@@ -98,6 +105,7 @@ abstract class _CouncilProposalVotesData {
 class SpendProposalDetailData extends _SpendProposalDetailData {
   static SpendProposalDetailData fromJson(Map<String, dynamic> json) =>
       _$SpendProposalDetailDataFromJson(json);
+  Map<String, dynamic> toJson() => _$SpendProposalDetailDataToJson(this);
 }
 
 abstract class _SpendProposalDetailData {
