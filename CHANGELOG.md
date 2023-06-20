@@ -1,3 +1,7 @@
+## [0.5.4+2]
+20230620
+* bump polkawallet/bridge 0.1.4-0
+
 ## [0.5.4+1] - 20230613
 
 * auto publish with github actions.
