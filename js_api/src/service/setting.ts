@@ -59,7 +59,7 @@ export async function getNetworkProperties(api: ApiPromise) {
   const genesisHash = api.genesisHash.toHuman();
   return genesisHash == SubstrateNetworkKeys.POLKADOT
     ? api.registry.createType("ChainProperties", {
-        ...chainProperties,
+        ...chainProperties.toJSON(),
         tokenDecimals: [10],
         tokenSymbol: ["DOT"],
         genesisHash,

@@ -1,3 +1,7 @@
+## [0.5.4+3]
+20230620
+* settings.getNetworkProperties() toJSON fix.
+
 ## [0.5.4+2]
 20230620
 * bump polkawallet/bridge 0.1.4-0
