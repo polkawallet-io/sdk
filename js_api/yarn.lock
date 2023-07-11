@@ -3120,9 +3120,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkawallet/bridge@npm:^0.1.5-4":
-  version: 0.1.5-4
-  resolution: "@polkawallet/bridge@npm:0.1.5-4"
+"@polkawallet/bridge@npm:^0.1.5-7":
+  version: 0.1.5-7
+  resolution: "@polkawallet/bridge@npm:0.1.5-7"
   dependencies:
     "@acala-network/api": ^5
     "@acala-network/sdk": ^4.1.9-2
@@ -3137,7 +3137,7 @@ __metadata:
     "@acala-network/api": ^5
     "@polkadot/api": ^10
     ethers: ^5
-  checksum: c72e7864fd4090d71de03237f992c7b683f3ebd832a666f08b02c441e85612914eca145a78df6073ef1dbbe3177a5e00cb4dc968de654f369d868a22f75b6e53
+  checksum: 7cea3190cd6ea577760e06626b0ada9cdca1a23f678af3efbf3570e86b0e673cd56ef909047afc65c52b72cf18ea85c5a56d091be99a7652135584bd0bcf4e20
   languageName: node
   linkType: hard
 
@@ -3157,7 +3157,7 @@ __metadata:
     "@polkadot/api": ^10.9.1
     "@polkadot/extension-dapp": ^0.43.2
     "@polkadot/ui-shared": ^2.2.1
-    "@polkawallet/bridge": ^0.1.5-4
+    "@polkawallet/bridge": ^0.1.5-7
     "@walletconnect/client": ^1.8.0
     "@walletconnect/sign-client": ^2.7.3
     "@walletconnect/types": ^2.4.6
