@@ -1,3 +1,7 @@
+## [0.5.4+6]
+20230713
+* bump polkawallet/bridge 0.1.5-8
+
 ## [0.5.4+5]
 20230711
 * bump polkawallet/bridge 0.1.5-7
