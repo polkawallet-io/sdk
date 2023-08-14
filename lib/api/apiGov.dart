@@ -40,9 +40,8 @@ class ApiGov {
   }
 
   Future<List<ProposalInfoData>> queryProposals() async {
-    final List data =
-        await (service.queryProposals() as FutureOr<List<dynamic>>);
-    return data
+    final List? data = await (service.queryProposals());
+    return data!
         .map((e) => ProposalInfoData.fromJson(Map<String, dynamic>.of(e)))
         .toList();
   }

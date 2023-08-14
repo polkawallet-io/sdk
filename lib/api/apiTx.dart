@@ -17,7 +17,13 @@ class ApiTx {
     final String param = rawParam != null ? rawParam : jsonEncode(params);
     final Map tx = txInfo.toJson();
     final res = await (service.estimateFees(tx, param, jsApi: jsApi));
-    return TxFeeEstimateResult.fromJson(res as Map<String, dynamic>);
+    if (res != null) {
+      final Map<String, dynamic> resTyped =
+          res.map((key, value) => MapEntry(key.toString(), value));
+      return TxFeeEstimateResult.fromJson(resTyped);
+    } else {
+      throw Exception('estimateFees returned null');
+    }
   }
 
 //  Future<dynamic> _testSendTx() async {

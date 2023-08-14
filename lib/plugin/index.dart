@@ -110,9 +110,12 @@ abstract class PolkawalletPlugin implements PolkawalletPluginBase {
             ..lockedBalance = '0'
             ..reservedBalance = '0');
     } else {
-      final data = await (sdk.api.account.queryBalance(acc.address)
-          as FutureOr<BalanceData>);
-      _updateBalances(acc, data);
+      final data = await (sdk.api.account.queryBalance(acc.address));
+      if (data != null) {
+        _updateBalances(acc, data);
+      } else {
+        throw Exception('queryBalance returned null. Address: ${acc.address}');
+      }
     }
   }
 
