@@ -21,6 +21,19 @@ class WebViewRunner {
 
   bool _webViewOOMReload = false;
 
+  // set isMessageChannelAlive = true for 10s if we receive a new message
+  bool isMessageChannelAlive = false;
+  Timer? _messageChannelAliveTimer;
+
+  void _setMessageChannelAlive() {
+    isMessageChannelAlive = true;
+
+    _messageChannelAliveTimer?.cancel();
+    _messageChannelAliveTimer = new Timer(Duration(seconds: 10), () {
+      isMessageChannelAlive = false;
+    });
+  }
+
   Future<void> launch(
     Function? onLaunched, {
     String? jsCode,
@@ -103,6 +116,9 @@ class WebViewRunner {
             if (_msgCompleters[path] != null) {
               Completer handler = _msgCompleters[path]!;
               handler.complete(msg['data']);
+
+              _setMessageChannelAlive();
+
               if (path.contains('uid=')) {
                 _msgCompleters.remove(path);
               }
@@ -110,6 +126,8 @@ class WebViewRunner {
             if (_msgHandlers[path] != null) {
               Function handler = _msgHandlers[path]!;
               handler(msg['data']);
+
+              _setMessageChannelAlive();
             }
 
             if (_msgJavascript[path] != null) {

@@ -1,3 +1,8 @@
+## [0.5.5]
+20230822
+* bump polkawallet/bridge 0.1.5-11
+* add webviewRunner.isMessageChannelAlive
+
 ## [0.5.4+7]
 20230726
 * bump polkawallet/bridge 0.1.5-9
