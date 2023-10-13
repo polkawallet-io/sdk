@@ -1,3 +1,8 @@
+## [0.5.5+2]
+20231013
+* acala js update
+* bridge update
+
 ## [0.5.5+1]
 20230919
 * bump polkawallet/bridge 0.1.5-16

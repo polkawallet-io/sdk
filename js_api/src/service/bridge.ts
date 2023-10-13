@@ -82,7 +82,7 @@ const _initBridge = async () => {
 async function connectFromChains(chains: ChainId[], nodeList: Partial<Record<ChainId, string[]>> | undefined) {
   nodeList = {
     acala: ["wss://acala-rpc.dwellir.com", "wss://acala.api.onfinality.io/public-ws", "wss://acala.polkawallet.io"],
-    karura: ["wss://karura-rpc.dwellir.com", "wss://karura.api.onfinality.io/public-ws", "wss://karura.polkawallet.io"],
+    karura: ["wss://karura.api.onfinality.io/public-ws", "wss://karura.polkawallet.io"],
     ...(nodeList || []),
   };
   // connect all adapters
