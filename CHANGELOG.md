@@ -1,3 +1,7 @@
+## [0.5.5+3]
+20231019
+* bump flutter_inappwebview: ^5.8.0. to fix ios build failed.
+
 ## [0.5.5+2]
 20231013
 * acala js update
