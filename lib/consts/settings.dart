@@ -24,7 +24,7 @@ const SigningMethodsEVM = [
   "wallet_watchAsset",
   "wallet_scanQRCode",
   // wallet auth methods
-  "eth_chainId",
+  // "eth_chainId",
   "eth_requestAccounts",
   "eth_accounts",
   "metamask_getProviderState",

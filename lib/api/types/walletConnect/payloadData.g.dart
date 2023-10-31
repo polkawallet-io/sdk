@@ -38,8 +38,8 @@ WCCallRequestData _$WCCallRequestDataFromJson(Map<String, dynamic> json) =>
       ..topic = json['topic'] as String?
       ..id = json['id'] as int?
       ..params = (json['params'] as List<dynamic>?)
-          ?.map(
-              (e) => WCCallRequestParamItem.fromJson(e as Map<String, dynamic>))
+          ?.map((e) =>
+              WCCallRequestParamItem.fromJson(e.cast<String?, dynamic>()))
           .toList();
 
 Map<String, dynamic> _$WCCallRequestDataToJson(WCCallRequestData instance) =>

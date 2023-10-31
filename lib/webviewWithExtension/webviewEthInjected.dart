@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/api/types/walletConnect/payloadData.dart';
 import 'package:polkawallet_sdk/consts/settings.dart';
-import 'package:polkawallet_sdk/service/eth/rpcApi.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/keyringEVM.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
@@ -21,6 +20,8 @@ class WebViewEthInjected extends StatefulWidget {
     this.initialUrl,
     this.keyringEVM, {
     required this.keyring,
+    required this.onSwitchEvmChain,
+    required this.onEvmRpcCall,
     this.onPageFinished,
     this.onExtensionReady,
     this.onWebViewCreated,
@@ -49,6 +50,8 @@ class WebViewEthInjected extends StatefulWidget {
   final Future<bool?> Function(DAppConnectParam)? onConnectRequest;
   final Future<bool?> Function(DAppConnectParam)? onConnectRequestEVM;
   final bool Function(String, {bool isEvm})? checkAuth;
+  final Future<bool> Function(String) onSwitchEvmChain;
+  final Future<Map> Function(Map) onEvmRpcCall;
 
   @override
   _WebViewEthInjectedState createState() => _WebViewEthInjectedState();
@@ -58,23 +61,6 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
   late WebViewController _controller;
   bool _loadingFinished = false;
   bool _signing = false;
-
-  String _currentChainId = '';
-
-  void _showEvmMismatch() {
-    showCupertinoDialog(
-        context: context,
-        builder: (_) {
-          return CupertinoAlertDialog(
-            title: Text('Network Mismatch'),
-            actions: [
-              CupertinoActionSheetAction(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text('Okay'))
-            ],
-          );
-        });
-  }
 
   Future<dynamic> _respondToDApp(Map msg, Map? res) async {
     print('respond ${msg['name']} to dapp:');
@@ -95,8 +81,7 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
     final method = res['method'];
     final isSigningMethod = SigningMethodsEVM.contains(method);
     if (!isSigningMethod) {
-      final data = await EvmRpcApi.getRpcCall(
-          widget.api.connectedNode?.endpoint ?? '', res);
+      final data = await widget.onEvmRpcCall(res);
       if (data['result'] != null) {
         res['result'] = data['result'];
       } else {
@@ -131,7 +116,11 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
         ];
         return _respondToDApp(msg, res);
       case 'wallet_switchEthereumChain':
-        _currentChainId = res['params'][0]['chainId'];
+        final accept =
+            await widget.onSwitchEvmChain(res['params'][0]['chainId']);
+        if (accept != true) {
+          res['error'] = ['userRejectedRequest', 'User denied network switch.'];
+        }
         res['result'] = null;
         return _respondToDApp(msg, res);
       case 'metamask_getProviderState':
@@ -143,13 +132,6 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
           'networkVersion': '0',
         };
         return _respondToDApp(msg, res);
-      case 'eth_chainId':
-        final chainId = int.parse(widget.api.connectedNode?.chainId ?? '1');
-        // Convert to hex
-        res['result'] = _currentChainId.isNotEmpty
-            ? _currentChainId
-            : '0x${chainId.toRadixString(16)}';
-        return _respondToDApp(msg, res);
       case 'eth_sign':
       case 'personal_sign':
       case 'eth_signTypedData':
@@ -157,12 +139,6 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
       case 'eth_signTransaction':
       case 'eth_sendTransaction':
         if (_signing) break;
-
-        /// the wallet will not send EVM tx if plugin mismatch
-        if (method == 'eth_sendTransaction' && _currentChainId.isNotEmpty) {
-          _showEvmMismatch();
-          break;
-        }
         _signing = true;
         final signed = await widget.onSignRequestEVM!(msg);
         _signing = false;
@@ -267,12 +243,12 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
     print('Inject EVM dapp js code...');
     final jsCodeEVM = await rootBundle.loadString(
         'packages/polkawallet_sdk/js_as_extension/dist/ethereum.js');
-    await _controller.runJavaScriptReturningResult(jsCodeEVM);
+    await _controller.runJavaScript(jsCodeEVM);
     print('EVM js code injected');
     print('Inject Substrate dapp js code...');
     final jsCode = await rootBundle
         .loadString('packages/polkawallet_sdk/js_as_extension/dist/main.js');
-    await _controller.runJavaScriptReturningResult(jsCode);
+    await _controller.runJavaScript(jsCode);
     print('Substrate js code injected');
 
     if (widget.onExtensionReady != null) {
