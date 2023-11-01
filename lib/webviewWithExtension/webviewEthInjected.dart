@@ -82,11 +82,7 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
     final isSigningMethod = SigningMethodsEVM.contains(method);
     if (!isSigningMethod) {
       final data = await widget.onEvmRpcCall(res);
-      if (data['result'] != null) {
-        res['result'] = data['result'];
-      } else {
-        res['error'] = ['unauthorized', 'Rpc call error.'];
-      }
+      res['result'] = data['result'];
       return _respondToDApp(msg, res);
     }
     if (method != 'eth_requestAccounts' &&
