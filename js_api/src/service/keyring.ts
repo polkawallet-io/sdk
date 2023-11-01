@@ -16,6 +16,7 @@ import { KeypairType } from "@polkadot/util-crypto/types";
 import { KeyringPair, KeyringPair$Json } from "@polkadot/keyring/types";
 import { ApiPromise, SubmittableResult } from "@polkadot/api";
 import { SubmittableExtrinsic } from "@polkadot/api/types";
+import { TypeRegistry } from "@polkadot/types";
 import { ITuple } from "@polkadot/types/types";
 import { DispatchError } from "@polkadot/types/interfaces";
 import account from "./account";
@@ -425,7 +426,7 @@ async function signTxAsExtension(password: string, json: any) {
       }
       keyPair.decodePkcs8(password);
 
-      const registry = (<any>window).api.registry;
+      const registry = new TypeRegistry();
 
       registry.setSignedExtensions(json["signedExtensions"]);
       const payload = registry.createType("ExtrinsicPayload", json, {
