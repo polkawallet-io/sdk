@@ -22,6 +22,7 @@ class WebViewEthInjected extends StatefulWidget {
     required this.keyring,
     required this.onSwitchEvmChain,
     required this.onEvmRpcCall,
+    required this.onAccountEmpty,
     this.onPageFinished,
     this.onExtensionReady,
     this.onWebViewCreated,
@@ -52,6 +53,7 @@ class WebViewEthInjected extends StatefulWidget {
   final bool Function(String, {bool isEvm})? checkAuth;
   final Future<bool> Function(String) onSwitchEvmChain;
   final Future<Map> Function(Map) onEvmRpcCall;
+  final Future<void> Function(String) onAccountEmpty;
 
   @override
   _WebViewEthInjectedState createState() => _WebViewEthInjectedState();
@@ -98,9 +100,15 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
       case 'eth_accounts':
         if (_signing) break;
         _signing = true;
-        final accept = await widget.onConnectRequestEVM!(
-            DAppConnectParam.fromJson(
-                {'id': res['id'].toString(), 'url': msg['origin']}));
+
+        bool? accept = false;
+        if (widget.keyringEVM.keyPairs.isEmpty) {
+          await widget.onAccountEmpty('evm');
+        } else {
+          accept = await widget.onConnectRequestEVM!(DAppConnectParam.fromJson(
+              {'id': res['id'].toString(), 'url': msg['origin']}));
+        }
+
         _signing = false;
         if (accept == true) {
           res['result'] = [widget.keyringEVM.current.address];
@@ -112,8 +120,13 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
         ];
         return _respondToDApp(msg, res);
       case 'wallet_switchEthereumChain':
-        final accept =
-            await widget.onSwitchEvmChain(res['params'][0]['chainId']);
+        bool? accept = false;
+        if (widget.keyringEVM.keyPairs.isEmpty) {
+          await widget.onAccountEmpty('evm');
+        } else {
+          accept = await widget.onSwitchEvmChain(res['params'][0]['chainId']);
+        }
+
         if (accept != true) {
           res['error'] = ['userRejectedRequest', 'User denied network switch.'];
         }
@@ -170,6 +183,13 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
           return _controller.runJavaScript(
               'walletExtension.onAppResponse("${msg['msgType']}${msg['id']}", true)');
         }
+
+        if (widget.keyring.keyPairs.isEmpty) {
+          await widget.onAccountEmpty('substrate');
+          return _controller.runJavaScript(
+              'walletExtension.onAppResponse("${msg['msgType']}${msg['id']}", false, null)');
+        }
+
         if (_signing) break;
         _signing = true;
         final accept = await widget.onConnectRequest!(
