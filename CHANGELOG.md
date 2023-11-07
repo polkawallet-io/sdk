@@ -1,3 +1,7 @@
+## [0.5.6+1]
+20231107
+* bump polkawallet/bridge 0.1.5-17
+
 ## [0.5.6]
 20231102
 * rebuild webviewEthInjected to support both substrate & EVM.

@@ -2909,7 +2909,7 @@ __metadata:
     "@polkadot/api": ^10.9.1
     "@polkadot/extension-dapp": ^0.43.2
     "@polkadot/ui-shared": ^2.2.1
-    "@polkawallet/bridge": ^0.1.5-16
+    "@polkawallet/bridge": ^0.1.5-17
     "@walletconnect/client": ^1.8.0
     "@walletconnect/sign-client": ^2.9.0
     "@walletconnect/types": ^2.4.6
