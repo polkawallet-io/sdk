@@ -29,7 +29,6 @@ class WebViewEthInjected extends StatefulWidget {
     this.onSignRequestEVM,
     this.onSignRequest,
     this.onConnectRequest,
-    this.onConnectRequestEVM,
     this.checkAuth,
   });
 
@@ -48,9 +47,9 @@ class WebViewEthInjected extends StatefulWidget {
   final Future<ExtensionSignResult?> Function(SignAsExtensionParam)?
       onSignRequest;
 
-  final Future<bool?> Function(DAppConnectParam)? onConnectRequest;
-  final Future<bool?> Function(DAppConnectParam)? onConnectRequestEVM;
-  final bool Function(String, {bool isEvm})? checkAuth;
+  final Future<List<KeyPairData>> Function(DAppConnectParam, {bool isEvm})?
+      onConnectRequest;
+  final List<KeyPairData> Function(String, {bool isEvm})? checkAuth;
   final Future<bool> Function(String) onSwitchEvmChain;
   final Future<Map> Function(Map) onEvmRpcCall;
   final Future<void> Function(String) onAccountEmpty;
@@ -87,10 +86,10 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
       res['result'] = data['result'];
       return _respondToDApp(msg, res);
     }
+    final authed = widget.checkAuth!(uri.host, isEvm: true);
     if (method != 'eth_requestAccounts' &&
         method != 'eth_accounts' &&
-        widget.checkAuth != null &&
-        !widget.checkAuth!(uri.host, isEvm: true)) {
+        authed.isEmpty) {
       res['error'] = ['unauthorized', 'wallet accounts unauthorized.'];
       return _respondToDApp(msg, res);
     }
@@ -101,17 +100,22 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
         if (_signing) break;
         _signing = true;
 
-        bool? accept = false;
+        List<KeyPairData> accountsAuthed = [];
         if (widget.keyringEVM.keyPairs.isEmpty) {
           await widget.onAccountEmpty('evm');
+        } else if (authed.isNotEmpty) {
+          res['result'] = authed.map((e) => e.address).toList();
+          return _respondToDApp(msg, res);
         } else {
-          accept = await widget.onConnectRequestEVM!(DAppConnectParam.fromJson(
-              {'id': res['id'].toString(), 'url': msg['origin']}));
+          accountsAuthed = await widget.onConnectRequest!(
+              DAppConnectParam.fromJson(
+                  {'id': res['id'].toString(), 'url': msg['origin']}),
+              isEvm: true);
         }
 
         _signing = false;
-        if (accept == true) {
-          res['result'] = [widget.keyringEVM.current.address];
+        if (accountsAuthed.isNotEmpty) {
+          res['result'] = accountsAuthed.map((e) => e.address).toList();
           return _respondToDApp(msg, res);
         }
         res['error'] = [
@@ -170,9 +174,10 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
 
   Future<dynamic> _msgHandlerSubstrate(Map msg) async {
     final uri = Uri.parse(msg['url']);
+    final authed = widget.checkAuth!(uri.host);
     if (msg['msgType'] != 'pub(authorize.tab)' &&
         widget.checkAuth != null &&
-        !widget.checkAuth!(uri.host)) {
+        authed.isEmpty) {
       return _controller.runJavaScript(
           'walletExtension.onAppResponse("${msg['msgType']}${msg['id']}", null, new Error("Rejected"))');
     }
@@ -192,16 +197,16 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
 
         if (_signing) break;
         _signing = true;
-        final accept = await widget.onConnectRequest!(
-            DAppConnectParam.fromJson({'id': msg['id'], 'url': msg['url']}));
+        final addressAuthed = authed.isNotEmpty
+            ? authed
+            : await widget.onConnectRequest!(DAppConnectParam.fromJson(
+                {'id': msg['id'], 'url': msg['url']}));
         _signing = false;
         return _controller.runJavaScript(
-            'walletExtension.onAppResponse("${msg['msgType']}${msg['id']}", ${accept ?? false}, null)');
+            'walletExtension.onAppResponse("${msg['msgType']}${msg['id']}", ${addressAuthed.isNotEmpty ?? false}, null)');
       case 'pub(accounts.list)':
       case 'pub(accounts.subscribe)':
-        final List<KeyPairData> ls = widget.keyring.keyPairs;
-        ls.retainWhere((e) => e.encoding!['content'][1] == 'sr25519');
-        final List res = ls.map((e) {
+        final List res = authed.map((e) {
           return {
             'address': e.address,
             'name': e.name,
@@ -246,10 +251,10 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
   }
 
   Future<void> _onFinishLoad(String url) async {
-    if (_loadingFinished) return;
-    setState(() {
-      _loadingFinished = true;
-    });
+    // if (_loadingFinished) return;
+    // setState(() {
+    //   _loadingFinished = true;
+    // });
 
     if (widget.onPageFinished != null) {
       widget.onPageFinished!(url);
