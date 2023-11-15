@@ -1,3 +1,9 @@
+## [0.5.7]
+20231115
+* bump polkadot-js/api 10.10.1
+* bump polkawallet/bridge 0.1.5-19
+* add select accounts while auth dApp access
+
 ## [0.5.6+1]
 20231107
 * bump polkawallet/bridge 0.1.5-17
