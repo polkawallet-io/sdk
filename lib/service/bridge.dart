@@ -54,6 +54,13 @@ class ServiceBridge {
     return res;
   }
 
+  Future<List<String>> getAcalaEVMTokens() async {
+    assert(_runner != null, 'bridge not init');
+    final List res = await _runner?.evalJavascript('bridge.getAcalaEVMTokens()',
+        wrapPromise: false);
+    return res.map((e) => e.toString()).toList();
+  }
+
   Future<String?> _checkConnection(String chain) async {
     final api = await _runner?.evalJavascript(
             'Promise.all([bridge.getApi("$chain")&&bridge.getApi("$chain").isConnected])')

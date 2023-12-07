@@ -34,6 +34,10 @@ class ApiBridge {
     return res;
   }
 
+  Future<List<String>> getAcalaEVMTokens() async {
+    return service.getAcalaEVMTokens();
+  }
+
   Future<List<String>> connectFromChains(List<String> chains,
       {Map<String, List<String>>? nodeList}) async {
     return service.connectFromChains(chains, nodeList: nodeList);

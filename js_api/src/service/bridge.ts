@@ -335,10 +335,15 @@ async function checkAddressFormat(address: string, ss58: number) {
   }
 }
 
+function getAcalaEVMTokens() {
+  return ["TAI", "tKSM", "KAR", "LKSM", "aUSD", "aSEED", "KSM", "USDCet", "tDOT", "ACA", "DOT", "LDOT"];
+}
+
 export default {
   getFromChainsAll,
   getRoutes,
   getChainsInfo,
+  getAcalaEVMTokens,
   connectFromChains,
   disconnectFromChains,
   getNetworkProperties,
