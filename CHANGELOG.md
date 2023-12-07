@@ -1,3 +1,8 @@
+## [0.5.8]
+20231207
+* bump polkawallet/bridge 0.1.5-25
+* add xcm-to-acala-evm-address support
+
 ## [0.5.7]
 20231115
 * bump polkadot-js/api 10.10.1
