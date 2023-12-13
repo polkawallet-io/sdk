@@ -1,3 +1,7 @@
+## [0.5.8+1]
+20231213
+* fix getEthAddress while no evm connected
+
 ## [0.5.8]
 20231207
 * bump polkawallet/bridge 0.1.5-25

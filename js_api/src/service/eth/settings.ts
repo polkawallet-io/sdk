@@ -75,5 +75,8 @@ export async function connect(url: string) {
 }
 
 export function getWeb3() {
+  if (!web3) {
+    web3 = new Web3();
+  }
   return web3;
 }
