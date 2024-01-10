@@ -103,17 +103,19 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
         List<KeyPairData> accountsAuthed = [];
         if (widget.keyringEVM.keyPairs.isEmpty) {
           await widget.onAccountEmpty('evm');
+          _signing = false;
         } else if (authed.isNotEmpty) {
           res['result'] = authed.map((e) => e.address).toList();
+          _signing = false;
           return _respondToDApp(msg, res);
         } else {
           accountsAuthed = await widget.onConnectRequest!(
               DAppConnectParam.fromJson(
                   {'id': res['id'].toString(), 'url': msg['origin']}),
               isEvm: true);
+          _signing = false;
         }
 
-        _signing = false;
         if (accountsAuthed.isNotEmpty) {
           res['result'] = accountsAuthed.map((e) => e.address).toList();
           return _respondToDApp(msg, res);
@@ -128,7 +130,12 @@ class _WebViewEthInjectedState extends State<WebViewEthInjected> {
         if (widget.keyringEVM.keyPairs.isEmpty) {
           await widget.onAccountEmpty('evm');
         } else {
+          if (_signing) break;
+          _signing = true;
+
           accept = await widget.onSwitchEvmChain(res['params'][0]['chainId']);
+
+          _signing = false;
         }
 
         if (accept != true) {

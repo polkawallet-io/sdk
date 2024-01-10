@@ -1,3 +1,7 @@
+## [0.5.8+3]
+20240110
+* webviewEthInjected connecting fix
+
 ## [0.5.8+2]
 20240109
 * bump polkawallet/bridge 0.1.5-26
