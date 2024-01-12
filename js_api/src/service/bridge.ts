@@ -1,7 +1,7 @@
 import { ApiProvider, BalanceData, Bridge, chains, FN, ChainId } from "@polkawallet/bridge";
 import { KusamaAdapter, PolkadotAdapter } from "@polkawallet/bridge/adapters/polkadot";
 import { AcalaAdapter, KaruraAdapter } from "@polkawallet/bridge/adapters/acala";
-import { StatemineAdapter } from "@polkawallet/bridge/adapters/statemint";
+import { StatemineAdapter, StatemintAdapter } from "@polkawallet/bridge/adapters/statemint";
 import { AltairAdapter } from "@polkawallet/bridge/adapters/centrifuge";
 import { AstarAdapter, ShidenAdapter } from "@polkawallet/bridge/adapters/astar";
 import { BifrostAdapter } from "@polkawallet/bridge/adapters/bifrost";
@@ -63,6 +63,7 @@ const availableAdapters: Record<string, BaseCrossChainAdapter> = {
   shadow: new ShadowAdapter(),
   shiden: new ShidenAdapter(),
   statemine: new StatemineAdapter(),
+  statemint: new StatemintAdapter(),
   turing: new TuringAdapter(),
   unique: new UniqueAdapter(),
 };
@@ -83,6 +84,22 @@ async function connectFromChains(chains: ChainId[], nodeList: Partial<Record<Cha
   nodeList = {
     acala: ["wss://acala-rpc.dwellir.com", "wss://acala.api.onfinality.io/public-ws", "wss://acala.polkawallet.io"],
     karura: ["wss://karura.api.onfinality.io/public-ws", "wss://karura.polkawallet.io"],
+    statemine: [
+      "wss://statemine-rpc.dwellir.com",
+      "wss://statemine-rpc-tn.dwellir.com",
+      "wss://sys.ibp.network/statemine",
+      "wss://sys.dotters.network/statemine",
+      "wss://rpc-asset-hub-kusama.luckyfriday.io",
+      "wss://kusama-asset-hub-rpc.polkadot.io",
+    ],
+    statemint: [
+      "wss://statemint-rpc.dwellir.com",
+      "wss://statemint-rpc-tn.dwellir.com",
+      "wss://sys.ibp.network/statemint",
+      "wss://sys.dotters.network/statemint",
+      "wss://rpc-asset-hub-polkadot.luckyfriday.io",
+      "wss://polkadot-asset-hub-rpc.polkadot.io",
+    ],
     ...(nodeList || []),
   };
   // connect all adapters
