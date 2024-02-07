@@ -167,6 +167,10 @@ async function initKeys(accounts: KeyringPair$Json[], ss58Formats: number[]) {
  * estimate gas fee of an extrinsic
  */
 async function txFeeEstimate(api: ApiPromise, txInfo: any, paramList: any[]) {
+  if (txInfo.module == "balances" && txInfo.call == "transfer") {
+    txInfo.call = "transferAllowDeath";
+  }
+
   let tx: SubmittableExtrinsic<"promise">;
   // wrap tx with council.propose for treasury propose
   if (txInfo.txName == "treasury.approveProposal") {
@@ -241,6 +245,10 @@ export function _getDispatchError(dispatchError: DispatchError): string {
  * sign and send extrinsic to network and wait for result.
  */
 function sendTx(api: ApiPromise, txInfo: any, paramList: any[], password: string, msgId: string) {
+  if (txInfo.module == "balances" && txInfo.call == "transfer") {
+    txInfo.call = "transferAllowDeath";
+  }
+
   return new Promise(async (resolve) => {
     let tx: SubmittableExtrinsic<"promise">;
     // wrap tx with council.propose for treasury propose
