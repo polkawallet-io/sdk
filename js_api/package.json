@@ -36,7 +36,6 @@
     "@polkadot/util": "^12.6.2",
     "@polkadot/util-crypto": "^12.6.2",
     "@polkadot/keyring": "^12.6.2",
-    "@polkawallet/bridge": "^0.1.5-31",
     "ethers": "^5.6.8"
   },
   "dependencies": {
@@ -46,7 +45,7 @@
     "@polkadot/api": "^10.11.2",
     "@polkadot/extension-dapp": "^0.43.2",
     "@polkadot/ui-shared": "^2.12.1",
-    "@polkawallet/bridge": "^0.1.5-31",
+    "@polkawallet/bridge": "^0.1.5-32",
     "@walletconnect/client": "^1.8.0",
     "@walletconnect/sign-client": "^2.9.0",
     "@walletconnect/utils": "^2.9.0",
