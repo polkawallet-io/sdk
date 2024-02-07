@@ -1,3 +1,7 @@
+## [0.5.8+7]
+20240207
+* bump polkawallet/bridge 0.1.5-31
+
 ## [0.5.8+6]
 20240126
 * bump polkawallet/bridge 0.1.5-29
