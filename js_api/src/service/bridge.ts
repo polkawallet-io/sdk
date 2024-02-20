@@ -212,6 +212,7 @@ async function getInputConfig(from: ChainId, to: ChainId, token: string, address
       decimals: res.destFee.balance.getPrecision(),
     },
     estimateFee: res.estimateFee.balance.toChainData().toString(),
+    xcmFee: (res.xcmFee?.balance.toChainData() ?? 0).toString(),
   };
 }
 

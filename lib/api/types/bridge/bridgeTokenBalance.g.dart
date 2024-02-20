@@ -38,6 +38,7 @@ BridgeAmountInputConfig _$BridgeAmountInputConfigFromJson(
       destFee:
           BridgeDestFeeData.fromJson(json['destFee'] as Map<String, dynamic>),
       estimateFee: json['estimateFee'] as String,
+      xcmFee: json['xcmFee'] as String,
     );
 
 Map<String, dynamic> _$BridgeAmountInputConfigToJson(
@@ -51,6 +52,7 @@ Map<String, dynamic> _$BridgeAmountInputConfigToJson(
       'maxInput': instance.maxInput,
       'destFee': instance.destFee,
       'estimateFee': instance.estimateFee,
+      'xcmFee': instance.xcmFee,
     };
 
 BridgeDestFeeData _$BridgeDestFeeDataFromJson(Map<String, dynamic> json) =>

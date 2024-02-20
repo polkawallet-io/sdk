@@ -34,6 +34,7 @@ class BridgeAmountInputConfig {
   String maxInput;
   BridgeDestFeeData destFee;
   String estimateFee;
+  String xcmFee;
   BridgeAmountInputConfig({
     required this.token,
     required this.from,
@@ -43,6 +44,7 @@ class BridgeAmountInputConfig {
     required this.maxInput,
     required this.destFee,
     required this.estimateFee,
+    required this.xcmFee,
   });
 
   static BridgeAmountInputConfig fromJson(Map<String, dynamic> json) =>
