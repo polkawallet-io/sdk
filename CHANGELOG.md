@@ -1,3 +1,7 @@
+## [0.5.9+1]
+20240301
+* bump polkawallet/bridge 0.1.5-35
+
 ## [0.5.9]
 20240220
 * add XCM delivery fee support.
