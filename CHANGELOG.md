@@ -1,3 +1,8 @@
+## [0.5.9+2]
+20240311
+* bump polkawallet/bridge 0.1.5-36
+* fix acala.js wallet constructor import
+
 ## [0.5.9+1]
 20240301
 * bump polkawallet/bridge 0.1.5-35

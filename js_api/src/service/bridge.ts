@@ -30,7 +30,7 @@ import { DispatchError } from "@polkadot/types/interfaces";
 import { SubmittableResult } from "@polkadot/api/submittable";
 
 import { EvmRpcProvider } from "@acala-network/eth-providers";
-import { Wallet } from "@acala-network/sdk/wallet";
+import { Wallet } from "@acala-network/sdk/wallet/wallet";
 
 let keyring = new Keyring({ ss58Format: 0, type: "sr25519" });
 
