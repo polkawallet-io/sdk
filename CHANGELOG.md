@@ -1,3 +1,7 @@
+## [0.6.0+2]
+20240604
+* bump polkadot-js/api 11.1.1
+
 ## [0.6.0+1]
 20240509
 * bump polkawallet/bridge 0.1.7-2
