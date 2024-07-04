@@ -49,7 +49,7 @@ class SubScanApi {
   final String moduleRecovery = 'Recovery';
 
   static String getSnEndpoint(String network) {
-    return 'https://$network.api.subscan.io/api/scan';
+    return 'https://$network.api.subscan.io/api/v2/scan';
   }
 
   /// do the request in an isolate to avoid UI stall
