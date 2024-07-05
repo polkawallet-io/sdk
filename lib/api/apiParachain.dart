@@ -25,4 +25,9 @@ class ApiParachain {
       List<String> paraIds, String pubKey) async {
     return service.queryUserContributions(paraIds, pubKey);
   }
+
+  /// chainName: kusamaPeople supported.
+  Future<String?> connectParachain(String chainName) async {
+    return service.connectParachain(chainName);
+  }
 }

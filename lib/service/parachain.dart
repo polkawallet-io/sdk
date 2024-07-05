@@ -25,4 +25,10 @@ class ServiceParachain {
         '${paraIds.map((e) => 'parachain.queryUserContributions(api, "$e", "$pubKey")').join(',')}])');
     return List<String>.from(res);
   }
+
+  Future<String?> connectParachain(String chainName) async {
+    final res = await serviceRoot.webView!
+        .evalJavascript('multiChain.connectParachain("$chainName")') as String?;
+    return res;
+  }
 }
