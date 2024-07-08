@@ -1,6 +1,8 @@
-## [0.6.0+2]
-20240604
+## [0.6.1]
+20240708
 * bump polkadot-js/api 11.1.1
+* bump polkawallet/bridge 0.1.7-9
+* add multiChain api for parachain connection
 
 ## [0.6.0+1]
 20240509
