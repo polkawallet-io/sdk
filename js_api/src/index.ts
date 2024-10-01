@@ -1,4 +1,5 @@
 import { WsProvider, ApiPromise } from "@polkadot/api";
+import type { RegistryTypes } from '@polkadot/types-codec/types';
 import { subscribeMessage, getNetworkConst, getNetworkProperties } from "./service/setting";
 import keyring from "./service/keyring";
 import account from "./service/account";
@@ -32,8 +33,9 @@ async function connectAll(nodes: string[]) {
  * connect to a specific node.
  *
  * @param {string} nodeEndpoint
+ * @param {RegistryTypes} types for ApiOptions
  */
-async function connect(nodes: string[]) {
+async function connect(nodes: string[], types: RegistryTypes | undefined = undefined) {
   (<any>window).api = undefined;
 
   return new Promise(async (resolve, reject) => {
@@ -41,6 +43,7 @@ async function connect(nodes: string[]) {
     try {
       const res = await ApiPromise.create({
         provider: wsProvider,
+        types: types,
       });
       if (!(<any>window).api) {
         (<any>window).api = res;
