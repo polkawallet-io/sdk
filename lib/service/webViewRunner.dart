@@ -227,16 +227,21 @@ class WebViewRunner {
     return c.future;
   }
 
-  Future<NetworkParams?> connectNode(List<NetworkParams> nodes) async {
+  Future<NetworkParams?> connectNode(
+    List<NetworkParams> nodes,
+    Map<String, dynamic>? types,
+  ) async {
     final isAvatarSupport = (await evalJavascript(
             'settings.connectAll ? {}:null',
             wrapPromise: false)) !=
         null;
+
+    final nodesEncoded = jsonEncode(nodes.map((e) => e.endpoint).toList());
+    final typesEncoded = types != null ? ', ${jsonEncode(types)}' : '';
+
     final dynamic res = await (isAvatarSupport
-        ? evalJavascript(
-            'settings.connectAll(${jsonEncode(nodes.map((e) => e.endpoint).toList())})')
-        : evalJavascript(
-            'settings.connect(${jsonEncode(nodes.map((e) => e.endpoint).toList())})'));
+        ? evalJavascript('settings.connectAll($nodesEncoded$typesEncoded)')
+        : evalJavascript('settings.connect($nodesEncoded$typesEncoded)'));
     if (res != null) {
       final index = nodes.indexWhere((e) => e.endpoint!.trim() == res.trim());
       if (_webViewOOMReload) {
