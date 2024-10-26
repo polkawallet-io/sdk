@@ -1,3 +1,7 @@
+## [0.6.3]
+20241027
+* bump polkadot-js/api 14.1.1
+
 ## [0.6.2]
 20240907
 * bump polkadot-js/api 12.4.2
