@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:polkawallet_sdk/api/types/addressIconData.dart';
-import 'package:polkawallet_sdk/ethers/apiEthers.dart';
+import 'package:polkawallet_sdk/consts/settings.dart';
 import 'package:polkawallet_sdk/service/index.dart';
 import 'package:polkawallet_sdk/storage/keyringEVM.dart';
 

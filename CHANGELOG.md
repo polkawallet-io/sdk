@@ -1,3 +1,7 @@
+## [0.6.3+1]
+20241111
+* remove unused ethers deps.
+
 ## [0.6.3]
 20241027
 * bump polkadot-js/api 14.1.1

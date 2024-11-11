@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:polkawallet_sdk/api/types/addressIconData.dart';
-import 'package:polkawallet_sdk/ethers/apiEthers.dart';
+import 'package:polkawallet_sdk/consts/settings.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/storage/keyringEVM.dart';
 import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
@@ -263,7 +263,8 @@ class _EthWithJSPageState extends State<EthWithJSPage> {
         await widget.sdk.api.eth.keyring.changeName(widget.keyring, 'newName');
     widget.showResult(
       context,
-      'changeName', JsonEncoder.withIndent('  ').convert(res.toJson()),
+      'changeName',
+      JsonEncoder.withIndent('  ').convert(res.toJson()),
     );
     setState(() {
       _submitting = false;
@@ -310,7 +311,8 @@ class _EthWithJSPageState extends State<EthWithJSPage> {
         '0xded97a9a203f794a042bb71107523d685258a27f9df00634d782ba0bdb70be3808bff9ac1ef9bbfff474ef69fc2b613b6ae7b1956a83e2286136f8814993e8491c');
     widget.showResult(
       context,
-      'signatureVerify', JsonEncoder.withIndent('  ').convert(res),
+      'signatureVerify',
+      JsonEncoder.withIndent('  ').convert(res),
     );
     setState(() {
       _submitting = false;

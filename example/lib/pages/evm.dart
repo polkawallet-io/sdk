@@ -1,12 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:polkawallet_sdk/api/types/addressIconData.dart';
-import 'package:polkawallet_sdk/ethers/apiEthers.dart';
 import 'package:polkawallet_sdk/polkawallet_sdk.dart';
 import 'package:polkawallet_sdk/storage/keyringEVM.dart';
 import 'package:polkawallet_sdk/storage/types/ethWalletData.dart';
-import 'package:polkawallet_sdk_example/pages/keyring.dart';
 
 class EVMPage extends StatefulWidget {
   EVMPage(this.sdk, this.keyring, this.showResult);
@@ -34,239 +29,240 @@ class _EVMPageState extends State<EVMPage> {
 
   bool _submitting = false;
 
-  Future<void> _generateMnemonic() async {
-    setState(() {
-      _submitting = true;
-    });
-    final AddressIconDataWithMnemonic seed =
-        await widget.sdk.ethers.generateMnemonic();
-    widget.showResult(context, 'generateMnemonic', seed.mnemonic!);
-    setState(() {
-      _submitting = false;
-    });
-  }
-
-  Future<void> _getAccountList() async {
-    final List<EthWalletData> ls = widget.keyring.keyPairs;
-    widget.showResult(
-      context,
-      'getAccountList',
-      JsonEncoder.withIndent('  ')
-          .convert(ls.map((e) => '${e.name}: ${e.address}').toList()),
-    );
-  }
-
-  Future<void> _getDecryptedSeed() async {
-    if (_testAcc == null) {
-      widget.showResult(
-        context,
-        'getDecryptedSeeds',
-        'should import keyPair to init test account.',
-      );
-      return;
-    }
-    setState(() {
-      _submitting = true;
-    });
-    final seed =
-        await widget.sdk.ethers.getDecryptedSeed(widget.keyring, _testPass);
-//        await widget.sdk.evm.getDecryptedSeed(widget.keyring, 'a654321');
-    widget.showResult(
-      context,
-      'getDecryptedSeeds',
-      seed == null
-          ? 'null'
-          : JsonEncoder.withIndent('  ').convert({
-              'address': _testAcc?.address,
-              'type': seed.type,
-              'seed': seed.seed,
-              'error': seed.error,
-            }),
-    );
-    setState(() {
-      _submitting = false;
-    });
-  }
-
-  Future<void> _importFromMnemonic() async {
-    setState(() {
-      _submitting = true;
-    });
-    final json = await widget.sdk.ethers.importAccount(
-      keyType: EVMKeyType.mnemonic,
-      key:
-          'wing know chapter eight shed lens mandate lake twenty useless bless glory',
-      name: 'testName01',
-      password: _testPass,
-    );
-    print(json);
-    final acc = await widget.sdk.ethers.addAccount(
-      widget.keyring,
-      keyType: EVMKeyType.mnemonic,
-      acc: json,
-      password: _testPass,
-    );
-    widget.showResult(
-      context,
-      'importFromMnemonic',
-      JsonEncoder.withIndent('  ').convert(acc.toJson()),
-    );
-    setState(() {
-      _submitting = false;
-      _testAcc = acc;
-    });
-  }
-
-  Future<void> _importFromPrivateKey() async {
-    setState(() {
-      _submitting = true;
-    });
-    final json = await widget.sdk.ethers.importAccount(
-      keyType: EVMKeyType.privateKey,
-      key: '0x2defc5ff7c700eb3a39a702e9b38534e8ea3419b93b1836dc6ccc891ce359290',
-      name: 'testName02',
-      password: _testPass,
-    );
-    print(json);
-    final acc = await widget.sdk.ethers.addAccount(
-      widget.keyring,
-      keyType: EVMKeyType.privateKey,
-      acc: json,
-      password: _testPass,
-    );
-    widget.showResult(
-      context,
-      'importFromPrivateKey',
-      JsonEncoder.withIndent('  ').convert(acc.toJson()),
-    );
-    setState(() {
-      _submitting = false;
-      _testAcc = acc;
-    });
-  }
-
-  Future<void> _importFromKeystore() async {
-    setState(() {
-      _submitting = true;
-    });
-    final json = await widget.sdk.ethers.importAccount(
-      keyType: EVMKeyType.keystore,
-      key: _testJson,
-      name: 'testName03',
-      password: _testPass,
-    );
-    final acc = await widget.sdk.ethers.addAccount(
-      widget.keyring,
-      keyType: EVMKeyType.keystore,
-      acc: json,
-      password: _testPass,
-    );
-    widget.showResult(
-      context,
-      'importFromKeystore',
-      JsonEncoder.withIndent('  ').convert(acc.toJson()),
-    );
-    setState(() {
-      _submitting = false;
-      _testAcc = acc;
-    });
-  }
-
-  Future<void> _deleteAccount() async {
-    if (_testAcc == null) {
-      widget.showResult(
-        context,
-        'deleteAccount',
-        'should import keyPair to init test account.',
-      );
-      return;
-    }
-    setState(() {
-      _submitting = true;
-    });
-    await widget.sdk.ethers.deleteAccount(widget.keyring, _testAcc!);
-    widget.showResult(
-      context,
-      'deleteAccount',
-      'ok',
-    );
-    setState(() {
-      _submitting = false;
-    });
-  }
-
-  Future<void> _checkPassword() async {
-    if (_testAcc == null) {
-      widget.showResult(
-        context,
-        'checkPassword',
-        'should import keyPair to init test account.',
-      );
-      return;
-    }
-    setState(() {
-      _submitting = true;
-    });
-    final bool passed =
-        await widget.sdk.ethers.checkPassword(_testAcc!, _testPass);
-    // await widget.sdk.evm.checkPassword(_testAcc, 'a654321');
-    widget.showResult(
-      context,
-      'checkPassword',
-      passed.toString(),
-    );
-    setState(() {
-      _submitting = false;
-    });
-  }
-
-  Future<void> _changePassword() async {
-    if (_testAcc == null) {
-      widget.showResult(
-        context,
-        'changePassword',
-        'should import keyPair to init test account.',
-      );
-      return;
-    }
-    setState(() {
-      _submitting = true;
-    });
-    final res = await widget.sdk.ethers
-        // .changePassword(widget.keyring, _testPass, 'a654321');
-        .changePassword(widget.keyring, 'a654321', _testPass);
-    widget.showResult(
-      context,
-      'changePassword',
-      res == null ? 'null' : JsonEncoder.withIndent('  ').convert(res.toJson()),
-    );
-    setState(() {
-      _submitting = false;
-      _testAcc = res;
-    });
-  }
-
-  Future<void> _changeName() async {
-    if (_testAcc == null) {
-      widget.showResult(
-        context,
-        'changeName',
-        'should import keyPair to init test account.',
-      );
-      return;
-    }
-    setState(() {
-      _submitting = true;
-    });
-    final res = await widget.sdk.ethers.changeName(widget.keyring, 'newName');
-    widget.showResult(
-      context,
-      'changeName', JsonEncoder.withIndent('  ').convert(res.toJson()),
-    );
-    setState(() {
-      _submitting = false;
-    });
-  }
+//   Future<void> _generateMnemonic() async {
+//     setState(() {
+//       _submitting = true;
+//     });
+//     final AddressIconDataWithMnemonic seed =
+//         await widget.sdk.ethers.generateMnemonic();
+//     widget.showResult(context, 'generateMnemonic', seed.mnemonic!);
+//     setState(() {
+//       _submitting = false;
+//     });
+//   }
+//
+//   Future<void> _getAccountList() async {
+//     final List<EthWalletData> ls = widget.keyring.keyPairs;
+//     widget.showResult(
+//       context,
+//       'getAccountList',
+//       JsonEncoder.withIndent('  ')
+//           .convert(ls.map((e) => '${e.name}: ${e.address}').toList()),
+//     );
+//   }
+//
+//   Future<void> _getDecryptedSeed() async {
+//     if (_testAcc == null) {
+//       widget.showResult(
+//         context,
+//         'getDecryptedSeeds',
+//         'should import keyPair to init test account.',
+//       );
+//       return;
+//     }
+//     setState(() {
+//       _submitting = true;
+//     });
+//     final seed =
+//         await widget.sdk.ethers.getDecryptedSeed(widget.keyring, _testPass);
+// //        await widget.sdk.evm.getDecryptedSeed(widget.keyring, 'a654321');
+//     widget.showResult(
+//       context,
+//       'getDecryptedSeeds',
+//       seed == null
+//           ? 'null'
+//           : JsonEncoder.withIndent('  ').convert({
+//               'address': _testAcc?.address,
+//               'type': seed.type,
+//               'seed': seed.seed,
+//               'error': seed.error,
+//             }),
+//     );
+//     setState(() {
+//       _submitting = false;
+//     });
+//   }
+//
+//   Future<void> _importFromMnemonic() async {
+//     setState(() {
+//       _submitting = true;
+//     });
+//     final json = await widget.sdk.ethers.importAccount(
+//       keyType: EVMKeyType.mnemonic,
+//       key:
+//           'wing know chapter eight shed lens mandate lake twenty useless bless glory',
+//       name: 'testName01',
+//       password: _testPass,
+//     );
+//     print(json);
+//     final acc = await widget.sdk.ethers.addAccount(
+//       widget.keyring,
+//       keyType: EVMKeyType.mnemonic,
+//       acc: json,
+//       password: _testPass,
+//     );
+//     widget.showResult(
+//       context,
+//       'importFromMnemonic',
+//       JsonEncoder.withIndent('  ').convert(acc.toJson()),
+//     );
+//     setState(() {
+//       _submitting = false;
+//       _testAcc = acc;
+//     });
+//   }
+//
+//   Future<void> _importFromPrivateKey() async {
+//     setState(() {
+//       _submitting = true;
+//     });
+//     final json = await widget.sdk.ethers.importAccount(
+//       keyType: EVMKeyType.privateKey,
+//       key: '0x2defc5ff7c700eb3a39a702e9b38534e8ea3419b93b1836dc6ccc891ce359290',
+//       name: 'testName02',
+//       password: _testPass,
+//     );
+//     print(json);
+//     final acc = await widget.sdk.ethers.addAccount(
+//       widget.keyring,
+//       keyType: EVMKeyType.privateKey,
+//       acc: json,
+//       password: _testPass,
+//     );
+//     widget.showResult(
+//       context,
+//       'importFromPrivateKey',
+//       JsonEncoder.withIndent('  ').convert(acc.toJson()),
+//     );
+//     setState(() {
+//       _submitting = false;
+//       _testAcc = acc;
+//     });
+//   }
+//
+//   Future<void> _importFromKeystore() async {
+//     setState(() {
+//       _submitting = true;
+//     });
+//     final json = await widget.sdk.ethers.importAccount(
+//       keyType: EVMKeyType.keystore,
+//       key: _testJson,
+//       name: 'testName03',
+//       password: _testPass,
+//     );
+//     final acc = await widget.sdk.ethers.addAccount(
+//       widget.keyring,
+//       keyType: EVMKeyType.keystore,
+//       acc: json,
+//       password: _testPass,
+//     );
+//     widget.showResult(
+//       context,
+//       'importFromKeystore',
+//       JsonEncoder.withIndent('  ').convert(acc.toJson()),
+//     );
+//     setState(() {
+//       _submitting = false;
+//       _testAcc = acc;
+//     });
+//   }
+//
+//   Future<void> _deleteAccount() async {
+//     if (_testAcc == null) {
+//       widget.showResult(
+//         context,
+//         'deleteAccount',
+//         'should import keyPair to init test account.',
+//       );
+//       return;
+//     }
+//     setState(() {
+//       _submitting = true;
+//     });
+//     await widget.sdk.ethers.deleteAccount(widget.keyring, _testAcc!);
+//     widget.showResult(
+//       context,
+//       'deleteAccount',
+//       'ok',
+//     );
+//     setState(() {
+//       _submitting = false;
+//     });
+//   }
+//
+//   Future<void> _checkPassword() async {
+//     if (_testAcc == null) {
+//       widget.showResult(
+//         context,
+//         'checkPassword',
+//         'should import keyPair to init test account.',
+//       );
+//       return;
+//     }
+//     setState(() {
+//       _submitting = true;
+//     });
+//     final bool passed =
+//         await widget.sdk.ethers.checkPassword(_testAcc!, _testPass);
+//     // await widget.sdk.evm.checkPassword(_testAcc, 'a654321');
+//     widget.showResult(
+//       context,
+//       'checkPassword',
+//       passed.toString(),
+//     );
+//     setState(() {
+//       _submitting = false;
+//     });
+//   }
+//
+//   Future<void> _changePassword() async {
+//     if (_testAcc == null) {
+//       widget.showResult(
+//         context,
+//         'changePassword',
+//         'should import keyPair to init test account.',
+//       );
+//       return;
+//     }
+//     setState(() {
+//       _submitting = true;
+//     });
+//     final res = await widget.sdk.ethers
+//         // .changePassword(widget.keyring, _testPass, 'a654321');
+//         .changePassword(widget.keyring, 'a654321', _testPass);
+//     widget.showResult(
+//       context,
+//       'changePassword',
+//       res == null ? 'null' : JsonEncoder.withIndent('  ').convert(res.toJson()),
+//     );
+//     setState(() {
+//       _submitting = false;
+//       _testAcc = res;
+//     });
+//   }
+//
+//   Future<void> _changeName() async {
+//     if (_testAcc == null) {
+//       widget.showResult(
+//         context,
+//         'changeName',
+//         'should import keyPair to init test account.',
+//       );
+//       return;
+//     }
+//     setState(() {
+//       _submitting = true;
+//     });
+//     final res = await widget.sdk.ethers.changeName(widget.keyring, 'newName');
+//     widget.showResult(
+//       context,
+//       'changeName',
+//       JsonEncoder.withIndent('  ').convert(res.toJson()),
+//     );
+//     setState(() {
+//       _submitting = false;
+//     });
+//   }
 
   @override
   void initState() {
@@ -327,19 +323,19 @@ class _EVMPageState extends State<EVMPage> {
               title: Text('getAccountList'),
               subtitle: Text('''
 sdk.api.keyring.accountList'''),
-              trailing: SubmitButton(
-                submitting: _submitting,
-                call: _getAccountList,
-              ),
+              // trailing: SubmitButton(
+              //   submitting: _submitting,
+              //   call: _getAccountList,
+              // ),
             ),
             Divider(),
             ListTile(
               title: Text('generateMnemonic'),
               subtitle: Text('sdk.api.keyring.generateMnemonic()'),
-              trailing: SubmitButton(
-                submitting: _submitting,
-                call: _generateMnemonic,
-              ),
+              // trailing: SubmitButton(
+              //   submitting: _submitting,
+              //   call: _generateMnemonic,
+              // ),
             ),
             Divider(),
             ListTile(
@@ -351,10 +347,10 @@ sdk.api.keyring.importAccount(
     name: 'testName01',
     password: 'a123456',
 )'''),
-              trailing: SubmitButton(
-                submitting: _submitting,
-                call: _importFromMnemonic,
-              ),
+              // trailing: SubmitButton(
+              //   submitting: _submitting,
+              //   call: _importFromMnemonic,
+              // ),
             ),
             Divider(),
             ListTile(
@@ -366,10 +362,10 @@ sdk.api.keyring.importAccount(
     name: 'testName02',
     password: 'a123456',
 )'''),
-              trailing: SubmitButton(
-                submitting: _submitting,
-                call: _importFromPrivateKey,
-              ),
+              // trailing: SubmitButton(
+              //   submitting: _submitting,
+              //   call: _importFromPrivateKey,
+              // ),
             ),
             Divider(),
             ListTile(
@@ -381,10 +377,10 @@ sdk.api.keyring.importAccount(
     name: 'testName03',
     password: 'a123456',
 )'''),
-              trailing: SubmitButton(
-                submitting: _submitting,
-                call: _importFromKeystore,
-              ),
+              // trailing: SubmitButton(
+              //   submitting: _submitting,
+              //   call: _importFromKeystore,
+              // ),
             ),
             Divider(),
             ListTile(
@@ -394,20 +390,20 @@ sdk.api.keyring.getDecryptedSeed(
     '${_testAcc?.toString()}',
     'a123456',
 )'''),
-              trailing: SubmitButton(
-                submitting: _submitting,
-                call: _getDecryptedSeed,
-              ),
+              // trailing: SubmitButton(
+              //   submitting: _submitting,
+              //   call: _getDecryptedSeed,
+              // ),
             ),
             Divider(),
             ListTile(
               title: Text('deleteAccount'),
               subtitle: Text('''
 sdk.api.keyring.deleteAccount'''),
-              trailing: SubmitButton(
-                submitting: _submitting,
-                call: _deleteAccount,
-              ),
+              // trailing: SubmitButton(
+              //   submitting: _submitting,
+              //   call: _deleteAccount,
+              // ),
             ),
             Divider(),
             ListTile(
@@ -417,10 +413,10 @@ sdk.api.keyring.checkPassword(
     '${_testAcc?.toString()}',
     'a123456',
 )'''),
-              trailing: SubmitButton(
-                submitting: _submitting,
-                call: _checkPassword,
-              ),
+              // trailing: SubmitButton(
+              //   submitting: _submitting,
+              //   call: _checkPassword,
+              // ),
             ),
             Divider(),
             ListTile(
@@ -431,10 +427,10 @@ sdk.api.keyring.changePassword(
     'a123456',
     'a654321',
 )'''),
-              trailing: SubmitButton(
-                submitting: _submitting,
-                call: _changePassword,
-              ),
+              // trailing: SubmitButton(
+              //   submitting: _submitting,
+              //   call: _changePassword,
+              // ),
             ),
             Divider(),
             ListTile(
@@ -444,10 +440,10 @@ sdk.api.keyring.changeName(
     '${_testAcc?.toString()}',
     'newName',
 )'''),
-              trailing: SubmitButton(
-                submitting: _submitting,
-                call: _changeName,
-              ),
+              // trailing: SubmitButton(
+              //   submitting: _submitting,
+              //   call: _changeName,
+              // ),
             ),
             Divider(),
           ],

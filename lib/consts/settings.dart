@@ -29,3 +29,7 @@ const SigningMethodsEVM = [
   "eth_accounts",
   "metamask_getProviderState",
 ];
+
+enum EVMKeyType { mnemonic, privateKey, keystore }
+
+const crypt_n = 1 << 14;
