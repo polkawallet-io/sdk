@@ -1,3 +1,7 @@
+## [0.6.3+2]
+20241119
+* bump acala/eth-providers 2.8+ & fix bridge.
+
 ## [0.6.3+1]
 20241111
 * remove unused ethers deps.
