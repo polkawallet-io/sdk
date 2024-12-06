@@ -17,6 +17,7 @@ import {
   isU8a,
   u8aToHex,
   objectSpread,
+  BN_MAX_INTEGER,
 } from "@polkadot/util";
 
 function checkGovExist(api: ApiPromise, version: number) {
@@ -567,10 +568,133 @@ async function getReferendumVoteConvictions(api: ApiPromise) {
   }));
   return res;
 }
+/**
+ * Query Referenda Conviction locks.
+ */
+async function queryReferendaLocks(api: ApiPromise, address: string) {
+  const lockClasses = await api.query.convictionVoting.classLocksFor(address);
+  if (!lockClasses) return [];
+
+  const voteParams = (lockClasses.toJSON() || []).map(([classId]) => [address, classId]);
+  if (!voteParams) return [];
+
+  const votesData = await api.query.convictionVoting?.votingFor.multi(voteParams);
+  const votes = transformVotes([voteParams, votesData]);
+  const refParams = getRefParams(votes);
+  if (!refParams) return [];
+
+  const referendaData = await api.query.referenda?.referendumInfoFor.multi(refParams);
+  const referenda = referendaData.map((v, index): null | [BN, any] =>
+    v.isSome
+      ? [refParams[index], v.unwrap()]
+      : null
+  ).filter((v): v is [BN, any] => !!v)
+  return getLocks(api, 'convictionVoting', votes, referenda);
+}
+
+function transformVotes([params, votes]: [[string, BN][], any[]]) {
+  return votes
+      .map((v, index): null | [BN, BN[], any] => {
+        if (!v.isCasting) {
+          return null;
+        }
+
+        const casting = v.asCasting;
+
+        return [
+          params[index][1],
+          casting.votes.map(([refId]) => refId),
+          casting
+        ];
+      })
+      .filter((v): v is [BN, BN[], any] => !!v)
+}
+function getRefParams (votes?: [classId: BN, refIds: BN[], casting: any][]): BN[] | undefined {
+  if (votes?.length) {
+    const refIds = votes.reduce<BN[]>((all, [, refIds]) => all.concat(refIds), []);
+
+    if (refIds.length) {
+      return refIds;
+    }
+  }
+
+  return undefined;
+}
+
+function getLocks (api: ApiPromise, palletVote: string, votes: [classId: BN, refIds: BN[], casting: any][], referenda: [BN, any][]): Lock[] {
+  const lockPeriod = api.consts[palletVote].voteLockingPeriod as BN;
+  const locks: Lock[] = [];
+
+  for (let i = 0, voteCount = votes.length; i < voteCount; i++) {
+    const [classId,, casting] = votes[i];
+
+    for (let i = 0, castCount = casting.votes.length; i < castCount; i++) {
+      const [refId, accountVote] = casting.votes[i];
+      const refInfo = referenda.find(([id]) => id.eq(refId));
+
+      if (refInfo) {
+        const [, tally] = refInfo;
+        let total: BN | undefined;
+        let endBlock: BN| undefined;
+        let convictionIndex = 0;
+        let locked = 'None';
+        const durationIndex = 1;
+
+        if (accountVote.isStandard) {
+          const { balance, vote } = accountVote.asStandard;
+
+          total = balance;
+
+          if ((tally.isApproved && vote.isAye) || (tally.isRejected && vote.isNay)) {
+            convictionIndex = vote.conviction.index;
+            locked = vote.conviction.type;
+          }
+        } else if (accountVote.isSplit) {
+          const { aye, nay } = accountVote.asSplit;
+
+          total = aye.add(nay);
+        } else if (accountVote.isSplitAbstain) {
+          const { abstain, aye, nay } = accountVote.asSplitAbstain;
+
+          total = aye.add(nay).add(abstain);
+        } else {
+          console.error(`Unable to handle ${accountVote.type}`);
+        }
+
+        if (tally.isOngoing) {
+          endBlock = BN_MAX_INTEGER;
+        } else if (tally.isKilled) {
+          endBlock = tally.asKilled;
+        } else if (tally.isCancelled || tally.isTimedOut) {
+          endBlock = tally.isCancelled
+            ? tally.asCancelled[0]
+            : tally.asTimedOut[0];
+        } else if (tally.isApproved || tally.isRejected) {
+          endBlock = lockPeriod
+            .muln(convictionIndex ? CONVICTIONS[convictionIndex - 1][durationIndex] : 0)
+            .add(
+              tally.isApproved
+                ? tally.asApproved[0]
+                : tally.asRejected[0]
+            );
+        } else {
+          console.error(`Unable to handle ${tally.type}`);
+        }
+
+        if (total && endBlock) {
+          locks.push({ classId, endBlock, locked, refId, total });
+        }
+      }
+    }
+  }
+
+  return locks;
+}
 
 export default {
   checkGovExist,
   // gov v2
   queryReferendums,
   getReferendumVoteConvictions,
+  queryReferendaLocks,
 };

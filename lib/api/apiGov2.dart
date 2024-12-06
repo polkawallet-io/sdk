@@ -33,4 +33,9 @@ class ApiGov2 {
     final List? res = await service.getReferendumVoteConvictions();
     return res;
   }
+
+  Future<List?> queryReferendaLocks(String address) async {
+    final List? res = await service.queryReferendaLocks(address);
+    return res;
+  }
 }

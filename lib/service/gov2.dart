@@ -32,4 +32,10 @@ class ServiceGov2 {
         .evalJavascript('gov2.getReferendumVoteConvictions(api)');
     return res;
   }
+
+  Future<List?> queryReferendaLocks(String address) async {
+    final dynamic data = await serviceRoot.webView!
+        .evalJavascript('gov2.queryReferendaLocks(api, "$address")');
+    return data;
+  }
 }
