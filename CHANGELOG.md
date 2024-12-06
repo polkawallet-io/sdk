@@ -1,3 +1,7 @@
+## [0.6.4]
+20241207
+* bump polkawallet/bridge 0.1.7-13.
+
 ## [0.6.3+2]
 20241119
 * bump acala/eth-providers 2.8+ & fix bridge.

@@ -12,7 +12,6 @@ import { IntegriteeAdapter } from "@polkawallet/bridge/adapters/integritee";
 import { QuartzAdapter, UniqueAdapter } from "@polkawallet/bridge/adapters/unique";
 import { KintsugiAdapter, InterlayAdapter } from "@polkawallet/bridge/adapters/interlay";
 import { TuringAdapter } from "@polkawallet/bridge/adapters/oak";
-import { ParallelAdapter, HeikoAdapter } from "@polkawallet/bridge/adapters/parallel";
 import { KhalaAdapter } from "@polkawallet/bridge/adapters/phala";
 import { BasiliskAdapter, HydraDxAdapter } from "@polkawallet/bridge/adapters/hydradx";
 import { MoonbeamAdapter, MoonriverAdapter } from "@polkawallet/bridge/adapters/moonbeam";
@@ -47,18 +46,14 @@ const availableAdapters: Record<string, BaseCrossChainAdapter> = {
   bifrost: new BifrostAdapter(),
   calamari: new CalamariAdapter(),
   crab: new CrabAdapter(),
-  heiko: new HeikoAdapter(),
   hydradx: new HydraDxAdapter(),
   integritee: new IntegriteeAdapter(),
   interlay: new InterlayAdapter(),
   khala: new KhalaAdapter(),
   kintsugi: new KintsugiAdapter(),
-  // kico: new KicoAdapter(),
   // listen: new ListenAdapter(),
   moonbeam: new MoonbeamAdapter(),
   moonriver: new MoonriverAdapter(),
-  parallel: new ParallelAdapter(),
-  // pichiu: new PichiuAdapter(),
   quartz: new QuartzAdapter(),
   shadow: new ShadowAdapter(),
   shiden: new ShidenAdapter(),
