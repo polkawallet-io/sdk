@@ -89,10 +89,11 @@ packages:
   flutter_inappwebview:
     dependency: transitive
     description:
-      name: flutter_inappwebview
-      sha256: d198297060d116b94048301ee6749cd2e7d03c1f2689783f52d210a6b7aba350
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: "200ca53154d719efce1a2f7c4d49d8293d8dc579"
+      resolved-ref: "200ca53154d719efce1a2f7c4d49d8293d8dc579"
+      url: "https://github.com/RomeroYang/flutter_inappwebview.git"
+    source: git
     version: "5.8.0"
   flutter_web_plugins:
     dependency: transitive
@@ -281,7 +282,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.6.3+2"
+    version: "0.6.4"
   process:
     dependency: transitive
     description:

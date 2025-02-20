@@ -1,6 +1,6 @@
 name: polkawallet_sdk
 description: Flutter SDK for building plugin package for polkawallet.
-version: 0.6.4
+version: 0.6.5
 homepage: https://polkawallet.io
 
 environment:
@@ -12,7 +12,10 @@ dependencies:
     sdk: flutter
   http: ^0.13.5
   webview_flutter: ^4.0.7
-  flutter_inappwebview: ^5.8.0
+  flutter_inappwebview:
+    git:
+      url: https://github.com/RomeroYang/flutter_inappwebview.git
+      ref: 200ca53154d719efce1a2f7c4d49d8293d8dc579
   shared_preferences: ^2.0.7
   get_storage: ^2.1.1
   json_annotation: ^4.8.0

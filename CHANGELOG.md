@@ -1,3 +1,8 @@
+## [0.6.5]
+20250220
+* bump polkadot-js/api 15.5.1
+* use forked inappwebview
+
 ## [0.6.4]
 20241207
 * bump polkawallet/bridge 0.1.7-13.
