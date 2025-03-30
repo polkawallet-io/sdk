@@ -1,3 +1,7 @@
+## [0.6.6]
+20250330
+* bump polkadot-js/api 15.8.1
+
 ## [0.6.5]
 20250220
 * bump polkadot-js/api 15.5.1
