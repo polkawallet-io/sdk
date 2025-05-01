@@ -91,9 +91,10 @@ class PolkawalletApi {
 
   /// connect to a list of nodes, return null if connect failed.
   Future<NetworkParams?> connectNode(
-      Keyring keyringStorage, List<NetworkParams> nodes) async {
+      Keyring keyringStorage, List<NetworkParams> nodes,
+      [Map<String, dynamic>? types]) async {
     _connectedNode = null;
-    final NetworkParams? res = await service.webView!.connectNode(nodes);
+    final NetworkParams? res = await service.webView!.connectNode(nodes, types);
     if (res != null) {
       _connectedNode = res;
 
